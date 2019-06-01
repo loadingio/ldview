@@ -1,0 +1,75 @@
+//- module
+- if(!ctrl.navtop) { ctrl.navtop = {placeholder: true, shown: true}; }
+- if(!ctrl.navtop.className) { ctrl.navtop.className = "navbar-light bg-light" };
+mixin nav-top
+  #nav-top
+    nav.navbar.navbar-expand-lg(class=ctrl.navtop.className)
+      a.navbar-brand(href="/") LOADING.IO
+      button.navbar-toggler(type="button",data-toggle="collapse",data-target="#nav-top-content"): span.navbar-toggler-icon
+      #nav-top-content.collapse.navbar-collapse
+        ul.navbar-nav.mr-auto
+          li.nav-item.dropdown
+            a.nav-link.dropdown-toggle(href="#",data-toggle="dropdown") Icon
+            .dropdown-menu
+              a.dropdown-item(href="/spinner/") Spinner Gallery
+              a.dropdown-item(href="/icon/") Icon Library
+              a.dropdown-item(href="/icon/set/") Theme Icons
+
+          li.nav-item: a.nav-link(href="/") Text
+
+          li.nav-item.dropdown
+            a.nav-link.dropdown-toggle(href="#",data-toggle="dropdown") Background
+            .dropdown-menu
+              a.dropdown-item(href="/pattern/") Loading Patterns
+              a.dropdown-item(href="/background/") Live Backgrounds
+
+          li.nav-item: a.nav-link(href="/progress/") Progress Bar
+
+          li.nav-item.dropdown
+            a.nav-link.dropdown-toggle(href="#",data-toggle="dropdown") Color
+            .dropdown-menu
+              a.dropdown-item(href="/animation/") Random Palette Generator
+              a.dropdown-item(href="/animation/") Gradient Gallery
+              a.dropdown-item(href="/color/doc") ldColorPicker
+              .dropdown-divider
+              a.dropdown-item(href="/transition/") Browse All Palettes ...
+
+
+          li.nav-item.dropdown
+            a.nav-link.dropdown-toggle(href="#",data-toggle="dropdown") Libraries
+            .dropdown-menu
+              .dropdown-header CSS
+              a.dropdown-item(href="/animation/") Loading.css
+              a.dropdown-item(href="/transition/") Transition.css
+              a.dropdown-item(href="/button/") Loading Buttons
+              .dropdown-divider
+              .dropdown-header JS
+              a.dropdown-item(href="/progress/") Loading Bar
+              a.dropdown-item(href="#") Gradient.js
+              a.dropdown-item(href="#") ldColorPicker
+              .dropdown-divider
+              .dropdown-header Framework
+              a.dropdown-item(href="#") loading UI
+              a.dropdown-item(href="#") ldLoader
+              a.dropdown-item(href="#") ldCover
+              .dropdown-divider
+              a.dropdown-item(href="#") ... More
+
+        ul.navbar-nav.ml-auto
+          li.nav-item: a.nav-link(href="/pricing/") Pricing
+
+          li#nav-login.nav-item: a.nav-link(onclick="lda.auth.show('login')") Login
+          li#nav-signup.nav-item: a.nav-link(onclick="lda.auth.show('signup')") Sign Up
+          li#nav-profile.nav-item.dropdown.d-none
+            a.nav-link.dropdown-toggle(href="#",data-toggle="dropdown"): .avatar.avatar-lg
+            .dropdown-menu.dropdown-menu-right
+              a.dropdown-item(href="/me/") My Creation
+              .dropdown.divider
+              a.dropdown-item(href="/me/settings/") Settings
+              a.dropdown-item(href="/me/billing/") Billing
+              a.dropdown-item(href="#",onclick="core.act('auth.logout')") Logout
+
+
+  //- add gaps to prevent content from been covered.
+  if ctrl.navtop.placeholder
+    #nav-top-placeholder
