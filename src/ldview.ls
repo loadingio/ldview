@@ -54,6 +54,7 @@
 
       ns.map ~> @handler[name].handle {node: it, name: name, data: it._data}
 
+    get: (n) -> (@map.nodes[n] or []).map -> it.node
 
     render: (names) ->
       _ = (n) ~>

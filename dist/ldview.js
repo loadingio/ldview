@@ -100,6 +100,11 @@
         });
       });
     },
+    get: function(n){
+      return (this.map.nodes[n] || []).map(function(it){
+        return it.node;
+      });
+    },
     render: function(names){
       var _, k, this$ = this, results$ = [];
       _ = function(n){
