@@ -101,6 +101,9 @@
       });
     },
     get: function(n){
+      return ((this.map.nodes[n] || [])[0] || {}).node;
+    },
+    getAll: function(n){
       return (this.map.nodes[n] || []).map(function(it){
         return it.node;
       });

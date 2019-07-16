@@ -78,8 +78,11 @@ After initialization, You probably will want to update some elements instead of 
 
 ## API
 
- * new ldView
- * view.get("node-name") - return a list of nodes in the name of node-name.
+ * new ldView({root, handler})
+   handler: hash with node-names as key and function as value.
+   - function: ({node}) which node is the element matched with this node-name.
+ * view.getAll("node-name") - return a list of nodes in the name of node-name.
+ * view.get("node-name") - return the first node with the name of node-name. shorthand for getAll(...)[0]
  * view.render(cfg)
 
 
