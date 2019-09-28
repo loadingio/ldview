@@ -4,5 +4,6 @@ echo "build src/ldview.ls -> dist/ldview.js ..."
 ./node_modules/.bin/lsc -cbp src/ldview.ls > dist/ldview.js
 echo "minifying ldview.js ..."
 ./node_modules/.bin/uglifyjs dist/ldview.js > dist/ldview.min.js
+echo "copy ldview.pug to dist/ ..."
+cp src/ldview.pug dist/
 echo "done."
-

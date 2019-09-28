@@ -76,6 +76,43 @@ After initialization, You probably will want to update some elements instead of 
     view.render <[name]> 
 
 
+## Scoping
+
+Scope the DOM fragment with `scope` pug mixin and `scope` function:
+
+    +scope("scope-name")
+      div(ld=scope("node-name")) my element.
+
+Above code fragment will output something like this:
+
+    <div ld-scope="scope-name">
+      <div ld="scope-name$node-name"> my element </div>
+    </div>
+
+`ld-scope` will prevent other views to find elements into this scope. Then when using ldView, you have to specify the scope name:
+
+    view = new ldView({root: "...", scope: "scope-name", handler: handler});
+
+
+While you can still use the node names (without the scope-name prefix) directly when manipulating ldView:
+
+    handler = {
+      "node-name": function(node) {  ... }
+    };
+    node = view.get("node-name");
+
+
+## Configurations
+
+ * root - view root
+ * handler - object containing name / handler pairs.
+   - name will be used when querying DOM in `ld` attribute.
+   - handler accept an object as argument:
+   - node: the target node
+ * scope - scope name for this view. view will be global if scope name is not defined.
+   this should be used along with the scope pug mixin.
+ * init-render - if set to true, ldView automatically calls render immediately after initialized.
+
 ## API
 
  * new ldView({root, handler})

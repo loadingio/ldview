@@ -1,0 +1,7 @@
+- scope = function(n) { return (!n?[]:(Array.isArray(n)?n:[n])).map(function(it){ return `${ld}$${it}`; }).join(' ');}
+mixin scope(input)
+  - var old = ld;
+  - ld = input;
+  div(ld-scope=input)
+    block
+  - ld = old;
