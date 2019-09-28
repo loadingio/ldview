@@ -134,9 +134,9 @@
       var _, k, this$ = this, results$ = [];
       _ = function(n){
         if (this$.map.nodes[n]) {
-          this$.map.nodes[n].map(function(it){
+          this$.map.nodes[n].map(function(d, i){
             if (this$.handler[n]) {
-              return this$.handler[n]((it.name = n, it));
+              return this$.handler[n]((d.name = n, d.idx = i, d));
             }
           });
         }

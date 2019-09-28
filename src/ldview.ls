@@ -78,7 +78,7 @@
 
     render: (names) ->
       _ = (n) ~>
-        if @map.nodes[n] => @map.nodes[n].map ~> if @handler[n] => @handler[n](it <<< {name: n})
+        if @map.nodes[n] => @map.nodes[n].map (d,i) ~> if @handler[n] => @handler[n](d <<< {name: n, idx: i})
         if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~> @proc-each n, it
       if names => (if Array.isArray(names) => names else [names]).map -> _ it
       else for k of @handler => _ k
