@@ -5,16 +5,14 @@
     var root, selector, exclusions, all, prefixRE, this$ = this;
     opt == null && (opt = {});
     this.handler = opt.handler;
-    this.scope = opt.scope;
+    this.prefix = opt.prefix;
     this.initRender = opt.initRender;
     this.root = root = typeof opt.root === 'string'
       ? ld$.find(document, opt.root, 0)
       : opt.root;
     if (this.root.setAttribute) {
-      if (this.scope) {
-        this.root.setAttribute('ld-scope', this.scope);
-      }
-      this.root.setAttribute('ld-root', this.id = "ld-" + Math.random().toString(36).substring(2));
+      this.id = "ld-" + Math.random().toString(36).substring(2);
+      this.root.setAttribute("ld-scope-" + this.id, '');
     }
     this.eaches = ld$.find(root, '[ld-each]').map(function(n){
       var p, c, i, ret;
@@ -50,13 +48,13 @@
     }).filter(function(it){
       return it;
     });
-    selector = this.scope ? "[ld^=" + this.scope + "\\$]" : "[ld]";
-    exclusions = ld$.find(root, (this.id ? "[ld-root=" + this.id + "] " : "") + ("[ld-scope] " + selector));
+    selector = this.prefix ? "[ld^=" + this.prefix + "\\$]" : "[ld]";
+    exclusions = ld$.find(root, (this.id ? "[ld-scope-" + this.id + "] " : "") + ("[ld-scope] " + selector));
     all = ld$.find(root, selector);
     this.nodes = all.filter(function(it){
       return !in$(it, exclusions);
     });
-    prefixRE = this.scope ? new RegExp("^" + this.scope + "\\$") : null;
+    prefixRE = this.prefix ? new RegExp("^" + this.prefix + "\\$") : null;
     this.map = {
       nodes: {},
       eaches: {}
@@ -64,7 +62,7 @@
     this.nodes.map(function(node){
       var names;
       names = (node.getAttribute('ld') || "").split(' ');
-      if (this$.scope) {
+      if (this$.prefix) {
         names = names.map(function(it){
           return it.replace(prefixRE, "").trim();
         });

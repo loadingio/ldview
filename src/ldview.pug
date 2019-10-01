@@ -1,7 +1,10 @@
-- scope = function(n) { return (!n?[]:(Array.isArray(n)?n:[n])).map(function(it){ return `${ld}$${it}`; }).join(' ');}
-mixin scope(input)
-  - var old = ld;
-  - ld = input;
-  div(ld-scope=input)
+- prefix = function(n) { return (!n?[]:(Array.isArray(n)?n:[n])).map(function(it){ return `${prefix.currentName}$${it}`; }).join(' ');}
+mixin scope(name)
+  - var prentName = prefix.currentName;
+  - prefix.currentName = name;
+  if attributes.class && /naked-scope/.exec(attributes.class)
     block
-  - ld = old;
+  else
+    div(ld-scope=name || '')&attributes(attributes)
+      block
+  - prefix.currentName = parentName;

@@ -81,25 +81,50 @@ After initialization, You probably will want to update some elements instead of 
 Scope the DOM fragment with `scope` pug mixin and `scope` function:
 
     +scope("scope-name")
-      div(ld=scope("node-name")) my element.
+      div(ld="node-name") my element.
 
 Above code fragment will output something like this:
 
     <div ld-scope="scope-name">
-      <div ld="scope-name$node-name"> my element </div>
+      <div ld="node-name"> my element </div>
     </div>
 
-`ld-scope` will prevent other views to find elements into this scope. Then when using ldView, you have to specify the scope name:
+`ld-scope` will prevent other views to find elements into this scope.
 
-    view = new ldView({root: "...", scope: "scope-name", handler: handler});
+If you want to mix views, you can set the scope to `naked` by adding a `naked-scope` class:
+
+    +scope("scope-name").naked-scope
+      div(ld="node-name") my element
+
+This will output following:
+
+    <div ld="node-name"> my element </div>
+
+While this seems to equal to doing nothing, you can prefix `ld` attribute by `scope-name` with `prefix` function in order to distinguish elements for different views:
+
+    +scope("scope-name").naked-scope
+      div(ld=prefix("node-name")) my element
+      div(ld="global-name") global element
+
+becomes
+
+    <div ld="scope-name$node-name"> my element </div>
+    <div ld="global-name"> global element </div>
+
+To access prefix-ed node, adding `prefix` option when initializing ldView:
+
+    var localView = new ldView({prefix: 'scope-name', handler: {
+      "node-name": function(node) { ... }
+    });
+    var localNode = localView.get("node-name");
+
+    var globalView = new ldView({handler: {
+      "node-name": function(node) { ... }
+    });
+    var globalNode = globalView.get("global-name");
 
 
-While you can still use the node names (without the scope-name prefix) directly when manipulating ldView:
-
-    handler = {
-      "node-name": function(node) {  ... }
-    };
-    node = view.get("node-name");
+Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have to prefix since only you can access `ld` elements within this scope.
 
 
 ## Configurations
@@ -109,7 +134,7 @@ While you can still use the node names (without the scope-name prefix) directly 
    - name will be used when querying DOM in `ld` attribute.
    - handler accept an object as argument:
    - node: the target node
- * scope - scope name for this view. view will be global if scope name is not defined.
+ * prefix - prefix name for this view. view will be global if scope name is not defined.
    this should be used along with the scope pug mixin.
  * init-render - if set to true, ldView automatically calls render immediately after initialized.
 
@@ -131,3 +156,4 @@ TBD
 ## License
 
 MIT
+

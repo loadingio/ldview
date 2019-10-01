@@ -1,13 +1,13 @@
 (->
   ldView = (opt = {}) ->
     @handler = opt.handler
-    @ <<< opt{scope, init-render}
+    @ <<< opt{prefix, init-render}
     @root = root = if typeof(opt.root) == \string => ld$.find(document, opt.root, 0) else opt.root
     # some roots such as document don't support setAttribute. yet document doesn't need scope, too.
     if @root.setAttribute =>
-      # if scoping - use ld-scope to identify it.
-      if @scope => @root.setAttribute \ld-scope, @scope
-      @root.setAttribute \ld-root, @id = "ld-#{Math.random!toString(36)substring(2)}"
+      @id = "ld-#{Math.random!toString(36)substring(2)}"
+      # ld-scope-${id} is used to identify a ldView object, for code of excluding scoped object
+      @root.setAttribute "ld-scope-#{@id}", ''
     # remove all ld-each by orders.
     @eaches = ld$.find(root, '[ld-each]')
       .map (n) ->
@@ -30,18 +30,18 @@
     # this can be done by ":scope :not([ld-scope]) [ld], :scope > [ld]"
     # but IE/Edge don't support :scope ( https://caniuse.com/#search=%3Ascope )
     # so we manually exclude them.
-    selector = if @scope => "[ld^=#{@scope}\\$]" else "[ld]"
+    selector = if @prefix => "[ld^=#{@prefix}\\$]" else "[ld]"
     # querySelector returns all nodes that matches the seletor, even if some rule are above / in parent of root.
     # so, we use a ld-root to trap the rule inside.
-    exclusions = ld$.find(root, (if @id => "[ld-root=#{@id}] " else "") + "[ld-scope] #selector")
+    exclusions = ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
     all = ld$.find(root, selector)
     @nodes = all.filter -> !(it in exclusions)
 
-    prefixRE = if @scope => new RegExp("^#{@scope}\\$") else null
+    prefixRE = if @prefix => new RegExp("^#{@prefix}\\$") else null
     @map = nodes: {}, eaches: {}
     @nodes.map (node) ~>
       names = (node.getAttribute(\ld) or "").split(' ')
-      if @scope => names = names.map -> it.replace(prefixRE,"").trim!
+      if @prefix => names = names.map -> it.replace(prefixRE,"").trim!
       names.map ~> @map.nodes[][it].push {node, names}
     @eaches.map (node) ~> @map.eaches[][node.name].push node
     if @init-render => @render!
