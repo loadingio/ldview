@@ -136,7 +136,7 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
    - node: the target node
  * prefix - prefix name for this view. view will be global if scope name is not defined.
    this should be used along with the scope pug mixin.
- * init-render - if set to true, ldView automatically calls render immediately after initialized.
+ * init-render - if set to true, ldView automatically calls render immediately after initialized. default true
 
 ## API
 

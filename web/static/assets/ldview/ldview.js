@@ -6,7 +6,7 @@
     opt == null && (opt = {});
     this.handler = opt.handler;
     this.prefix = opt.prefix;
-    this.initRender = opt.initRender;
+    this.initRender = opt.initRender != null ? opt.initRender : true;
     this.root = root = typeof opt.root === 'string'
       ? ld$.find(document, opt.root, 0)
       : opt.root;
