@@ -9,8 +9,19 @@
       @id = "ld-#{Math.random!toString(36)substring(2)}"
       # ld-scope-${id} is used to identify a ldView object, for code of excluding scoped object
       @root.setAttribute "ld-scope-#{@id}", ''
+
+    # now we are going to find *[ld]. yet, we want to exclude all that are scoped.
+    # this can be done by ":scope :not([ld-scope]) [ld], :scope > [ld]"
+    # but IE/Edge don't support :scope ( https://caniuse.com/#search=%3Ascope )
+    # so we manually exclude them.
+    # following is for [ld-each]; we will take care of [ld] later.
+    selector = if @prefix => "[ld-each^=#{@prefix}\\$]" else "[ld-each]"
+    # querySelector returns all nodes that matches the seletor, even if some rule are above / in parent of root.
+    # so, we use a ld-root to trap the rule inside.
+    exclusions = ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
+    all = ld$.find(root, selector)
     # remove all ld-each by orders.
-    @eaches = ld$.find(root, '[ld-each]')
+    @eaches = all.filter -> !(it in exclusions)
       .map (n) ->
         p = n.parentNode
         while p => if p == document => break else p = p.parentNode
@@ -27,13 +38,8 @@
         return ret
       .filter -> it
 
-    # now we are going to find *[ld]. yet, we want to exclude all that are scoped.
-    # this can be done by ":scope :not([ld-scope]) [ld], :scope > [ld]"
-    # but IE/Edge don't support :scope ( https://caniuse.com/#search=%3Ascope )
-    # so we manually exclude them.
+    # now here is for [ld]
     selector = if @prefix => "[ld^=#{@prefix}\\$]" else "[ld]"
-    # querySelector returns all nodes that matches the seletor, even if some rule are above / in parent of root.
-    # so, we use a ld-root to trap the rule inside.
     exclusions = ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
     all = ld$.find(root, selector)
     @nodes = all.filter -> !(it in exclusions)
