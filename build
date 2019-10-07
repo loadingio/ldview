@@ -6,4 +6,7 @@ echo "minifying ldview.js ..."
 ./node_modules/.bin/uglifyjs dist/ldview.js > dist/ldview.min.js
 echo "copy ldview.pug to dist/ ..."
 cp src/ldview.pug dist/
+echo "copy files to web ..."
+mkdir -p web/static/assets/ldview/
+cp dist/* web/static/assets/ldview/
 echo "done."
