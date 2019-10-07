@@ -3,6 +3,7 @@
     @handler = opt.handler
     @ <<< opt{prefix, init-render}
     @root = root = if typeof(opt.root) == \string => ld$.find(document, opt.root, 0) else opt.root
+    if !@root => console.warn "[ldView] warning: no node found for root ", opt.root
     # some roots such as document don't support setAttribute. yet document doesn't need scope, too.
     if @root.setAttribute =>
       @id = "ld-#{Math.random!toString(36)substring(2)}"

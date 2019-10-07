@@ -10,6 +10,9 @@
     this.root = root = typeof opt.root === 'string'
       ? ld$.find(document, opt.root, 0)
       : opt.root;
+    if (!this.root) {
+      console.warn("[ldView] warning: no node found for root ", opt.root);
+    }
     if (this.root.setAttribute) {
       this.id = "ld-" + Math.random().toString(36).substring(2);
       this.root.setAttribute("ld-scope-" + this.id, '');
