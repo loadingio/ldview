@@ -1,32 +1,15 @@
 doctype html
 html
   include /../../static/assets/ldui/pug/ldui.pug
+  include /../../static/assets/ldview/ldview.pug
   head
     +css("https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css")
     +css("/assets/ldui/ldui.min.css")
   body
-    .w-75.mx-auto.my-4
-      .text-center
-        .avatar.rounded-circle(ld="useravatar",style="width:128px;height:128px")
-        h1
-          span(ld="username") Kirby
-          .badge.badge-primary.align-top.ml-1(style="font-size:16px;margin-right:-50px") FREE
-        .text-muted(ld="userdesc") Hello Kirby is a handsome boy
-      .sep.my-4
-      .row
-        .col-9
-          .d-flex(style="justify-content:space-between;flex-wrap:wrap")
-            .ldpal(ld-each="pal",style="width:240px")
-              .colors
-                .color(ld-each="color",style="background:#ff9")
-                .ctrl
-        .col-3
-          .mb-4(ld="ctrl-panel free")
-            .btn.btn-primary.btn-block.btn-lg Upgrade to Pro
-          .mb-4(ld="ctrl-panel pro")
-            label.mb-0
-              span Pro Usage
-              small.text-muted.ml-1 ( #[span(ld="quota.used") 10] / #[span(ld="quota.max") 10] )
-            .progress: .progress-bar(style="width:40%")
+    div(ld="global") global
+    +scope("local")(ld="local")
+      div(ld-each="loop") loop
+
     +script("/assets/ldui/ldui.min.js")
+    +script("/assets/ldview/ldview.min.js")
     +script("/js/index.js")
