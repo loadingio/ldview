@@ -1,6 +1,7 @@
 (->
   ldView = (opt = {}) ->
-    @handler = opt.handler
+    @handler = opt.handler or {}
+    @action = opt.action or {}
     @prefix = opt.prefix
     @init-render = if opt.init-render? => opt.init-render else true
     @root = root = if typeof(opt.root) == \string => ld$.find(document, opt.root, 0) else opt.root
@@ -50,8 +51,12 @@
     @nodes.map (node) ~>
       names = (node.getAttribute(\ld) or "").split(' ')
       if @prefix => names = names.map -> it.replace(prefixRE,"").trim!
-      names.map ~> @map.nodes[][it].push {node, names}
+      names.map ~> @map.nodes[][it].push {node, names, evts: {}}
     @eaches.map (node) ~> @map.eaches[][node.name].push node
+    names = {}
+    for list in ([[k for k of @handler]] ++ [v for k,v of @action].map (it) -> [k for k of it]) =>
+      for it in list => names[it] = true
+    @names = [k for k of names]
     if @init-render => @render!
     @
 
@@ -88,10 +93,16 @@
 
     render: (names) ->
       _ = (n) ~>
-        if @map.nodes[n] => @map.nodes[n].map (d,i) ~> if @handler[n] => @handler[n](d <<< {name: n, idx: i})
+        if @map.nodes[n] => @map.nodes[n].map (d,i) ~>
+          d <<< {name: n, idx: i}
+          if @handler[n] => @handler[n](d)
+          for k,v of @action =>
+            if v and v[n] and !d.{}evts[k] =>
+              d.node.addEventListener k, (evt) -> v[n]({evt} <<< d)
+              d.evts[k] = true
         if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~> @proc-each n, it
       if names => (if Array.isArray(names) => names else [names]).map -> _ it
-      else for k of @handler => _ k
+      else for k in @names => _(k)
 
   if module? => module.exports = ldView
   if window? => window.ldView = ldView

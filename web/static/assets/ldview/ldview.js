@@ -2,9 +2,10 @@
 (function(){
   var ldView;
   ldView = function(opt){
-    var root, selector, exclusions, all, prefixRE, this$ = this;
+    var root, selector, exclusions, all, prefixRE, names, i$, ref$, k, v, len$, list, j$, len1$, it, res$, this$ = this;
     opt == null && (opt = {});
-    this.handler = opt.handler;
+    this.handler = opt.handler || {};
+    this.action = opt.action || {};
     this.prefix = opt.prefix;
     this.initRender = opt.initRender != null ? opt.initRender : true;
     this.root = root = typeof opt.root === 'string'
@@ -79,7 +80,8 @@
         var ref$;
         return ((ref$ = this$.map.nodes)[it] || (ref$[it] = [])).push({
           node: node,
-          names: names
+          names: names,
+          evts: {}
         });
       });
     });
@@ -87,10 +89,45 @@
       var ref$, key$;
       return ((ref$ = this$.map.eaches)[key$ = node.name] || (ref$[key$] = [])).push(node);
     });
+    names = {};
+    for (i$ = 0, len$ = (ref$ = [(fn$.call(this))].concat((fn1$.call(this)).map(fn2$))).length; i$ < len$; ++i$) {
+      list = ref$[i$];
+      for (j$ = 0, len1$ = list.length; j$ < len1$; ++j$) {
+        it = list[j$];
+        names[it] = true;
+      }
+    }
+    res$ = [];
+    for (k in names) {
+      res$.push(k);
+    }
+    this.names = res$;
     if (this.initRender) {
       this.render();
     }
     return this;
+    function fn$(){
+      var results$ = [];
+      for (k in this.handler) {
+        results$.push(k);
+      }
+      return results$;
+    }
+    function fn1$(){
+      var ref$, results$ = [];
+      for (k in ref$ = this.action) {
+        v = ref$[k];
+        results$.push(v);
+      }
+      return results$;
+    }
+    function fn2$(it){
+      var k, results$ = [];
+      for (k in it) {
+        results$.push(k);
+      }
+      return results$;
+    }
   };
   ldView.prototype = import$(Object.create(Object.prototype), {
     procEach: function(name, data){
@@ -143,12 +180,28 @@
       });
     },
     render: function(names){
-      var _, k, this$ = this, results$ = [];
+      var _, i$, ref$, len$, k, this$ = this, results$ = [];
       _ = function(n){
         if (this$.map.nodes[n]) {
           this$.map.nodes[n].map(function(d, i){
+            var k, ref$, v, results$ = [];
+            d.name = n;
+            d.idx = i;
             if (this$.handler[n]) {
-              return this$.handler[n]((d.name = n, d.idx = i, d));
+              this$.handler[n](d);
+            }
+            for (k in ref$ = this$.action) {
+              v = ref$[k];
+              if (v && v[n] && !(d.evts || (d.evts = {}))[k]) {
+                d.node.addEventListener(k, fn$);
+                results$.push(d.evts[k] = true);
+              }
+            }
+            return results$;
+            function fn$(evt){
+              return v[n](import$({
+                evt: evt
+              }, d));
             }
           });
         }
@@ -165,7 +218,8 @@
           return _(it);
         });
       } else {
-        for (k in this.handler) {
+        for (i$ = 0, len$ = (ref$ = this.names).length; i$ < len$; ++i$) {
+          k = ref$[i$];
           results$.push(_(k));
         }
         return results$;
