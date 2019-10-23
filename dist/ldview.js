@@ -95,7 +95,7 @@
   ldView.prototype = import$(Object.create(Object.prototype), {
     procEach: function(name, data){
       var list, items, nodes, lastidx, ret, ns, this$ = this;
-      list = this.handler[name].list();
+      list = this.handler[name].list() || [];
       items = [];
       nodes = data.nodes.filter(function(it){
         return it;

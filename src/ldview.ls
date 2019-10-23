@@ -59,7 +59,7 @@
     #data = {container, idx, node, name, nodes, proxy}
     # node._data = item in list
     proc-each: (name, data) ->
-      list = @handler[name].list!
+      list = @handler[name].list! or []
 
       items = []
       nodes = data.nodes
