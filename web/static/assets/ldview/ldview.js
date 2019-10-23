@@ -97,13 +97,18 @@
       var list, items, nodes, lastidx, ret, ns, this$ = this;
       list = this.handler[name].list();
       items = [];
-      nodes = data.nodes.map(function(n){
+      nodes = data.nodes.filter(function(it){
+        return it;
+      }).map(function(n){
         if (!in$(n._data, list)) {
-          n.parentNode.removeChild(n);
-          return n._data = null;
+          if (n.parentNode) {
+            n.parentNode.removeChild(n);
+          }
+          n._data = null;
         } else {
-          return items.push(n._data);
+          items.push(n._data);
         }
+        return n;
       }).filter(function(it){
         return it._data;
       });
@@ -120,13 +125,14 @@
         return node;
       });
       ns = ret;
-      return ns.map(function(it){
+      ns.map(function(it){
         return this$.handler[name].handle({
           node: it,
           name: name,
           data: it._data
         });
       });
+      return data.nodes = ns;
     },
     get: function(n){
       return ((this.map.nodes[n] || [])[0] || {}).node;

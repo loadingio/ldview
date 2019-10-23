@@ -63,11 +63,13 @@
 
       items = []
       nodes = data.nodes
+        .filter(->it)
         .map (n) -> 
           if !(n._data in list) =>
-            n.parentNode.removeChild n
+            if n.parentNode => n.parentNode.removeChild n
             n._data = null
           else items.push n._data
+          n
         .filter (._data)
       lastidx = 0
       ret = list.map (n,i) ->
@@ -78,8 +80,8 @@
         data.container.insertBefore node, (nodes[lastidx + 1] or data.proxy)
         return node
       ns = ret
-
       ns.map ~> @handler[name].handle {node: it, name: name, data: it._data}
+      data.nodes = ns
 
     get: (n) -> ((@map.nodes[n] or []).0 or {}).node
     getAll: (n) -> (@map.nodes[n] or []).map -> it.node
