@@ -134,6 +134,19 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
    - name will be used when querying DOM in `ld` attribute.
    - handler accept an object as argument:
    - node: the target node
+ * action - action handler. object containing event names such as click, mousemove, etc.
+   - each member contains a handler object similar to the root handler.
+   - example:
+
+    action: {
+      click: {
+        buy: ({node, evt}) -> ...
+      }
+      change: {
+        name: ({node, evt}) -> ...
+        title: ({node, evt}) -> ...
+      }
+
  * prefix - prefix name for this view. view will be global if scope name is not defined.
    this should be used along with the scope pug mixin.
  * init-render - if set to true, ldView automatically calls render immediately after initialized. default true
