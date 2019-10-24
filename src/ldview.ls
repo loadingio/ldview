@@ -1,4 +1,6 @@
 (->
+  set-evt-handler = (d,k,f) -> d.node.addEventListener k, (evt) -> f({evt} <<< d)
+
   ldView = (opt = {}) ->
     @handler = opt.handler or {}
     @action = opt.action or {}
@@ -98,7 +100,8 @@
           if @handler[n] => @handler[n](d)
           for k,v of @action =>
             if v and v[n] and !d.{}evts[k] =>
-              d.node.addEventListener k, (evt) -> v[n]({evt} <<< d)
+              # scoping so event handler can call v[n]
+              set-evt-handler d, k, v[n]
               d.evts[k] = true
         if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~> @proc-each n, it
       if names => (if Array.isArray(names) => names else [names]).map -> _ it
