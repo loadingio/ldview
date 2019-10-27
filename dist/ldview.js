@@ -206,7 +206,9 @@
               this$.handler[n](d);
             }
             if (this$.text[n]) {
-              d.node.textContent = this$.text[n](d);
+              d.node.textContent = typeof this$.text[n] === 'function'
+                ? this$.text[n](d)
+                : this$.text[n];
             }
             for (k in ref$ = this$.action) {
               v = ref$[k];

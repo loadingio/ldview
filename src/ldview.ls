@@ -99,7 +99,7 @@
         if @map.nodes[n] => @map.nodes[n].map (d,i) ~>
           d <<< {name: n, idx: i}
           if @handler[n] => @handler[n](d)
-          if @text[n] => d.node.textContent = @text[n](d)
+          if @text[n] => d.node.textContent = if typeof(@text[n]) == \function => @text[n](d) else @text[n]
           for k,v of @action =>
             if v and v[n] and !d.{}evts[k] =>
               # scoping so event handler can call v[n]
