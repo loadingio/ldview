@@ -13,6 +13,7 @@
     opt == null && (opt = {});
     this.handler = opt.handler || {};
     this.action = opt.action || {};
+    this.text = opt.text || {};
     this.prefix = opt.prefix;
     this.initRender = opt.initRender != null ? opt.initRender : true;
     this.root = root = typeof opt.root === 'string'
@@ -97,7 +98,7 @@
       return ((ref$ = this$.map.eaches)[key$ = node.name] || (ref$[key$] = [])).push(node);
     });
     names = {};
-    for (i$ = 0, len$ = (ref$ = [(fn$.call(this))].concat((fn1$.call(this)).map(fn2$))).length; i$ < len$; ++i$) {
+    for (i$ = 0, len$ = (ref$ = [(fn$.call(this))].concat([(fn1$.call(this))], (fn2$.call(this)).map(fn3$))).length; i$ < len$; ++i$) {
       list = ref$[i$];
       for (j$ = 0, len1$ = list.length; j$ < len1$; ++j$) {
         it = list[j$];
@@ -115,12 +116,19 @@
     return this;
     function fn$(){
       var results$ = [];
-      for (k in this.handler) {
+      for (k in this.text) {
         results$.push(k);
       }
       return results$;
     }
     function fn1$(){
+      var results$ = [];
+      for (k in this.handler) {
+        results$.push(k);
+      }
+      return results$;
+    }
+    function fn2$(){
       var ref$, results$ = [];
       for (k in ref$ = this.action) {
         v = ref$[k];
@@ -128,7 +136,7 @@
       }
       return results$;
     }
-    function fn2$(it){
+    function fn3$(it){
       var k, results$ = [];
       for (k in it) {
         results$.push(k);
@@ -196,6 +204,9 @@
             d.idx = i;
             if (this$.handler[n]) {
               this$.handler[n](d);
+            }
+            if (this$.text[n]) {
+              d.node.textContent = this$.text[n](d);
             }
             for (k in ref$ = this$.action) {
               v = ref$[k];

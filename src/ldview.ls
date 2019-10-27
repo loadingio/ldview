@@ -4,6 +4,7 @@
   ldView = (opt = {}) ->
     @handler = opt.handler or {}
     @action = opt.action or {}
+    @text = opt.text or {}
     @prefix = opt.prefix
     @init-render = if opt.init-render? => opt.init-render else true
     @root = root = if typeof(opt.root) == \string => ld$.find(document, opt.root, 0) else opt.root
@@ -56,7 +57,7 @@
       names.map ~> @map.nodes[][it].push {node, names, evts: {}}
     @eaches.map (node) ~> @map.eaches[][node.name].push node
     names = {}
-    for list in ([[k for k of @handler]] ++ [v for k,v of @action].map (it) -> [k for k of it]) =>
+    for list in ([[k for k of @text]] ++ [[k for k of @handler]] ++ [v for k,v of @action].map (it) -> [k for k of it]) =>
       for it in list => names[it] = true
     @names = [k for k of names]
     if @init-render => @render!
@@ -98,6 +99,7 @@
         if @map.nodes[n] => @map.nodes[n].map (d,i) ~>
           d <<< {name: n, idx: i}
           if @handler[n] => @handler[n](d)
+          if @text[n] => d.node.textContent = @text[n](d)
           for k,v of @action =>
             if v and v[n] and !d.{}evts[k] =>
               # scoping so event handler can call v[n]
