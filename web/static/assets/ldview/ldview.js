@@ -14,6 +14,8 @@
     this.handler = opt.handler || {};
     this.action = opt.action || {};
     this.text = opt.text || {};
+    this.initer = opt.init || {};
+    this.inited = {};
     this.prefix = opt.prefix;
     this.initRender = opt.initRender != null ? opt.initRender : true;
     this.root = root = typeof opt.root === 'string'
@@ -199,25 +201,35 @@
       _ = function(n){
         if (this$.map.nodes[n]) {
           this$.map.nodes[n].map(function(d, i){
-            var k, ref$, v, results$ = [];
+            var k, ref$, v, e, results$ = [];
             d.name = n;
             d.idx = i;
-            if (this$.handler[n]) {
-              this$.handler[n](d);
-            }
-            if (this$.text[n]) {
-              d.node.textContent = typeof this$.text[n] === 'function'
-                ? this$.text[n](d)
-                : this$.text[n];
-            }
-            for (k in ref$ = this$.action) {
-              v = ref$[k];
-              if (v && v[n] && !(d.evts || (d.evts = {}))[k]) {
-                setEvtHandler(d, k, v[n]);
-                results$.push(d.evts[k] = true);
+            try {
+              if (this$.handler[n]) {
+                this$.handler[n](d);
               }
+              if (this$.text[n]) {
+                d.node.textContent = typeof this$.text[n] === 'function'
+                  ? this$.text[n](d)
+                  : this$.text[n];
+              }
+              if (this$.initer[n] && !this$.inited[n]) {
+                this$.initer[n](d);
+                this$.inited[n] = true;
+              }
+              for (k in ref$ = this$.action) {
+                v = ref$[k];
+                if (v && v[n] && !(d.evts || (d.evts = {}))[k]) {
+                  setEvtHandler(d, k, v[n]);
+                  results$.push(d.evts[k] = true);
+                }
+              }
+              return results$;
+            } catch (e$) {
+              e = e$;
+              console.warn("[ldView] failed when rendering " + n);
+              throw e;
             }
-            return results$;
           });
         }
         if (this$.map.eaches[n] && this$.handler[n]) {

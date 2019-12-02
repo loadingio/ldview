@@ -5,6 +5,8 @@
     @handler = opt.handler or {}
     @action = opt.action or {}
     @text = opt.text or {}
+    @initer = opt.init or {}
+    @inited = {}
     @prefix = opt.prefix
     @init-render = if opt.init-render? => opt.init-render else true
     @root = root = if typeof(opt.root) == \string => ld$.find(document, opt.root, 0) else opt.root
@@ -98,13 +100,19 @@
       _ = (n) ~>
         if @map.nodes[n] => @map.nodes[n].map (d,i) ~>
           d <<< {name: n, idx: i}
-          if @handler[n] => @handler[n](d)
-          if @text[n] => d.node.textContent = if typeof(@text[n]) == \function => @text[n](d) else @text[n]
-          for k,v of @action =>
-            if v and v[n] and !d.{}evts[k] =>
-              # scoping so event handler can call v[n]
-              set-evt-handler d, k, v[n]
-              d.evts[k] = true
+          try
+            if @handler[n] => @handler[n](d)
+            if @text[n] => d.node.textContent = if typeof(@text[n]) == \function => @text[n](d) else @text[n]
+            if @initer[n] and !@inited[n] => @initer[n](d); @inited[n] = true
+            for k,v of @action =>
+              if v and v[n] and !d.{}evts[k] =>
+                # scoping so event handler can call v[n]
+                set-evt-handler d, k, v[n]
+                d.evts[k] = true
+          catch e
+            console.warn "[ldView] failed when rendering #{n}"
+            throw e
+
         if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~> @proc-each n, it
       if names => (if Array.isArray(names) => names else [names]).map -> _ it
       else for k in @names => _(k)
