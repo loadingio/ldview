@@ -59,7 +59,7 @@
       names.map ~> @map.nodes[][it].push {node, names, evts: {}}
     @eaches.map (node) ~> @map.eaches[][node.name].push node
     names = {}
-    for list in ([[k for k of @text]] ++ [[k for k of @handler]] ++ [v for k,v of @action].map (it) -> [k for k of it]) =>
+    for list in ([[k for k of @initer]] ++ [[k for k of @text]] ++ [[k for k of @handler]] ++ [v for k,v of @action].map (it) -> [k for k of it]) =>
       for it in list => names[it] = true
     @names = [k for k of names]
     if @init-render => @render!
