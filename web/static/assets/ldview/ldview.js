@@ -15,7 +15,6 @@
     this.action = opt.action || {};
     this.text = opt.text || {};
     this.initer = opt.init || {};
-    this.inited = {};
     this.prefix = opt.prefix;
     this.initRender = opt.initRender != null ? opt.initRender : true;
     this.root = root = typeof opt.root === 'string'
@@ -220,9 +219,9 @@
                   ? this$.text[n](d)
                   : this$.text[n];
               }
-              if (this$.initer[n] && !this$.inited[n]) {
+              if (this$.initer[n] && !(d.inited || (d.inited = {}))[n]) {
                 this$.initer[n](d);
-                this$.inited[n] = true;
+                d.inited[n] = true;
               }
               for (k in ref$ = this$.action) {
                 v = ref$[k];

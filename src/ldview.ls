@@ -6,7 +6,6 @@
     @action = opt.action or {}
     @text = opt.text or {}
     @initer = opt.init or {}
-    @inited = {}
     @prefix = opt.prefix
     @init-render = if opt.init-render? => opt.init-render else true
     @root = root = if typeof(opt.root) == \string => ld$.find(document, opt.root, 0) else opt.root
@@ -103,7 +102,7 @@
           try
             if @handler[n] => @handler[n](d)
             if @text[n] => d.node.textContent = if typeof(@text[n]) == \function => @text[n](d) else @text[n]
-            if @initer[n] and !@inited[n] => @initer[n](d); @inited[n] = true
+            if @initer[n] and !d.{}inited[n] => @initer[n](d); d.inited[n] = true
             for k,v of @action =>
               if v and v[n] and !d.{}evts[k] =>
                 # scoping so event handler can call v[n]
