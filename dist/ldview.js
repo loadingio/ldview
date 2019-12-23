@@ -185,11 +185,12 @@
         return node;
       });
       ns = ret;
-      ns.map(function(it){
+      ns.map(function(it, i){
         return this$.handler[name].handle({
           node: it,
           name: name,
-          data: it._data
+          data: it._data,
+          idx: i
         });
       });
       return data.nodes = ns;

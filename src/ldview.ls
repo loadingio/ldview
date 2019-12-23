@@ -89,7 +89,7 @@
         data.container.insertBefore node, (nodes[lastidx + 1] or data.proxy)
         return node
       ns = ret
-      ns.map ~> @handler[name].handle {node: it, name: name, data: it._data}
+      ns.map (it,i) ~> @handler[name].handle {node: it, name: name, data: it._data, idx: i}
       data.nodes = ns
 
     get: (n) -> ((@map.nodes[n] or []).0 or {}).node
