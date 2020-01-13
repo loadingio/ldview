@@ -185,7 +185,9 @@
         return node;
       });
       ns = ret;
-      ns.map(function(it, i){
+      ns.filter(function(it){
+        return it;
+      }).map(function(it, i){
         return this$.handler[name].handle({
           node: it,
           name: name,
