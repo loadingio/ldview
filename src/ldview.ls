@@ -82,7 +82,7 @@
         .filter (._data)
       lastidx = 0
       ret = list.map (n,i) ->
-        if (lastidx := items.indexOf(n)) >= 0 => return nodes[lastidx]
+        if (j = items.indexOf(n)) >= 0 => return nodes[lastidx := j]
         node = data.node.cloneNode true
         node._data = n
         node.removeAttribute \ld-each

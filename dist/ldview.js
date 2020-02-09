@@ -174,9 +174,9 @@
       });
       lastidx = 0;
       ret = list.map(function(n, i){
-        var node;
-        if ((lastidx = items.indexOf(n)) >= 0) {
-          return nodes[lastidx];
+        var j, node;
+        if ((j = items.indexOf(n)) >= 0) {
+          return nodes[lastidx = j];
         }
         node = data.node.cloneNode(true);
         node._data = n;
