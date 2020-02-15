@@ -9,7 +9,7 @@
     });
   };
   ldView = function(opt){
-    var root, selector, exclusions, all, prefixRE, names, i$, ref$, k, v, len$, list, j$, len1$, it, res$, this$ = this;
+    var names, i$, ref$, k, v, len$, list, j$, len1$, it, res$;
     opt == null && (opt = {});
     this.handler = opt.handler || {};
     this.action = opt.action || {};
@@ -17,7 +17,7 @@
     this.initer = opt.init || {};
     this.prefix = opt.prefix;
     this.initRender = opt.initRender != null ? opt.initRender : true;
-    this.root = root = typeof opt.root === 'string'
+    this.root = typeof opt.root === 'string'
       ? ld$.find(document, opt.root, 0)
       : opt.root;
     if (!this.root) {
@@ -27,77 +27,7 @@
       this.id = "ld-" + Math.random().toString(36).substring(2);
       this.root.setAttribute("ld-scope-" + this.id, '');
     }
-    selector = this.prefix ? "[ld-each^=" + this.prefix + "\\$]" : "[ld-each]";
-    exclusions = ld$.find(root, (this.id ? "[ld-scope-" + this.id + "] " : "") + ("[ld-scope] " + selector));
-    all = ld$.find(root, selector);
-    this.eaches = all.filter(function(it){
-      return !in$(it, exclusions);
-    }).map(function(n){
-      var p, c, i, ret;
-      p = n.parentNode;
-      while (p) {
-        if (p === document) {
-          break;
-        } else {
-          p = p.parentNode;
-        }
-      }
-      if (!p) {
-        return null;
-      }
-      if (ld$.parent(n.parentNode, '*[ld-each]', document)) {
-        return null;
-      }
-      c = n.parentNode;
-      i = Array.from(c.childNodes).indexOf(n);
-      ret = {
-        container: c,
-        idx: i,
-        node: n,
-        name: n.getAttribute('ld-each'),
-        nodes: []
-      };
-      p = document.createComment(" ld-each=" + ret.name + " ");
-      p._data = ret;
-      c.insertBefore(p, n);
-      ret.proxy = p;
-      c.removeChild(n);
-      return ret;
-    }).filter(function(it){
-      return it;
-    });
-    selector = this.prefix ? "[ld^=" + this.prefix + "\\$]" : "[ld]";
-    exclusions = ld$.find(root, (this.id ? "[ld-scope-" + this.id + "] " : "") + ("[ld-scope] " + selector));
-    all = ld$.find(root, selector);
-    this.nodes = all.filter(function(it){
-      return !in$(it, exclusions);
-    });
-    prefixRE = this.prefix ? new RegExp("^" + this.prefix + "\\$") : null;
-    this.map = {
-      nodes: {},
-      eaches: {}
-    };
-    this.nodes.map(function(node){
-      var names;
-      names = (node.getAttribute('ld') || "").split(' ');
-      if (this$.prefix) {
-        names = names.map(function(it){
-          return it.replace(prefixRE, "").trim();
-        });
-      }
-      return names.map(function(it){
-        var ref$;
-        return ((ref$ = this$.map.nodes)[it] || (ref$[it] = [])).push({
-          node: node,
-          names: names,
-          evts: {}
-        });
-      });
-    });
-    this.eaches.map(function(node){
-      var ref$, key$;
-      return ((ref$ = this$.map.eaches)[key$ = node.name] || (ref$[key$] = [])).push(node);
-    });
+    this.update();
     names = {};
     for (i$ = 0, len$ = (ref$ = [(fn$.call(this))].concat([(fn1$.call(this))], [(fn2$.call(this))], (fn3$.call(this)).map(fn4$))).length; i$ < len$; ++i$) {
       list = ref$[i$];
@@ -153,6 +83,96 @@
     }
   };
   ldView.prototype = import$(Object.create(Object.prototype), {
+    update: function(root){
+      var selector, exclusions, all, eachesNodes, eaches, nodes, prefixRE, this$ = this;
+      root == null && (root = this.root);
+      if (!this.nodes) {
+        this.nodes = [];
+      }
+      if (!this.eaches) {
+        this.eaches = [];
+      }
+      if (!this.map) {
+        this.map = {
+          nodes: {},
+          eaches: {}
+        };
+      }
+      selector = this.prefix ? "[ld-each^=" + this.prefix + "\\$]" : "[ld-each]";
+      exclusions = ld$.find(root, (this.id ? "[ld-scope-" + this.id + "] " : "") + ("[ld-scope] " + selector));
+      all = ld$.find(root, selector);
+      eachesNodes = this.eaches.map(function(it){
+        return it.n;
+      });
+      eaches = all.filter(function(it){
+        return !in$(it, exclusions);
+      }).filter(function(it){
+        return !in$(it, eachesNodes);
+      }).map(function(n){
+        var p, c, i, ret;
+        p = n.parentNode;
+        while (p) {
+          if (p === document) {
+            break;
+          } else {
+            p = p.parentNode;
+          }
+        }
+        if (!p) {
+          return null;
+        }
+        if (ld$.parent(n.parentNode, '*[ld-each]', document)) {
+          return null;
+        }
+        c = n.parentNode;
+        i = Array.from(c.childNodes).indexOf(n);
+        ret = {
+          container: c,
+          idx: i,
+          node: n,
+          name: n.getAttribute('ld-each'),
+          nodes: []
+        };
+        p = document.createComment(" ld-each=" + ret.name + " ");
+        p._data = ret;
+        c.insertBefore(p, n);
+        ret.proxy = p;
+        c.removeChild(n);
+        return ret;
+      }).filter(function(it){
+        return it;
+      });
+      this.eaches = this.eaches.concat(eaches);
+      eaches.map(function(node){
+        var ref$, key$;
+        return ((ref$ = this$.map.eaches)[key$ = node.name] || (ref$[key$] = [])).push(node);
+      });
+      selector = this.prefix ? "[ld^=" + this.prefix + "\\$]" : "[ld]";
+      exclusions = ld$.find(root, (this.id ? "[ld-scope-" + this.id + "] " : "") + ("[ld-scope] " + selector));
+      all = ld$.find(root, selector);
+      nodes = all.filter(function(it){
+        return !(in$(it, exclusions) || in$(it, this$.nodes));
+      });
+      this.nodes = this.nodes.concat(nodes);
+      prefixRE = this.prefix ? new RegExp("^" + this.prefix + "\\$") : null;
+      return nodes.map(function(node){
+        var names;
+        names = (node.getAttribute('ld') || "").split(' ');
+        if (this$.prefix) {
+          names = names.map(function(it){
+            return it.replace(prefixRE, "").trim();
+          });
+        }
+        return names.map(function(it){
+          var ref$;
+          return ((ref$ = this$.map.nodes)[it] || (ref$[it] = [])).push({
+            node: node,
+            names: names,
+            evts: {}
+          });
+        });
+      });
+    },
     procEach: function(name, data){
       var list, items, nodes, lastidx, ret, ns, this$ = this;
       list = this.handler[name].list() || [];

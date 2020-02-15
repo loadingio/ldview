@@ -8,7 +8,7 @@
     @initer = opt.init or {}
     @prefix = opt.prefix
     @init-render = if opt.init-render? => opt.init-render else true
-    @root = root = if typeof(opt.root) == \string => ld$.find(document, opt.root, 0) else opt.root
+    @root = if typeof(opt.root) == \string => ld$.find(document, opt.root, 0) else opt.root
     if !@root => console.warn "[ldView] warning: no node found for root ", opt.root
     # some roots such as document don't support setAttribute. yet document doesn't need scope, too.
     if @root.setAttribute =>
@@ -16,47 +16,8 @@
       # ld-scope-${id} is used to identify a ldView object, for code of excluding scoped object
       @root.setAttribute "ld-scope-#{@id}", ''
 
-    # now we are going to find *[ld]. yet, we want to exclude all that are scoped.
-    # this can be done by ":scope :not([ld-scope]) [ld], :scope > [ld]"
-    # but IE/Edge don't support :scope ( https://caniuse.com/#search=%3Ascope )
-    # so we manually exclude them.
-    # following is for [ld-each]; we will take care of [ld] later.
-    selector = if @prefix => "[ld-each^=#{@prefix}\\$]" else "[ld-each]"
-    # querySelector returns all nodes that matches the seletor, even if some rule are above / in parent of root.
-    # so, we use a ld-root to trap the rule inside.
-    exclusions = ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
-    all = ld$.find(root, selector)
-    # remove all ld-each by orders.
-    @eaches = all.filter -> !(it in exclusions)
-      .map (n) ->
-        p = n.parentNode
-        while p => if p == document => break else p = p.parentNode
-        if !p => return null
-        if ld$.parent(n.parentNode, '*[ld-each]', document) => return null
-        c = n.parentNode
-        i = Array.from(c.childNodes).indexOf(n)
-        ret = {container: c, idx: i, node: n, name: n.getAttribute(\ld-each), nodes: []}
-        p = document.createComment " ld-each=#{ret.name} "
-        p._data = ret
-        c.insertBefore p, n
-        ret.proxy = p
-        c.removeChild n
-        return ret
-      .filter -> it
+    @update!
 
-    # now here is for [ld]
-    selector = if @prefix => "[ld^=#{@prefix}\\$]" else "[ld]"
-    exclusions = ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
-    all = ld$.find(root, selector)
-    @nodes = all.filter -> !(it in exclusions)
-
-    prefixRE = if @prefix => new RegExp("^#{@prefix}\\$") else null
-    @map = nodes: {}, eaches: {}
-    @nodes.map (node) ~>
-      names = (node.getAttribute(\ld) or "").split(' ')
-      if @prefix => names = names.map -> it.replace(prefixRE,"").trim!
-      names.map ~> @map.nodes[][it].push {node, names, evts: {}}
-    @eaches.map (node) ~> @map.eaches[][node.name].push node
     names = {}
     for list in ([[k for k of @initer]] ++ [[k for k of @text]] ++ [[k for k of @handler]] ++ [v for k,v of @action].map (it) -> [k for k of it]) =>
       for it in list => names[it] = true
@@ -65,6 +26,66 @@
     @
 
   ldView.prototype = Object.create(Object.prototype) <<< do
+    # update nodes
+    update: (root = @root) ->
+      if !@nodes => @nodes = []
+      if !@eaches => @eaches = []
+      if !@map => @map = nodes: {}, eaches: {}
+      # now we are going to find *[ld]. yet, we want to exclude all that are scoped.
+      # this can be done by ":scope :not([ld-scope]) [ld], :scope > [ld]"
+      # but IE/Edge don't support :scope ( https://caniuse.com/#search=%3Ascope )
+      # so we manually exclude them.
+      # following is for [ld-each]; we will take care of [ld] later.
+      selector = if @prefix => "[ld-each^=#{@prefix}\\$]" else "[ld-each]"
+      # querySelector returns all nodes that matches the seletor, even if some rule are above / in parent of root.
+      # so, we use a ld-root to trap the rule inside.
+      exclusions = ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
+      all = ld$.find(root, selector)
+      # remove all ld-each by orders.
+      eaches-nodes = @eaches.map -> it.n
+      eaches = all
+        .filter -> !(it in exclusions)
+        .filter -> !(it in eaches-nodes)
+        .map (n) ->
+          p = n.parentNode
+          while p => if p == document => break else p = p.parentNode
+          if !p => return null
+          if ld$.parent(n.parentNode, '*[ld-each]', document) => return null
+          c = n.parentNode
+          i = Array.from(c.childNodes).indexOf(n)
+          ret = {container: c, idx: i, node: n, name: n.getAttribute(\ld-each), nodes: []}
+          p = document.createComment " ld-each=#{ret.name} "
+          p._data = ret
+          c.insertBefore p, n
+          ret.proxy = p
+          c.removeChild n
+          return ret
+        .filter -> it
+      # TODO
+      # we should check if nodes in @eaches are still ld-each labeled.
+      # but updating label after initializing rarely happens so we ignore it right now.
+      @eaches = @eaches ++ eaches
+      eaches.map (node) ~> @map.eaches[][node.name].push node
+
+      # now here is for [ld]
+      selector = if @prefix => "[ld^=#{@prefix}\\$]" else "[ld]"
+      exclusions = ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
+      all = ld$.find(root, selector)
+      nodes = all.filter ~> !((it in exclusions) or (it in @nodes))
+      @nodes = @nodes ++ nodes
+
+      prefixRE = if @prefix => new RegExp("^#{@prefix}\\$") else null
+      nodes.map (node) ~>
+        names = (node.getAttribute(\ld) or "").split(' ')
+        if @prefix => names = names.map -> it.replace(prefixRE,"").trim!
+        names.map ~> @map.nodes[][it].push {node, names, evts: {}}
+
+      # TODO
+      # we should remove nodes from @map if they are updated and have ld/ld-each attribute removed.
+      # yet this rarely happens at least for now so we skip this.
+
+
+
     #data = {container, idx, node, name, nodes, proxy}
     # node._data = item in list
     proc-each: (name, data) ->
