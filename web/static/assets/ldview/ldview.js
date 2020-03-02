@@ -200,6 +200,12 @@
         }
         node = data.node.cloneNode(true);
         node._data = n;
+        node._obj = {
+          node: node,
+          name: name,
+          data: n,
+          idx: i
+        };
         node.removeAttribute('ld-each');
         data.container.insertBefore(node, nodes[lastidx + 1] || data.proxy);
         return node;
@@ -208,12 +214,7 @@
       ns.filter(function(it){
         return it;
       }).map(function(it, i){
-        return this$.handler[name].handle({
-          node: it,
-          name: name,
-          data: it._data,
-          idx: i
-        });
+        return this$._render(name, it._obj, i, this$.handler[name]);
       });
       return data.nodes = ns;
     },
@@ -225,40 +226,52 @@
         return it.node;
       });
     },
+    _render: function(n, d, i, b){
+      var init, handler, text, action, ref$, k, v, f, e, results$ = [];
+      if (b) {
+        init = b.init || null;
+        handler = b.handler || b.handle || null;
+        text = b.text || null;
+        action = b.action || {};
+      } else {
+        ref$ = [this.initer[n], this.handler[n], this.text[n], this.action], init = ref$[0], handler = ref$[1], text.action = ref$[2];
+      }
+      try {
+        if (handler) {
+          handler(d);
+        }
+        if (text) {
+          d.node.textContent = typeof text === 'function' ? text(d) : text;
+        }
+        if (init && !(d.inited || (d.inited = {}))[n]) {
+          init(d);
+          d.inited[n] = true;
+        }
+        for (k in ref$ = action || {}) {
+          v = ref$[k];
+          if (!v || !((f = b
+            ? v
+            : v[n]) && !(d.evts || (d.evts = {}))[k])) {
+            continue;
+          }
+          setEvtHandler(d, k, f);
+          results$.push(d.evts[k] = true);
+        }
+        return results$;
+      } catch (e$) {
+        e = e$;
+        console.warn("[ldView] failed when rendering " + n);
+        throw e;
+      }
+    },
     render: function(names){
       var _, i$, ref$, len$, k, this$ = this, results$ = [];
       _ = function(n){
         if (this$.map.nodes[n]) {
           this$.map.nodes[n].map(function(d, i){
-            var k, ref$, v, e, results$ = [];
             d.name = n;
             d.idx = i;
-            try {
-              if (this$.handler[n]) {
-                this$.handler[n](d);
-              }
-              if (this$.text[n]) {
-                d.node.textContent = typeof this$.text[n] === 'function'
-                  ? this$.text[n](d)
-                  : this$.text[n];
-              }
-              if (this$.initer[n] && !(d.inited || (d.inited = {}))[n]) {
-                this$.initer[n](d);
-                d.inited[n] = true;
-              }
-              for (k in ref$ = this$.action) {
-                v = ref$[k];
-                if (v && v[n] && !(d.evts || (d.evts = {}))[k]) {
-                  setEvtHandler(d, k, v[n]);
-                  results$.push(d.evts[k] = true);
-                }
-              }
-              return results$;
-            } catch (e$) {
-              e = e$;
-              console.warn("[ldView] failed when rendering " + n);
-              throw e;
-            }
+            return this$._render(n, d, i);
           });
         }
         if (this$.map.eaches[n] && this$.handler[n]) {

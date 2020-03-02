@@ -48,7 +48,7 @@ the element with "book" ld-each attribute will be replaced by a comment node. Th
 
           # node is one of the nodes cloned from the original book element
           # and the data is entry bound to node from myBookList.
-          handle: ({node,data,name}) -> 
+          handler: ({node,data,name}) -> 
 
 
 While you can manually update DOM content in the handler, you can also recursively apply ldView to make the whole process simpler:
@@ -59,7 +59,7 @@ While you can manually update DOM content in the handler, you can also recursive
         # here we have an object containing a list function and a handle function
         book: do 
           list: -> myBookList # tell ldView to map book elements to myBookList
-          handle: ({node,data}) ->
+          handler: ({node,data}) ->
             (new ldView do
                root: node,
                handler: do
@@ -164,6 +164,11 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
 ## Placeholder for loading
 
 TBD
+
+
+## Update Note
+
+`handle` in repeat item is deprecated now. use `handler` instead.
 
 
 ## License

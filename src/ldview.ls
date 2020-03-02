@@ -84,8 +84,6 @@
       # we should remove nodes from @map if they are updated and have ld/ld-each attribute removed.
       # yet this rarely happens at least for now so we skip this.
 
-
-
     #data = {container, idx, node, name, nodes, proxy}
     # node._data = item in list
     proc-each: (name, data) ->
@@ -106,33 +104,43 @@
         if (j = items.indexOf(n)) >= 0 => return nodes[lastidx := j]
         node = data.node.cloneNode true
         node._data = n
+        node._obj = {node, name, data: n, idx: i}
         node.removeAttribute \ld-each
         data.container.insertBefore node, (nodes[lastidx + 1] or data.proxy)
         return node
       ns = ret
-      ns.filter(->it).map (it,i) ~> @handler[name].handle {node: it, name: name, data: it._data, idx: i}
+      ns.filter(->it).map (it,i) ~> @_render name, it._obj, i, @handler[name]
       data.nodes = ns
 
     get: (n) -> ((@map.nodes[n] or []).0 or {}).node
     getAll: (n) -> (@map.nodes[n] or []).map -> it.node
+    # b: base handling class. will be local object for repeat items, otherwise is null
+    _render: (n,d,i,b) ->
+      if b =>
+        init = b.init or null
+        # handle is deprecated.
+        handler = b.handler or b.handle or null
+        text = b.text or null
+        action = b.action or {}
+      else [init,handler,text.action] = [@initer[n], @handler[n], @text[n], @action]
+      try
+        if handler => handler(d)
+        if text => d.node.textContent = if typeof(text) == \function => text(d) else text
+        if init and !d.{}inited[n] => init(d); d.inited[n] = true
+        for k,v of (action or {}) =>
+          if !v or !((f = if b => v else v[n]) and !d.{}evts[k]) => continue
+          # scoping so event handler can call v[n]
+          set-evt-handler d, k, f
+          d.evts[k] = true
+      catch e
+        console.warn "[ldView] failed when rendering #{n}"
+        throw e
 
     render: (names) ->
       _ = (n) ~>
         if @map.nodes[n] => @map.nodes[n].map (d,i) ~>
           d <<< {name: n, idx: i}
-          try
-            if @handler[n] => @handler[n](d)
-            if @text[n] => d.node.textContent = if typeof(@text[n]) == \function => @text[n](d) else @text[n]
-            if @initer[n] and !d.{}inited[n] => @initer[n](d); d.inited[n] = true
-            for k,v of @action =>
-              if v and v[n] and !d.{}evts[k] =>
-                # scoping so event handler can call v[n]
-                set-evt-handler d, k, v[n]
-                d.evts[k] = true
-          catch e
-            console.warn "[ldView] failed when rendering #{n}"
-            throw e
-
+          @_render n,d,i
         if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~> @proc-each n, it
       if names => (if Array.isArray(names) => names else [names]).map -> _ it
       else for k in @names => _(k)
