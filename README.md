@@ -50,6 +50,16 @@ the element with "book" ld-each attribute will be replaced by a comment node. Th
           # and the data is entry bound to node from myBookList.
           handler: ({node,data,name}) -> 
 
+in list config, you can use all configs available for a generic items. for example, 
+
+    book: do
+      list: -> ...
+      init: ({node, data, name, idx}) -> 
+      handler: ({node, data, name, idx}) -> ...
+      text: -> ... 
+      action: click: ({node, name, evt, idx}) -> ...
+
+
 
 While you can manually update DOM content in the handler, you can also recursively apply ldView to make the whole process simpler:
 
