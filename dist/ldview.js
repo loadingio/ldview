@@ -234,7 +234,7 @@
         text = b.text || null;
         action = b.action || {};
       } else {
-        ref$ = [this.initer[n], this.handler[n], this.text[n], this.action], init = ref$[0], handler = ref$[1], text.action = ref$[2];
+        ref$ = [this.initer[n], this.handler[n], this.text[n], this.action], init = ref$[0], handler = ref$[1], text = ref$[2], action = ref$[3];
       }
       try {
         if (handler) {

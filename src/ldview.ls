@@ -122,7 +122,7 @@
         handler = b.handler or b.handle or null
         text = b.text or null
         action = b.action or {}
-      else [init,handler,text.action] = [@initer[n], @handler[n], @text[n], @action]
+      else [init,handler,text,action] = [@initer[n], @handler[n], @text[n], @action]
       try
         if handler => handler(d)
         if text => d.node.textContent = if typeof(text) == \function => text(d) else text
