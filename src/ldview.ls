@@ -37,7 +37,7 @@
       # so we manually exclude them.
       # following is for [ld-each]; we will take care of [ld] later.
       selector = if @prefix => "[ld-each^=#{@prefix}\\$]" else "[ld-each]"
-      # querySelector returns all nodes that matches the seletor, even if some rule are above / in parent of root.
+      # querySelector returns all nodes that matches the selector, even if some rule are above / in parent of root.
       # so, we use a ld-root to trap the rule inside.
       exclusions = ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
       all = ld$.find(root, selector)
