@@ -109,7 +109,7 @@
       }).filter(function(it){
         return !in$(it, eachesNodes);
       }).map(function(n){
-        var p, c, i, ret;
+        var p, name, c, i, ret;
         p = n.parentNode;
         while (p) {
           if (p === document) {
@@ -124,13 +124,17 @@
         if (ld$.parent(n.parentNode, '*[ld-each]', document)) {
           return null;
         }
+        name = n.getAttribute('ld-each');
+        if (!this$.handler[name]) {
+          return null;
+        }
         c = n.parentNode;
         i = Array.from(c.childNodes).indexOf(n);
         ret = {
           container: c,
           idx: i,
           node: n,
-          name: n.getAttribute('ld-each'),
+          name: name,
           nodes: []
         };
         p = document.createComment(" ld-each=" + ret.name + " ");

@@ -41,7 +41,7 @@ the element with "book" ld-each attribute will be replaced by a comment node. Th
     new ldView do
       handler: do
         # instead of a simple handler function,
-        # here we have an object containing a list function and a handle function
+        # here we have an object containing a list function and a handler function
         book: do 
           # tell ldView to map book elements to myBookList
           list: -> myBookList
@@ -69,7 +69,7 @@ While you can manually update DOM content in the handler, you can also recursive
         # here we have an object containing a list function and a handle function
         book: do 
           list: -> myBookList # tell ldView to map book elements to myBookList
-          handler: ({node,data}) ->
+          init: ({node,data}) ->
             (new ldView do
                root: node,
                handler: do

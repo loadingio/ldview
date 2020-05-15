@@ -46,14 +46,16 @@
       eaches = all
         .filter -> !(it in exclusions)
         .filter -> !(it in eaches-nodes)
-        .map (n) ->
+        .map (n) ~>
           p = n.parentNode
           while p => if p == document => break else p = p.parentNode
           if !p => return null
           if ld$.parent(n.parentNode, '*[ld-each]', document) => return null
+          name = n.getAttribute(\ld-each)
+          if !@handler[name] => return null
           c = n.parentNode
           i = Array.from(c.childNodes).indexOf(n)
-          ret = {container: c, idx: i, node: n, name: n.getAttribute(\ld-each), nodes: []}
+          ret = {container: c, idx: i, node: n, name: name, nodes: []}
           p = document.createComment " ld-each=#{ret.name} "
           p._data = ret
           c.insertBefore p, n
