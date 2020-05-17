@@ -169,6 +169,26 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
  * view.getAll("node-name") - return a list of nodes in the name of node-name.
  * view.get("node-name") - return the first node with the name of node-name. shorthand for getAll(...)[0]
  * view.render(cfg)
+ * view.bindEachNode({container, name, node, idx})
+   - ldView keeps track of nodes once they are created as in ld-each.
+     If for some reason we need a node to be removed from ld-each list but use in other place ( e.g.,
+     when dragging outside we need the dragged node to exist for better user experience ), we can
+     unbind it and rebind it later.
+   - while node is removed from / inserted into ld-each node list, these functions wont update data.
+     User should update data themselves otherwise inserted node will be deleted / removed node will
+     be re-created in the next render call.
+   - parameters:
+     - container: container of these ld-each nodes.
+     - idx: index to insert this node.
+     - node: node to be inserted.
+     - name: name of ld-each.
+ * view.unbindEachNode({container, name, node, idx})
+   - counterpart of bindEachNode.
+   - parameters:
+     - container: container of these ld-each nodes.
+     - idx: if provided, remove node in this position and return it.
+     - node: if idx is not provided, user can use the node itself to hint ldView.
+     - name: name of ld-each.
 
 
 ## Placeholder for loading
@@ -179,6 +199,11 @@ TBD
 ## Update Note
 
 `handle` in repeat item is deprecated now. use `handler` instead.
+
+
+## TODO
+
+ * lookup view from node.
 
 
 ## License

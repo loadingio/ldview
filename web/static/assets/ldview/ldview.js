@@ -196,7 +196,7 @@
       }).filter(function(it){
         return it._data;
       });
-      lastidx = 0;
+      lastidx = -1;
       ret = list.map(function(n, i){
         var j, node;
         if ((j = items.indexOf(n)) >= 0) {
@@ -268,6 +268,40 @@
         throw e;
       }
     },
+    bindEachNode: function(arg$){
+      var name, container, idx, node, obj;
+      name = arg$.name, container = arg$.container, idx = arg$.idx, node = arg$.node;
+      if (!(obj = this.map.eaches[name].filter(function(it){
+        return it.container === container;
+      })[0])) {
+        return;
+      }
+      if (idx != null) {
+        return obj.nodes.splice(idx, 0, node);
+      } else {
+        return obj.nodes.push(node);
+      }
+    },
+    unbindEachNode: function(arg$){
+      var name, container, idx, node, obj;
+      name = arg$.name, container = arg$.container, idx = arg$.idx, node = arg$.node;
+      if (!(obj = this.map.eaches[name].filter(function(it){
+        return it.container === container;
+      })[0])) {
+        return;
+      }
+      if (node && !idx) {
+        idx = obj.nodes.indexOf(node);
+      }
+      return obj.nodes.splice(idx, 1);
+    }
+    /*
+    each-hack-add: (n, node) ->
+      @map.eaches[n].0.nodes.push node
+    each-hack-del: (n, node) ->
+      idx = @map.eaches[n].0.nodes.indexOf(node)
+      if idx >= 0 => @map.eaches[n].0.nodes.splice idx, 1
+    */,
     render: function(names){
       var _, i$, ref$, len$, k, this$ = this, results$ = [];
       _ = function(n){

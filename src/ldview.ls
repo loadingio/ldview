@@ -101,7 +101,7 @@
           else items.push n._data
           n
         .filter (._data)
-      lastidx = 0
+      lastidx = -1
       ret = list.map (n,i) ->
         if (j = items.indexOf(n)) >= 0 => return nodes[lastidx := j]
         node = data.node.cloneNode true
@@ -137,6 +137,15 @@
       catch e
         console.warn "[ldView] failed when rendering #{n}"
         throw e
+
+    bind-each-node: ({name, container, idx, node}) ->
+      if !(obj = @map.eaches[name].filter(-> it.container == container).0) => return
+      if idx? => obj.nodes.splice(idx, 0, node) else obj.nodes.push node
+
+    unbind-each-node: ({name, container, idx, node}) ->
+      if !(obj = @map.eaches[name].filter(-> it.container == container).0) => return
+      if node and !idx => idx = obj.nodes.indexOf(node)
+      return obj.nodes.splice idx, 1
 
     render: (names) ->
       _ = (n) ~>
