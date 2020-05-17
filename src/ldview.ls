@@ -7,11 +7,13 @@
     @text = opt.text or {}
     @initer = opt.init or {}
     @prefix = opt.prefix
+    @global = opt.global or false
+    @ld = if @global => \pd else \ld
     @init-render = if opt.init-render? => opt.init-render else true
     @root = if typeof(opt.root) == \string => ld$.find(document, opt.root, 0) else opt.root
     if !@root => console.warn "[ldView] warning: no node found for root ", opt.root
     # some roots such as document don't support setAttribute. yet document doesn't need scope, too.
-    if @root.setAttribute =>
+    if @root.setAttribute and !@global =>
       @id = "ld-#{Math.random!toString(36)substring(2)}"
       # ld-scope-${id} is used to identify a ldView object, for code of excluding scoped object
       @root.setAttribute "ld-scope-#{@id}", ''
@@ -36,10 +38,11 @@
       # but IE/Edge don't support :scope ( https://caniuse.com/#search=%3Ascope )
       # so we manually exclude them.
       # following is for [ld-each]; we will take care of [ld] later.
-      selector = if @prefix => "[ld-each^=#{@prefix}\\$]" else "[ld-each]"
+      selector = if @prefix => "[#{@ld}-each^=#{@prefix}\\$]" else "[#{@ld}-each]"
       # querySelector returns all nodes that matches the selector, even if some rule are above / in parent of root.
       # so, we use a ld-root to trap the rule inside.
-      exclusions = ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
+      exclusions = if @global => []
+      else ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
       all = ld$.find(root, selector)
       # remove all ld-each by orders.
       eaches-nodes = @eaches.map -> it.n
@@ -50,13 +53,13 @@
           p = n.parentNode
           while p => if p == document => break else p = p.parentNode
           if !p => return null
-          if ld$.parent(n.parentNode, '*[ld-each]', document) => return null
-          name = n.getAttribute(\ld-each)
+          if ld$.parent(n.parentNode, "*[#{@ld}-each]", document) => return null
+          name = n.getAttribute("#{@ld}-each")
           if !@handler[name] => return null
           c = n.parentNode
           i = Array.from(c.childNodes).indexOf(n)
           ret = {container: c, idx: i, node: n, name: name, nodes: []}
-          p = document.createComment " ld-each=#{ret.name} "
+          p = document.createComment " #{@ld}-each=#{ret.name} "
           p._data = ret
           c.insertBefore p, n
           ret.proxy = p
@@ -70,15 +73,16 @@
       eaches.map (node) ~> @map.eaches[][node.name].push node
 
       # now here is for [ld]
-      selector = if @prefix => "[ld^=#{@prefix}\\$]" else "[ld]"
-      exclusions = ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
+      selector = if @prefix => "[#{@ld}^=#{@prefix}\\$]" else "[#{@ld}]"
+      exclusions = if @global => []
+      else ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
       all = ld$.find(root, selector)
       nodes = all.filter ~> !((it in exclusions) or (it in @nodes))
       @nodes = @nodes ++ nodes
 
       prefixRE = if @prefix => new RegExp("^#{@prefix}\\$") else null
       nodes.map (node) ~>
-        names = (node.getAttribute(\ld) or "").split(' ')
+        names = (node.getAttribute(@ld) or "").split(' ')
         if @prefix => names = names.map -> it.replace(prefixRE,"").trim!
         names.map ~> @map.nodes[][it].push {node, names, evts: {}}
 
@@ -102,12 +106,12 @@
           n
         .filter (._data)
       lastidx = -1
-      ret = list.map (n,i) ->
+      ret = list.map (n,i) ~>
         if (j = items.indexOf(n)) >= 0 => return nodes[lastidx := j]
         node = data.node.cloneNode true
         node._data = n
         node._obj = {node, name, data: n, idx: i}
-        node.removeAttribute \ld-each
+        node.removeAttribute "#{@ld}-each"
         data.container.insertBefore node, (nodes[lastidx + 1] or data.proxy)
         return node
       ns = ret

@@ -16,6 +16,8 @@
     this.text = opt.text || {};
     this.initer = opt.init || {};
     this.prefix = opt.prefix;
+    this.global = opt.global || false;
+    this.ld = this.global ? 'pd' : 'ld';
     this.initRender = opt.initRender != null ? opt.initRender : true;
     this.root = typeof opt.root === 'string'
       ? ld$.find(document, opt.root, 0)
@@ -23,7 +25,7 @@
     if (!this.root) {
       console.warn("[ldView] warning: no node found for root ", opt.root);
     }
-    if (this.root.setAttribute) {
+    if (this.root.setAttribute && !this.global) {
       this.id = "ld-" + Math.random().toString(36).substring(2);
       this.root.setAttribute("ld-scope-" + this.id, '');
     }
@@ -98,8 +100,12 @@
           eaches: {}
         };
       }
-      selector = this.prefix ? "[ld-each^=" + this.prefix + "\\$]" : "[ld-each]";
-      exclusions = ld$.find(root, (this.id ? "[ld-scope-" + this.id + "] " : "") + ("[ld-scope] " + selector));
+      selector = this.prefix
+        ? "[" + this.ld + "-each^=" + this.prefix + "\\$]"
+        : "[" + this.ld + "-each]";
+      exclusions = this.global
+        ? []
+        : ld$.find(root, (this.id ? "[ld-scope-" + this.id + "] " : "") + ("[ld-scope] " + selector));
       all = ld$.find(root, selector);
       eachesNodes = this.eaches.map(function(it){
         return it.n;
@@ -121,10 +127,10 @@
         if (!p) {
           return null;
         }
-        if (ld$.parent(n.parentNode, '*[ld-each]', document)) {
+        if (ld$.parent(n.parentNode, "*[" + this$.ld + "-each]", document)) {
           return null;
         }
-        name = n.getAttribute('ld-each');
+        name = n.getAttribute(this$.ld + "-each");
         if (!this$.handler[name]) {
           return null;
         }
@@ -137,7 +143,7 @@
           name: name,
           nodes: []
         };
-        p = document.createComment(" ld-each=" + ret.name + " ");
+        p = document.createComment(" " + this$.ld + "-each=" + ret.name + " ");
         p._data = ret;
         c.insertBefore(p, n);
         ret.proxy = p;
@@ -151,8 +157,12 @@
         var ref$, key$;
         return ((ref$ = this$.map.eaches)[key$ = node.name] || (ref$[key$] = [])).push(node);
       });
-      selector = this.prefix ? "[ld^=" + this.prefix + "\\$]" : "[ld]";
-      exclusions = ld$.find(root, (this.id ? "[ld-scope-" + this.id + "] " : "") + ("[ld-scope] " + selector));
+      selector = this.prefix
+        ? "[" + this.ld + "^=" + this.prefix + "\\$]"
+        : "[" + this.ld + "]";
+      exclusions = this.global
+        ? []
+        : ld$.find(root, (this.id ? "[ld-scope-" + this.id + "] " : "") + ("[ld-scope] " + selector));
       all = ld$.find(root, selector);
       nodes = all.filter(function(it){
         return !(in$(it, exclusions) || in$(it, this$.nodes));
@@ -161,7 +171,7 @@
       prefixRE = this.prefix ? new RegExp("^" + this.prefix + "\\$") : null;
       return nodes.map(function(node){
         var names;
-        names = (node.getAttribute('ld') || "").split(' ');
+        names = (node.getAttribute(this$.ld) || "").split(' ');
         if (this$.prefix) {
           names = names.map(function(it){
             return it.replace(prefixRE, "").trim();
@@ -210,7 +220,7 @@
           data: n,
           idx: i
         };
-        node.removeAttribute('ld-each');
+        node.removeAttribute(this$.ld + "-each");
         data.container.insertBefore(node, nodes[lastidx + 1] || data.proxy);
         return node;
       });
@@ -294,14 +304,7 @@
         idx = obj.nodes.indexOf(node);
       }
       return obj.nodes.splice(idx, 1);
-    }
-    /*
-    each-hack-add: (n, node) ->
-      @map.eaches[n].0.nodes.push node
-    each-hack-del: (n, node) ->
-      idx = @map.eaches[n].0.nodes.indexOf(node)
-      if idx >= 0 => @map.eaches[n].0.nodes.splice idx, 1
-    */,
+    },
     render: function(names){
       var _, i$, ref$, len$, k, this$ = this, results$ = [];
       _ = function(n){
