@@ -2,6 +2,7 @@
   set-evt-handler = (d,k,f) -> d.node.addEventListener k, (evt) -> f({evt} <<< d)
 
   ldView = (opt = {}) ->
+    @evt-handler = {}
     @handler = opt.handler or {}
     @action = opt.action or {}
     @text = opt.text or {}
@@ -94,20 +95,28 @@
     # node._data = item in list
     proc-each: (name, data) ->
       list = @handler[name].list! or []
-
+      getkey = @handler[name].key
+      hash = {}
       items = []
+      if getkey => list.map(-> hash[getkey(it)] = it) else getkey = (->it)
       nodes = data.nodes
         .filter(->it)
-        .map (n) -> 
-          if !(n._data in list) =>
+        .map (n) ->
+          k = getkey(n._data)
+          if (typeof(k) != \object and !hash[k]) or (typeof(k) == \object and !(n._data in list))  =>
             if n.parentNode => n.parentNode.removeChild n
             n._data = null
-          else items.push n._data
+          else items.push k
           n
         .filter (._data)
       lastidx = -1
       ret = list.map (n,i) ~>
-        if (j = items.indexOf(n)) >= 0 => return nodes[lastidx := j]
+        if (j = items.indexOf(getkey(n))) >= 0 =>
+          node = nodes[lastidx := j]
+          node._data = n
+          if !node._obj => node._obj = {node, name, data: n, idx: i}
+          if node._obj.data != n => node._obj.data = n
+          return node
         node = data.node.cloneNode true
         node._data = n
         node._obj = {node, name, data: n, idx: i}
@@ -152,6 +161,7 @@
       return obj.nodes.splice idx, 1
 
     render: (names) ->
+      @fire \beforeRender
       _ = (n) ~>
         if @map.nodes[n] => @map.nodes[n].map (d,i) ~>
           d <<< {name: n, idx: i}
@@ -159,6 +169,10 @@
         if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~> @proc-each n, it
       if names => (if Array.isArray(names) => names else [names]).map -> _ it
       else for k in @names => _(k)
+      @fire \afterRender
+
+    on: (n, cb) -> @evt-handler.[][n].push cb
+    fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
 
   if module? => module.exports = ldView
   if window? => window.ldView = ldView
