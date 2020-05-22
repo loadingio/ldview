@@ -130,9 +130,9 @@
         action = b.action or {}
       else [init,handler,text,action] = [@initer[n], @handler[n], @text[n], @action]
       try
+        if init and !d.{}inited[n] => init(d); d.inited[n] = true
         if handler => handler(d)
         if text => d.node.textContent = if typeof(text) == \function => text(d) else text
-        if init and !d.{}inited[n] => init(d); d.inited[n] = true
         for k,v of (action or {}) =>
           if !v or !((f = if b => v else v[n]) and !d.{}evts[k]) => continue
           # scoping so event handler can call v[n]

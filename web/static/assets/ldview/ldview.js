@@ -251,15 +251,15 @@
         ref$ = [this.initer[n], this.handler[n], this.text[n], this.action], init = ref$[0], handler = ref$[1], text = ref$[2], action = ref$[3];
       }
       try {
+        if (init && !(d.inited || (d.inited = {}))[n]) {
+          init(d);
+          d.inited[n] = true;
+        }
         if (handler) {
           handler(d);
         }
         if (text) {
           d.node.textContent = typeof text === 'function' ? text(d) : text;
-        }
-        if (init && !(d.inited || (d.inited = {}))[n]) {
-          init(d);
-          d.inited[n] = true;
         }
         for (k in ref$ = action || {}) {
           v = ref$[k];
