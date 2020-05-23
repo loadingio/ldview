@@ -24,27 +24,31 @@
     };
   });
   localview = new ldView({
-    initRender: true,
     root: rootview.get('local'),
     handler: {
       loop: {
+        key: function(it){
+          return it.key;
+        },
         list: function(){
           return data;
         },
         handle: function(arg$){
           var node, data;
           node = arg$.node, data = arg$.data;
-          console.log(node);
           return node.innerText = data.value;
         }
       }
     }
   });
-  data = [5, 4, 3, 2, 1].map(function(it){
-    return {
-      key: it,
-      value: it
-    };
-  });
-  return localview.render();
+  return setTimeout(function(){
+    console.log('here');
+    data = [5, 4, 3, 2, 1].map(function(it){
+      return {
+        key: it,
+        value: it
+      };
+    });
+    return localview.render();
+  }, 1000);
 })();

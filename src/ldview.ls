@@ -110,7 +110,6 @@
             items.push k
           n
         .filter (._data)
-      lastidx = -1
       proxy-index = Array.from(data.container.childNodes).indexOf(data.proxy)
       ns = []
       for i from list.length - 1 to 0 by -1 =>
@@ -124,6 +123,8 @@
           expected-idx = proxy-index - (list.length - i)
           if idx != expected-idx =>
             node.parentNode.removeChild(node)
+            proxy-index = Array.from(data.container.childNodes).indexOf(data.proxy)
+            expected-idx = proxy-index - (list.length - i)
             data.container.insertBefore node, data.container.childNodes[expected-idx + 1]
             proxy-index = proxy-index + 1
           ns.splice 0, 0, node

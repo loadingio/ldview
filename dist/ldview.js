@@ -190,7 +190,7 @@ var slice$ = [].slice;
       });
     },
     procEach: function(name, data){
-      var list, getkey, hash, items, nodes, lastidx, proxyIndex, ns, i$, i, n, j, node, idx, expectedIdx, this$ = this;
+      var list, getkey, hash, items, nodes, proxyIndex, ns, i$, i, n, j, node, idx, expectedIdx, this$ = this;
       list = this.handler[name].list() || [];
       getkey = this.handler[name].key;
       hash = {};
@@ -221,7 +221,6 @@ var slice$ = [].slice;
       }).filter(function(it){
         return it._data;
       });
-      lastidx = -1;
       proxyIndex = Array.from(data.container.childNodes).indexOf(data.proxy);
       ns = [];
       for (i$ = list.length - 1; i$ >= 0; --i$) {
@@ -243,6 +242,8 @@ var slice$ = [].slice;
           expectedIdx = proxyIndex - (list.length - i);
           if (idx !== expectedIdx) {
             node.parentNode.removeChild(node);
+            proxyIndex = Array.from(data.container.childNodes).indexOf(data.proxy);
+            expectedIdx = proxyIndex - (list.length - i);
             data.container.insertBefore(node, data.container.childNodes[expectedIdx + 1]);
             proxyIndex = proxyIndex + 1;
           }
