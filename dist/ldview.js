@@ -190,7 +190,7 @@ var slice$ = [].slice;
       });
     },
     procEach: function(name, data){
-      var list, getkey, hash, items, nodes, lastidx, proxyIndex, ret, i$, i, n, j, node, idx, expectedIdx, ns, this$ = this;
+      var list, getkey, hash, items, nodes, lastidx, proxyIndex, ns, i$, i, n, j, node, idx, expectedIdx, this$ = this;
       list = this.handler[name].list() || [];
       getkey = this.handler[name].key;
       hash = {};
@@ -223,10 +223,9 @@ var slice$ = [].slice;
       });
       lastidx = -1;
       proxyIndex = Array.from(data.container.childNodes).indexOf(data.proxy);
-      ret = [];
+      ns = [];
       for (i$ = list.length - 1; i$ >= 0; --i$) {
         i = i$;
-        console.log(i);
         n = list[i];
         if ((j = items.indexOf(getkey(n))) >= 0) {
           node = nodes[j];
@@ -247,7 +246,7 @@ var slice$ = [].slice;
             data.container.insertBefore(node, data.container.childNodes[expectedIdx + 1]);
             proxyIndex = proxyIndex + 1;
           }
-          ret.splice(0, 0, node);
+          ns.splice(0, 0, node);
           continue;
         }
         node = data.node.cloneNode(true);
@@ -262,35 +261,8 @@ var slice$ = [].slice;
         expectedIdx = proxyIndex - (list.length - i);
         data.container.insertBefore(node, data.container.childNodes[expectedIdx + 1]);
         proxyIndex = proxyIndex + 1;
-        ret.splice(0, 0, node);
+        ns.splice(0, 0, node);
       }
-      /*
-      ret = list.map (n,i) ~>
-        if (j = items.indexOf(getkey(n))) >= 0 =>
-          node = nodes[lastidx := j]
-          node._data = n
-          if !node._obj => node._obj = {node, name, data: n, idx: i}
-          if node._obj.data != n => node._obj.data = n
-      
-          data.container.childNodes
-      
-          # if always remove node before reinsert {
-          data.container.insertBefore node, data.proxy
-          # }
-          #
-          return node
-        node = data.node.cloneNode true
-        node._data = n
-        node._obj = {node, name, data: n, idx: i}
-        node.removeAttribute "#{@ld}-each"
-        # if always remove node before reinsert {
-        data.container.insertBefore node, data.proxy
-        # } else {
-        # data.container.insertBefore node, (nodes[lastidx + 1] or data.proxy)
-        # }
-        return node
-      */
-      ns = ret;
       ns.filter(function(it){
         return it;
       }).map(function(it, i){
