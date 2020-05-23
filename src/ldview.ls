@@ -106,7 +106,11 @@
           if (typeof(k) != \object and !hash[k]) or (typeof(k) == \object and !(n._data in list))  =>
             if n.parentNode => n.parentNode.removeChild n
             n._data = null
-          else items.push k
+          else
+            items.push k
+            # if always remove node before reinsert { ( naive approach for absolutely position correctness )
+            if n.parent => n.parentNode.removeChild n
+            # }
           n
         .filter (._data)
       lastidx = -1
@@ -116,12 +120,19 @@
           node._data = n
           if !node._obj => node._obj = {node, name, data: n, idx: i}
           if node._obj.data != n => node._obj.data = n
+          # if always remove node before reinsert {
+          data.container.insertBefore node, data.proxy
+          # }
           return node
         node = data.node.cloneNode true
         node._data = n
         node._obj = {node, name, data: n, idx: i}
         node.removeAttribute "#{@ld}-each"
-        data.container.insertBefore node, (nodes[lastidx + 1] or data.proxy)
+        # if always remove node before reinsert {
+        data.container.insertBefore node, data.proxy
+        # } else {
+        # data.container.insertBefore node, (nodes[lastidx + 1] or data.proxy)
+        # }
         return node
       ns = ret
       ns.filter(->it).map (it,i) ~> @_render name, it._obj, i, @handler[name]
