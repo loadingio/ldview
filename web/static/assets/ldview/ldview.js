@@ -190,7 +190,7 @@ var slice$ = [].slice;
       });
     },
     procEach: function(name, data){
-      var list, getkey, hash, items, nodes, lastidx, ret, ns, this$ = this;
+      var list, getkey, hash, items, nodes, lastidx, proxyIndex, ret, i$, i, n, j, node, idx, expectedIdx, ns, this$ = this;
       list = this.handler[name].list() || [];
       getkey = this.handler[name].key;
       hash = {};
@@ -216,33 +216,39 @@ var slice$ = [].slice;
           n._data = null;
         } else {
           items.push(k);
-          if (n.parent) {
-            n.parentNode.removeChild(n);
-          }
         }
         return n;
       }).filter(function(it){
         return it._data;
       });
       lastidx = -1;
-      ret = list.map(function(n, i){
-        var j, node;
+      proxyIndex = Array.from(data.container.childNodes).indexOf(data.proxy);
+      ret = [];
+      for (i$ = list.length - 1; i$ >= 0; --i$) {
+        i = i$;
+        console.log(i);
+        n = list[i];
         if ((j = items.indexOf(getkey(n))) >= 0) {
-          node = nodes[lastidx = j];
+          node = nodes[j];
           node._data = n;
           if (!node._obj) {
             node._obj = {
               node: node,
-              name: name,
-              data: n,
-              idx: i
+              name: {
+                idx: i
+              }
             };
           }
-          if (node._obj.data !== n) {
-            node._obj.data = n;
+          node._obj.data = n;
+          idx = Array.from(data.container.childNodes).indexOf(node);
+          expectedIdx = proxyIndex - (list.length - i);
+          if (idx !== expectedIdx) {
+            node.parentNode.removeChild(node);
+            data.container.insertBefore(node, data.container.childNodes[expectedIdx + 1]);
+            proxyIndex = proxyIndex + 1;
           }
-          data.container.insertBefore(node, data.proxy);
-          return node;
+          ret.splice(0, 0, node);
+          continue;
         }
         node = data.node.cloneNode(true);
         node._data = n;
@@ -252,10 +258,38 @@ var slice$ = [].slice;
           data: n,
           idx: i
         };
-        node.removeAttribute(this$.ld + "-each");
-        data.container.insertBefore(node, data.proxy);
-        return node;
-      });
+        node.removeAttribute(this.ld + "-each");
+        expectedIdx = proxyIndex - (list.length - i);
+        data.container.insertBefore(node, data.container.childNodes[expectedIdx + 1]);
+        proxyIndex = proxyIndex + 1;
+        ret.splice(0, 0, node);
+      }
+      /*
+      ret = list.map (n,i) ~>
+        if (j = items.indexOf(getkey(n))) >= 0 =>
+          node = nodes[lastidx := j]
+          node._data = n
+          if !node._obj => node._obj = {node, name, data: n, idx: i}
+          if node._obj.data != n => node._obj.data = n
+      
+          data.container.childNodes
+      
+          # if always remove node before reinsert {
+          data.container.insertBefore node, data.proxy
+          # }
+          #
+          return node
+        node = data.node.cloneNode true
+        node._data = n
+        node._obj = {node, name, data: n, idx: i}
+        node.removeAttribute "#{@ld}-each"
+        # if always remove node before reinsert {
+        data.container.insertBefore node, data.proxy
+        # } else {
+        # data.container.insertBefore node, (nodes[lastidx + 1] or data.proxy)
+        # }
+        return node
+      */
       ns = ret;
       ns.filter(function(it){
         return it;
