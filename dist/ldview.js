@@ -13,6 +13,7 @@ var slice$ = [].slice;
     var names, i$, ref$, k, v, len$, list, j$, len1$, it, res$;
     opt == null && (opt = {});
     this.evtHandler = {};
+    this.context = opt.context || null;
     this.handler = opt.handler || {};
     this.action = opt.action || {};
     this.text = opt.text || {};
@@ -184,6 +185,7 @@ var slice$ = [].slice;
           return ((ref$ = this$.map.nodes)[it] || (ref$[it] = [])).push({
             node: node,
             names: names,
+            local: {},
             evts: {}
           });
         });
@@ -233,7 +235,8 @@ var slice$ = [].slice;
             node._obj = {
               node: node,
               name: {
-                idx: i
+                idx: i,
+                local: {}
               }
             };
           }
@@ -256,7 +259,8 @@ var slice$ = [].slice;
           node: node,
           name: name,
           data: n,
-          idx: i
+          idx: i,
+          local: {}
         };
         node.removeAttribute(this.ld + "-each");
         expectedIdx = proxyIndex - (list.length - i);
@@ -281,6 +285,7 @@ var slice$ = [].slice;
     },
     _render: function(n, d, i, b){
       var init, handler, text, action, ref$, k, v, f, e, results$ = [];
+      d.context = this.context;
       if (b) {
         init = b.init || null;
         handler = b.handler || b.handle || null;
@@ -374,6 +379,9 @@ var slice$ = [].slice;
         }
       }
       return this.fire('afterRender');
+    },
+    setContext: function(v){
+      return this.context = v;
     },
     on: function(n, cb){
       var ref$;

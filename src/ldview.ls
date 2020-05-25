@@ -3,6 +3,7 @@
 
   ldView = (opt = {}) ->
     @evt-handler = {}
+    @context = opt.context or null
     @handler = opt.handler or {}
     @action = opt.action or {}
     @text = opt.text or {}
@@ -85,7 +86,7 @@
       nodes.map (node) ~>
         names = (node.getAttribute(@ld) or "").split(' ')
         if @prefix => names = names.map -> it.replace(prefixRE,"").trim!
-        names.map ~> @map.nodes[][it].push {node, names, evts: {}}
+        names.map ~> @map.nodes[][it].push {node, names, local: {}, evts: {}}
 
       # TODO
       # we should remove nodes from @map if they are updated and have ld/ld-each attribute removed.
@@ -117,7 +118,7 @@
         if (j = items.indexOf(getkey(n))) >= 0 =>
           node = nodes[j]
           node._data = n
-          if !node._obj => node._obj = {node, name: idx: i}
+          if !node._obj => node._obj = {node, name: idx: i , local: {}}
           node._obj.data = n
           idx = Array.from(data.container.childNodes).indexOf(node)
           expected-idx = proxy-index - (list.length - i)
@@ -131,7 +132,7 @@
           continue
         node = data.node.cloneNode true
         node._data = n
-        node._obj = {node, name, data: n, idx: i}
+        node._obj = {node, name, data: n, idx: i, local: {}}
         node.removeAttribute "#{@ld}-each"
         expected-idx = proxy-index - (list.length - i)
         data.container.insertBefore node, data.container.childNodes[expected-idx + 1]
@@ -144,6 +145,7 @@
     getAll: (n) -> (@map.nodes[n] or []).map -> it.node
     # b: base handling class. will be local object for repeat items, otherwise is null
     _render: (n,d,i,b) ->
+      d <<< {context: @context}
       if b =>
         init = b.init or null
         # handle is deprecated.
@@ -183,6 +185,8 @@
       if names => (if Array.isArray(names) => names else [names]).map -> _ it
       else for k in @names => _(k)
       @fire \afterRender
+
+    set-context: (v) -> @context = v
 
     on: (n, cb) -> @evt-handler.[][n].push cb
     fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v

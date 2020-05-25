@@ -21,7 +21,7 @@ To bind the corresponding processor, create a new ldView object with a handler o
       root: document.body
       handler: do
         # this example actually demonstrates how to do a if/else or switch/case statement.
-        plan: ({node, names, name, container, idx, nodes}) ->
+        plan: ({node, names, name, container, idx, nodes, context, local}) ->
           node.style.display = (if currentPlan in names => 'block' else 'none')
 
 Then, render it:
@@ -161,6 +161,7 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
    this should be used along with the scope pug mixin.
  * init-render - if set to true, ldView automatically calls render immediately after initialized. default true
  * global - set true to use `pd` and `pd-each` for access nodes globally beyond ld-scope. default false.
+ * context - default data accessible with in handler functions. can be set later with `setContext` api.
 
 ## API
 
@@ -170,6 +171,7 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
  * view.getAll("node-name") - return a list of nodes in the name of node-name.
  * view.get("node-name") - return the first node with the name of node-name. shorthand for getAll(...)[0]
  * view.render(cfg)
+ * view.setContext(v) - set a custom context object for using in handler functions.
  * view.bindEachNode({container, name, node, idx})
    - ldView keeps track of nodes once they are created as in ld-each.
      If for some reason we need a node to be removed from ld-each list but use in other place ( e.g.,
@@ -190,6 +192,20 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
      - idx: if provided, remove node in this position and return it.
      - node: if idx is not provided, user can use the node itself to hint ldView.
      - name: name of ld-each.
+
+## Handler Parameters
+
+When handlers for each ld node is called, it contains following parameters:
+
+ * node - current node
+ * names - all name in ld/pd for current node, space separated.
+ * name - matched name for current handler of this node.
+ * idx - index of current node, if this rule matches multiple times.
+ * local - local data for storing information along with the node, in its life cycle.
+ * context - view-wise data, set via `setContext` API. default null.
+ * data - only for `ld-each` node. bound data for this node.
+ * evt - event object if this handler is an event handler.
+ * evts - hash for listing all bound events.
 
 
 ## Placeholder for loading
