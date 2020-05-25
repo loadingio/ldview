@@ -7,7 +7,7 @@ A simple, logic-less client side template engine.
 
 ldView works by defining what elements are and how should they be processed. Instead of defining how html should be rendered inside DOM, we name elements and assign processors in JavaScript according to their names.
 
-For example, following code names three DIVs with "ld" attributes in "plan free", "plan month", and "plan year" respectively:
+For example, following code names three DIVs with "ld" attributes in "plan free", "plan month", and "plan year":
 
     body
       div(ld="plan free")
@@ -24,7 +24,7 @@ To bind the corresponding processor, create a new ldView object with a handler o
         plan: ({node, names, name, container, idx, nodes, context, local}) ->
           node.style.display = (if currentPlan in names => 'block' else 'none')
 
-Then, render it:
+view by default will be rendered after initialized, but you can render it again with `render` api:
 
     view.render!
 
