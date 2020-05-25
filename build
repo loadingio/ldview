@@ -7,6 +7,6 @@ echo "minifying ldview.js ..."
 echo "copy ldview.pug to dist/ ..."
 cp src/ldview.pug dist/
 echo "copy files to web ..."
-mkdir -p web/static/assets/ldview/
-cp dist/* web/static/assets/ldview/
+mkdir -p web/static/assets/lib/ldview/
+cp dist/* web/static/assets/lib/ldview/
 echo "done."
