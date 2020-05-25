@@ -5,7 +5,7 @@ A simple, logic-less client side template engine.
 
 ## Usage
 
-ldView works by defining what elements are and how should they be proceeded. Instead of defining how html should be rendered inside DOM, we name elements and assign processors in JavaScript according to their names.
+ldView works by defining what elements are and how should they be processed. Instead of defining how html should be rendered inside DOM, we name elements and assign processors in JavaScript according to their names.
 
 For example, following code names three DIVs with "ld" attributes in "plan free", "plan month", and "plan year" respectively:
 
@@ -208,13 +208,11 @@ When handlers for each ld node is called, it contains following parameters:
  * evts - hash for listing all bound events.
 
 
-## Placeholder for loading
-
-TBD
-
 
 ## Update Note
 
+ * add `local` parameter for storing data along with node.
+ * add `context` parameters for storing data along with ldView.
  * add `global` option for global ldView.
  * `handle` in repeat item is deprecated now. use `handler` instead.
 
