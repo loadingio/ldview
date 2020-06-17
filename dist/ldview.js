@@ -371,22 +371,19 @@ var slice$ = [].slice;
         }
         if (this$.map.eaches[n] && this$.handler[n]) {
           return this$.map.eaches[n].map(function(it){
-            var getkey, ret;
+            var getkey;
             if (!(key != null)) {
               return this$.procEach(n, it);
             }
             getkey = this$.handler[n].key || function(it){
               return it;
             };
-            it.nodes.map(function(d, i){
-              return in$(getkey(d._data), key);
+            return it.nodes.map(function(d, i){
+              if (!in$(getkey(d._data), key)) {
+                return;
+              }
+              return this$._render(n, d._obj, d.idx, this$.handler[n]);
             });
-            if (!(ret = it.nodes.filter(function(it){
-              return getkey(it._data) === key;
-            })[0])) {
-              return;
-            }
-            return this$._render(n, it._obj, it.idx, this$.handler[n]);
           });
         }
       };

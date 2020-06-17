@@ -187,9 +187,9 @@
         if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~>
           if !(key?) => return @proc-each n, it
           getkey = @handler[n].key or (->it)
-          it.nodes.map (d,i) -> getkey(d._data) in key
-          if !(ret = it.nodes.filter(-> getkey(it._data) == key).0) => return
-          @_render n, it._obj, it.idx, @handler[n]
+          it.nodes.map (d,i) ~>
+            if !(getkey(d._data) in key) => return
+            @_render n, d._obj, d.idx, @handler[n]
 
       if names => (if Array.isArray(names) => names else [names]).map -> _ it
       else for k in @names => _(k)
