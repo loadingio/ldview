@@ -320,7 +320,7 @@ var slice$ = [].slice;
         return results$;
       } catch (e$) {
         e = e$;
-        console.warn("[ldView] failed when rendering " + n);
+        console.warn("[ldView] failed when rendering " + n + ":", e);
         throw e;
       }
     },

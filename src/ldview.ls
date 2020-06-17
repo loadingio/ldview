@@ -163,7 +163,7 @@
           set-evt-handler d, k, f
           d.evts[k] = true
       catch e
-        console.warn "[ldView] failed when rendering #{n}"
+        console.warn "[ldView] failed when rendering #{n}:", e
         throw e
 
     bind-each-node: ({name, container, idx, node}) ->
