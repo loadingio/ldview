@@ -95,7 +95,7 @@
     #data = {container, idx, node, name, nodes, proxy}
     # node._data = item in list
     proc-each: (name, data) ->
-      list = @handler[name].list! or []
+      list = @handler[name].list({context: @context}) or []
       getkey = @handler[name].key
       hash = {}
       items = []
@@ -178,10 +178,19 @@
     render: (names) ->
       @fire \beforeRender
       _ = (n) ~>
+        if typeof(n) == \object =>
+          [n,key] = [n.name, n.key]
+          if !Array.isArray(key) => key = [key]
         if @map.nodes[n] => @map.nodes[n].map (d,i) ~>
           d <<< {name: n, idx: i}
           @_render n,d,i
-        if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~> @proc-each n, it
+        if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~>
+          if !(key?) => return @proc-each n, it
+          getkey = @handler[n].key or (->it)
+          it.nodes.map (d,i) -> getkey(d._data) in key
+          if !(ret = it.nodes.filter(-> getkey(it._data) == key).0) => return
+          @_render n, it._obj, it.idx, @handler[n]
+
       if names => (if Array.isArray(names) => names else [names]).map -> _ it
       else for k in @names => _(k)
       @fire \afterRender
