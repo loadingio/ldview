@@ -194,6 +194,8 @@ var slice$ = [].slice;
     procEach: function(name, data){
       var list, getkey, hash, items, nodes, proxyIndex, ns, i$, i, n, j, node, idx, expectedIdx, this$ = this;
       list = this.handler[name].list({
+        name: data.name,
+        node: data.node,
         context: this.context
       }) || [];
       getkey = this.handler[name].key;

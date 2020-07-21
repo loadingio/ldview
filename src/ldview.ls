@@ -95,7 +95,7 @@
     #data = {container, idx, node, name, nodes, proxy}
     # node._data = item in list
     proc-each: (name, data) ->
-      list = @handler[name].list({context: @context}) or []
+      list = @handler[name].list({name: data.name, node: data.node, context: @context}) or []
       getkey = @handler[name].key
       hash = {}
       items = []
