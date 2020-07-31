@@ -238,10 +238,9 @@ var slice$ = [].slice;
           if (!node._obj) {
             node._obj = {
               node: node,
-              name: {
-                idx: i,
-                local: {}
-              }
+              name: name,
+              idx: i,
+              local: {}
             };
           }
           node._obj.data = n;

@@ -118,7 +118,7 @@
         if (j = items.indexOf(getkey(n))) >= 0 =>
           node = nodes[j]
           node._data = n
-          if !node._obj => node._obj = {node, name: idx: i , local: {}}
+          if !node._obj => node._obj = {node, name, idx: i, local: {}}
           node._obj.data = n
           idx = Array.from(data.container.childNodes).indexOf(node)
           expected-idx = proxy-index - (list.length - i)
