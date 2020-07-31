@@ -1,6 +1,7 @@
 {
   "author": "Kirby Wu",
   "name": "ldView",
+  "license": "MIT",
   "description": "view template micro framework",
   "version": "0.0.1",
   "homepage": "https://github.com/loadingio/ldView",
