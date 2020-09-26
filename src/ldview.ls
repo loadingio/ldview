@@ -94,7 +94,7 @@
 
     #data = {container, idx, node, name, nodes, proxy}
     # node._data = item in list
-    proc-each: (name, data) ->
+    proc-each: (name, data, key = null) ->
       list = @handler[name].list({name: data.name, node: data.node, context: @context}) or []
       getkey = @handler[name].key
       hash = {}
@@ -138,7 +138,9 @@
         data.container.insertBefore node, data.container.childNodes[expected-idx + 1]
         proxy-index = proxy-index + 1
         ns.splice 0, 0, node
-      ns.filter(->it).map (it,i) ~> @_render name, it._obj, i, @handler[name]
+      _ = ns.filter(->it)
+      if key? => _ = _.filter -> getkey(it._obj.data) in key
+      _.map (it,i) ~> @_render name, it._obj, i, @handler[name]
       data.nodes = ns
 
     get: (n) -> ((@map.nodes[n] or []).0 or {}).node
@@ -184,12 +186,7 @@
         if @map.nodes[n] => @map.nodes[n].map (d,i) ~>
           d <<< {name: n, idx: i}
           @_render n,d,i
-        if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~>
-          if !(key?) => return @proc-each n, it
-          getkey = @handler[n].key or (->it)
-          it.nodes.map (d,i) ~>
-            if !(getkey(d._data) in key) => return
-            @_render n, d._obj, d.idx, @handler[n]
+        if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~> @proc-each n, it, key
 
       if names => (if Array.isArray(names) => names else [names]).map -> _ it
       else for k in @names => _(k)

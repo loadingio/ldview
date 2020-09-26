@@ -191,8 +191,9 @@ var slice$ = [].slice;
         });
       });
     },
-    procEach: function(name, data){
-      var list, getkey, hash, items, nodes, proxyIndex, ns, i$, i, n, j, node, idx, expectedIdx, this$ = this;
+    procEach: function(name, data, key){
+      var list, getkey, hash, items, nodes, proxyIndex, ns, i$, i, n, j, node, idx, expectedIdx, _, this$ = this;
+      key == null && (key = null);
       list = this.handler[name].list({
         name: data.name,
         node: data.node,
@@ -271,9 +272,15 @@ var slice$ = [].slice;
         proxyIndex = proxyIndex + 1;
         ns.splice(0, 0, node);
       }
-      ns.filter(function(it){
+      _ = ns.filter(function(it){
         return it;
-      }).map(function(it, i){
+      });
+      if (key != null) {
+        _ = _.filter(function(it){
+          return in$(getkey(it._obj.data), key);
+        });
+      }
+      _.map(function(it, i){
         return this$._render(name, it._obj, i, this$.handler[name]);
       });
       return data.nodes = ns;
@@ -372,19 +379,7 @@ var slice$ = [].slice;
         }
         if (this$.map.eaches[n] && this$.handler[n]) {
           return this$.map.eaches[n].map(function(it){
-            var getkey;
-            if (!(key != null)) {
-              return this$.procEach(n, it);
-            }
-            getkey = this$.handler[n].key || function(it){
-              return it;
-            };
-            return it.nodes.map(function(d, i){
-              if (!in$(getkey(d._data), key)) {
-                return;
-              }
-              return this$._render(n, d._obj, d.idx, this$.handler[n]);
-            });
+            return this$.procEach(n, it, key);
           });
         }
       };
