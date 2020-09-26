@@ -1,6 +1,6 @@
 {
   "author": "zbryikt",
-  "name": "ldview",
+  "name": "@loadingio/ldview",
   "license": "MIT",
   "description": "view template micro framework",
   "version": "0.0.1",

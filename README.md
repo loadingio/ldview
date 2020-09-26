@@ -42,21 +42,24 @@ the element with "book" ld-each attribute will be replaced by a comment node. Th
       handler: do
         # instead of a simple handler function,
         # here we have an object containing a list function and a handler function
-        book: do 
+        book: do
           # tell ldView to map book elements to myBookList
           list: -> myBookList
 
+          # optional key getter for stable update
+          # key: -> it.key
+
           # node is one of the nodes cloned from the original book element
           # and the data is entry bound to node from myBookList.
-          handler: ({node,data,name}) -> 
+          handler: ({node,data,name}) ->
 
-in list config, you can use all configs available for a generic items. for example, 
+in list config, you can use all configs available for a generic items. for example,
 
     book: do
       list: -> ...
-      init: ({node, data, name, idx}) -> 
+      init: ({node, data, name, idx}) ->
       handler: ({node, data, name, idx}) -> ...
-      text: -> ... 
+      text: -> ...
       action: click: ({node, name, evt, idx}) -> ...
 
 
@@ -67,7 +70,7 @@ While you can manually update DOM content in the handler, you can also recursive
       handler: do
         # instead of a simple handler function,
         # here we have an object containing a list function and a handle function
-        book: do 
+        book: do
           list: -> myBookList # tell ldView to map book elements to myBookList
           init: ({node,data}) ->
             (new ldView do
@@ -77,13 +80,30 @@ While you can manually update DOM content in the handler, you can also recursive
                  author: (.node.textContent = data.author)
             ).render!
 
+Or, let ldView do it for you with `view` option:
+
+    new ldView do
+      handler: do
+        # instead of a simple handler function,
+        # here we have an object containing a list function and a handle function
+        book: do
+          list: -> myBookList # tell ldView to map book elements to myBookList
+          view:
+            handler: do
+              name: (.node.textContent = data.name)
+              author: (.node.textContent = data.author)
+
 
 After initialization, You probably will want to update some elements instead of updating every node. Just pass target names into render function:
 
     view = new ldView( ... );
     view.render!
     # after some updates ... only update ld="name" elements.
-    view.render <[name]> 
+    view.render <[name]>
+
+For updating partial entries in `ld-each`, use following syntax with keys:
+
+    view.render {name: 'some-ld-each-name', key: [key1, key2, ... ]}
 
 
 ## Scoping

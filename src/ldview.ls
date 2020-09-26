@@ -149,11 +149,16 @@
     _render: (n,d,i,b) ->
       d <<< {context: @context}
       if b =>
-        init = b.init or null
-        # handle is deprecated.
-        handler = b.handler or b.handle or null
-        text = b.text or null
-        action = b.action or {}
+        if b.view =>
+          init = ({node,local,data}) ->
+            local._view = new ldView({init-render: false, context: data, root: node} <<< b.view)
+          handler = ({local,data}) -> local._view.setContext(data); local._view.render!
+        else
+          init = b.init or null
+          # handle is deprecated.
+          handler = b.handler or b.handle or null
+          text = b.text or null
+          action = b.action or {}
       else [init,handler,text,action] = [@initer[n], @handler[n], @text[n], @action]
       try
         if init and !d.{}inited[n] => init(d); d.inited[n] = true

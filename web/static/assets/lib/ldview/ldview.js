@@ -297,10 +297,27 @@ var slice$ = [].slice;
       var init, handler, text, action, ref$, k, v, f, e, results$ = [];
       d.context = this.context;
       if (b) {
-        init = b.init || null;
-        handler = b.handler || b.handle || null;
-        text = b.text || null;
-        action = b.action || {};
+        if (b.view) {
+          init = function(arg$){
+            var node, local, data;
+            node = arg$.node, local = arg$.local, data = arg$.data;
+            return local._view = new ldView(import$({
+              context: data,
+              root: node
+            }, b.view));
+          };
+          handler = function(arg$){
+            var local, data;
+            local = arg$.local, data = arg$.data;
+            local._view.setContext(data);
+            return local._view.render();
+          };
+        } else {
+          init = b.init || null;
+          handler = b.handler || b.handle || null;
+          text = b.text || null;
+          action = b.action || {};
+        }
       } else {
         ref$ = [this.initer[n], this.handler[n], this.text[n], this.action], init = ref$[0], handler = ref$[1], text = ref$[2], action = ref$[3];
       }
