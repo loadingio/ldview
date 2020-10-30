@@ -4,6 +4,8 @@
   ldView = (opt = {}) ->
     @evt-handler = {}
     @context = opt.context or null
+    @attr = opt.attr or {}
+    @style = opt.style or {}
     @handler = opt.handler or {}
     @action = opt.action or {}
     @text = opt.text or {}
@@ -23,7 +25,7 @@
     @update!
 
     names = {}
-    for list in ([[k for k of @initer]] ++ [[k for k of @text]] ++ [[k for k of @handler]] ++ [v for k,v of @action].map (it) -> [k for k of it]) =>
+    for list in ([[k for k of @initer]] ++ [[k for k of @attr]] ++ [[k for k of @style]] ++ [[k for k of @text]] ++ [[k for k of @handler]] ++ [v for k,v of @action].map (it) -> [k for k of it]) =>
       for it in list => names[it] = true
     @names = [k for k of names]
     if @init-render => @render!
@@ -158,12 +160,16 @@
           # handle is deprecated.
           handler = b.handler or b.handle or null
           text = b.text or null
+          attr = b.attr or null
+          style = b.style or null
           action = b.action or {}
-      else [init,handler,text,action] = [@initer[n], @handler[n], @text[n], @action]
+      else [init,handler,attr,style,text,action] = [@initer[n], @handler[n], @attr[n], @style[n], @text[n], @action]
       try
         if init and !d.{}inited[n] => init(d); d.inited[n] = true
         if handler => handler(d)
         if text => d.node.textContent = if typeof(text) == \function => text(d) else text
+        if attr => for k,v of (attr(d) or {}) => d.node.setAttribute(k,v)
+        if style => for k,v of (style(d) or {}) => d.node.style[k] = v
         for k,v of (action or {}) =>
           if !v or !((f = if b => v else v[n]) and !d.{}evts[k]) => continue
           # scoping so event handler can call v[n]

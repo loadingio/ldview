@@ -14,6 +14,8 @@ var slice$ = [].slice;
     opt == null && (opt = {});
     this.evtHandler = {};
     this.context = opt.context || null;
+    this.attr = opt.attr || {};
+    this.style = opt.style || {};
     this.handler = opt.handler || {};
     this.action = opt.action || {};
     this.text = opt.text || {};
@@ -34,7 +36,7 @@ var slice$ = [].slice;
     }
     this.update();
     names = {};
-    for (i$ = 0, len$ = (ref$ = [(fn$.call(this))].concat([(fn1$.call(this))], [(fn2$.call(this))], (fn3$.call(this)).map(fn4$))).length; i$ < len$; ++i$) {
+    for (i$ = 0, len$ = (ref$ = [(fn$.call(this))].concat([(fn1$.call(this))], [(fn2$.call(this))], [(fn3$.call(this))], [(fn4$.call(this))], (fn5$.call(this)).map(fn6$))).length; i$ < len$; ++i$) {
       list = ref$[i$];
       for (j$ = 0, len1$ = list.length; j$ < len1$; ++j$) {
         it = list[j$];
@@ -59,19 +61,33 @@ var slice$ = [].slice;
     }
     function fn1$(){
       var results$ = [];
-      for (k in this.text) {
+      for (k in this.attr) {
         results$.push(k);
       }
       return results$;
     }
     function fn2$(){
       var results$ = [];
-      for (k in this.handler) {
+      for (k in this.style) {
         results$.push(k);
       }
       return results$;
     }
     function fn3$(){
+      var results$ = [];
+      for (k in this.text) {
+        results$.push(k);
+      }
+      return results$;
+    }
+    function fn4$(){
+      var results$ = [];
+      for (k in this.handler) {
+        results$.push(k);
+      }
+      return results$;
+    }
+    function fn5$(){
       var ref$, results$ = [];
       for (k in ref$ = this.action) {
         v = ref$[k];
@@ -79,7 +95,7 @@ var slice$ = [].slice;
       }
       return results$;
     }
-    function fn4$(it){
+    function fn6$(it){
       var k, results$ = [];
       for (k in it) {
         results$.push(k);
@@ -294,7 +310,7 @@ var slice$ = [].slice;
       });
     },
     _render: function(n, d, i, b){
-      var init, handler, text, action, ref$, k, v, f, e, results$ = [];
+      var init, handler, text, attr, style, action, ref$, k, v, f, e, results$ = [];
       d.context = this.context;
       if (b) {
         if (b.view) {
@@ -302,6 +318,7 @@ var slice$ = [].slice;
             var node, local, data;
             node = arg$.node, local = arg$.local, data = arg$.data;
             return local._view = new ldView(import$({
+              initRender: false,
               context: data,
               root: node
             }, b.view));
@@ -316,10 +333,12 @@ var slice$ = [].slice;
           init = b.init || null;
           handler = b.handler || b.handle || null;
           text = b.text || null;
+          attr = b.attr || null;
+          style = b.style || null;
           action = b.action || {};
         }
       } else {
-        ref$ = [this.initer[n], this.handler[n], this.text[n], this.action], init = ref$[0], handler = ref$[1], text = ref$[2], action = ref$[3];
+        ref$ = [this.initer[n], this.handler[n], this.attr[n], this.style[n], this.text[n], this.action], init = ref$[0], handler = ref$[1], attr = ref$[2], style = ref$[3], text = ref$[4], action = ref$[5];
       }
       try {
         if (init && !(d.inited || (d.inited = {}))[n]) {
@@ -331,6 +350,18 @@ var slice$ = [].slice;
         }
         if (text) {
           d.node.textContent = typeof text === 'function' ? text(d) : text;
+        }
+        if (attr) {
+          for (k in ref$ = attr(d) || {}) {
+            v = ref$[k];
+            d.node.setAttribute(k, v);
+          }
+        }
+        if (style) {
+          for (k in ref$ = style(d) || {}) {
+            v = ref$[k];
+            d.node.style[k] = v;
+          }
         }
         for (k in ref$ = action || {}) {
           v = ref$[k];
