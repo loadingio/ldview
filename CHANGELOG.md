@@ -1,3 +1,8 @@
+## v0.0.3 ( current master )
+
+ - add `ctxs` for nested views.
+
+
 ## v0.0.2
 
  - add `attr` and `style` directive. 

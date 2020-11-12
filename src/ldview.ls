@@ -3,6 +3,7 @@
 
   ldView = (opt = {}) ->
     @evt-handler = {}
+    @ctxs = opt.ctxs or null
     @context = opt.context or null
     @attr = opt.attr or {}
     @style = opt.style or {}
@@ -149,11 +150,13 @@
     getAll: (n) -> (@map.nodes[n] or []).map -> it.node
     # b: base handling class. will be local object for repeat items, otherwise is null
     _render: (n,d,i,b) ->
-      d <<< {context: @context}
+      d <<< {context: @context, ctxs: @ctxs}
       if b =>
         if b.view =>
-          init = ({node,local,data}) ->
-            local._view = new ldView({init-render: false, context: data, root: node} <<< b.view)
+          init = ({node,local,data,context,ctxs}) ->
+            local._view = new ldView({
+              init-render: false, context: data, ctxs: if ctxs => [data] ++ ctxs else [data], root: node
+            } <<< b.view)
           handler = ({local,data}) -> local._view.setContext(data); local._view.render!
         else
           init = b.init or null

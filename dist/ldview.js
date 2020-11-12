@@ -13,6 +13,7 @@ var slice$ = [].slice;
     var names, i$, ref$, k, v, len$, list, j$, len1$, it, res$;
     opt == null && (opt = {});
     this.evtHandler = {};
+    this.ctxs = opt.ctxs || null;
     this.context = opt.context || null;
     this.attr = opt.attr || {};
     this.style = opt.style || {};
@@ -312,14 +313,18 @@ var slice$ = [].slice;
     _render: function(n, d, i, b){
       var init, handler, text, attr, style, action, ref$, k, v, f, e, results$ = [];
       d.context = this.context;
+      d.ctxs = this.ctxs;
       if (b) {
         if (b.view) {
           init = function(arg$){
-            var node, local, data;
-            node = arg$.node, local = arg$.local, data = arg$.data;
+            var node, local, data, context, ctxs;
+            node = arg$.node, local = arg$.local, data = arg$.data, context = arg$.context, ctxs = arg$.ctxs;
             return local._view = new ldView(import$({
               initRender: false,
               context: data,
+              ctxs: ctxs
+                ? [data].concat(ctxs)
+                : [data],
               root: node
             }, b.view));
           };

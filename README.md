@@ -226,7 +226,7 @@ When handlers for each ld node is called, it contains following parameters:
  * data - only for `ld-each` node. bound data for this node.
  * evt - event object if this handler is an event handler.
  * evts - hash for listing all bound events.
-
+ * ctxs - contexts in all parent view when using nested view feature.
 
 
 ## Update Note
