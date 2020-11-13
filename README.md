@@ -240,6 +240,7 @@ When handlers for each ld node is called, it contains following parameters:
 ## TODO
 
  * lookup view from node.
+ * even with view directive, user should still be able to work on the context node.
 
 
 ## License
