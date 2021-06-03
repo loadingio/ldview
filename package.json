@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "dist/ldview.min.js",
   "description": "view template micro framework",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "homepage": "https://github.com/loadingio/ldView",
   "repository": {
     "type": "git",
