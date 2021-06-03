@@ -8,10 +8,10 @@
   "files": [
     "dist/**/*"
   ],
-  "homepage": "https://github.com/loadingio/ldView",
+  "homepage": "https://github.com/loadingio/ldview",
   "repository": {
     "type": "git",
-    "url": "https://github.com/loadingio/ldView"
+    "url": "https://github.com/loadingio/ldview"
   },
   "engines": {
     "node": ">=0.12.6",
