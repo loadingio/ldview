@@ -17,11 +17,11 @@ For example, following code names three DIVs with "ld" attributes in "plan free"
 
 To bind the corresponding processor, create a new ldView object with a handler object:
 
-    view = new ldView do
+    view = new ldview do
       root: document.body
-      handler: do
+      handler:
         # this example actually demonstrates how to do a if/else or switch/case statement.
-        plan: ({node, names, name, container, idx, nodes, ctx, local}) ->
+        plan: ({node, names, name, container, idx, nodes, ctx, local, views}) ->
           node.style.display = (if currentPlan in names => 'block' else 'none')
 
 view by default will be rendered after initialized, but you can render it again with `render` api:
@@ -38,11 +38,11 @@ ldView supports basic looping too. Declare an element to be looped with "ld-each
 
 the element with "book" ld-each attribute will be replaced by a comment node. Then, you can bind it with an array of elements to automatically generate a list of similar book elements with a slightly different handler config:
 
-    new ldView do
-      handler: do
+    new ldview do
+      handler:
         # instead of a simple handler function,
         # here we have an object containing a list function and a handler function
-        book: do
+        book:
           # tell ldView to map book elements to myBookList
           list: -> myBookList
 
@@ -55,7 +55,7 @@ the element with "book" ld-each attribute will be replaced by a comment node. Th
 
 in list config, you can use all configs available for a generic items. for example,
 
-    book: do
+    book:
       list: -> ...
       init: ({node, data, name, idx}) ->
       handler: ({node, data, name, idx}) -> ...
@@ -66,37 +66,37 @@ in list config, you can use all configs available for a generic items. for examp
 
 While you can manually update DOM content in the handler, you can also recursively apply ldView to make the whole process simpler:
 
-    new ldView do
-      handler: do
+    new ldview do
+      handler:
         # instead of a simple handler function,
         # here we have an object containing a list function and a handle function
-        book: do
+        book:
           list: -> myBookList # tell ldView to map book elements to myBookList
           init: ({node,data}) ->
-            (new ldView do
+            (new ldview do
                root: node,
-               handler: do
+               handler:
                  name: (.node.textContent = data.name)
                  author: (.node.textContent = data.author)
             ).render!
 
 Or, let ldView do it for you with `view` option:
 
-    new ldView do
-      handler: do
+    new ldview do
+      handler:
         # instead of a simple handler function,
         # here we have an object containing a list function and a handle function
-        book: do
+        book:
           list: -> myBookList # tell ldView to map book elements to myBookList
           view:
-            handler: do
+            handler:
               name: (.node.textContent = data.name)
               author: (.node.textContent = data.author)
 
 
 After initialization, You probably will want to update some elements instead of updating every node. Just pass target names into render function:
 
-    view = new ldView( ... );
+    view = new ldview( ... );
     view.render!
     # after some updates ... only update ld="name" elements.
     view.render <[name]>
@@ -108,8 +108,9 @@ For updating partial entries in `ld-each`, use following syntax with keys:
 
 ## Scoping
 
-Scope the DOM fragment with `scope` pug mixin and `scope` function:
+Scope the DOM fragment with `scope` pug mixin and `scope` function available in ldview's `index.pug`:
 
+    include /path-to-ldview/index.pug
     +scope("scope-name")
       div(ld="node-name") my element.
 
@@ -143,12 +144,12 @@ becomes
 
 To access prefix-ed node, adding `prefix` option when initializing ldView:
 
-    var localView = new ldView({prefix: 'scope-name', handler: {
+    var localView = new ldview({prefix: 'scope-name', handler: {
       "node-name": function(node) { ... }
     });
     var localNode = localView.get("node-name");
 
-    var globalView = new ldView({handler: {
+    var globalView = new ldview({handler: {
       "node-name": function(node) { ... }
     });
     var globalNode = globalView.get("global-name");
@@ -182,18 +183,19 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
  * `initRender` - if set to true, ldView automatically calls render immediately after initialized. default true
  * `global` - set true to use `pd` and `pd-each` for access nodes globally beyond ld-scope. default false.
  * `ctx` - default data accessible with in handler functions. can be set later with `setContext` api.
-   - `context` is used as `ctx` before `0.0.3`, and it's now `ctx`.
+   - `context` is used as `ctx` before `0.1.0`, and it's now `ctx`.
+ * `ctxs` and `baseViews` - these config are used internally. Don't use this unless you know what's your doing.
 
 ## API
 
- * new ldView({root, handler , ...})
+ * new ldview({root, handler , ...})
    handler: hash with node-names as key and function as value.
    - function: ({node}) which node is the element matched with this node-name.
  * view.getAll("node-name") - return a list of nodes in the name of node-name.
  * view.get("node-name") - return the first node with the name of node-name. shorthand for getAll(...)[0]
  * view.render(cfg)
  * view.setCtx(v) - set a custom context object for using in handler functions.
-   - `setContext` is used before `0.0.3`. use `setCtx` now.
+   - `setContext` is used before `0.1.0`. use `setCtx` now.
  * view.bindEachNode({container, name, node, idx})
    - ldView keeps track of nodes once they are created as in ld-each.
      If for some reason we need a node to be removed from ld-each list but use in other place ( e.g.,
@@ -225,27 +227,13 @@ When handlers for each ld node is called, it contains following parameters:
  * `idx` - index of current node, if this rule matches multiple times.
  * `local` - local data for storing information along with the node, in its life cycle.
  * `ctx` - view-wise data, set via `setCtx` API. default null.
-   - `context` is used before 0.0.3. use `ctx` now.
+   - `context` is used before 0.1.0. use `ctx` now.
  * `data` - only for `ld-each` node. bound data for this node.
  * `evt` - event object if this handler is an event handler.
  * `evts` - hash for listing all bound events.
  * `ctxs` - contexts in all parent view when using nested view feature.
  * `views` - list of views (including views built recursively) for invoking this handler
    - `views[0]` is always the current view. larger number gets ancestor views.
-
-
-## Update Note ( to be removed - use CHANGELOG.md instead )
-
- * rename `context` to `ctx`.
- * add `local` parameter for storing data along with node.
- * add `context` parameters for storing data along with ldView.
- * add `global` option for global ldView.
- * `handle` in repeat item is deprecated now. use `handler` instead.
-
-
-## TODO
-
- * lookup view from node.
 
 
 ## License
