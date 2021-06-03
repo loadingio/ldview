@@ -1,5 +1,5 @@
 (function(){
-  var setEvtHandler, ldview, slice$ = [].slice;
+  var setEvtHandler, ldview;
   setEvtHandler = function(d, k, f){
     return d.node.addEventListener(k, function(evt){
       return f(import$({
@@ -470,8 +470,12 @@
       return ((ref$ = this.evtHandler)[n] || (ref$[n] = [])).push(cb);
     },
     fire: function(n){
-      var v, i$, ref$, len$, cb, results$ = [];
-      v = slice$.call(arguments, 1);
+      var v, res$, i$, to$, ref$, len$, cb, results$ = [];
+      res$ = [];
+      for (i$ = 1, to$ = arguments.length; i$ < to$; ++i$) {
+        res$.push(arguments[i$]);
+      }
+      v = res$;
       for (i$ = 0, len$ = (ref$ = this.evtHandler[n] || []).length; i$ < len$; ++i$) {
         cb = ref$[i$];
         results$.push(cb.apply(this, v));
@@ -483,7 +487,7 @@
     module.exports = ldview;
   }
   if (typeof window != 'undefined' && window !== null) {
-    window.ldView = ldview = ldview;
+    window.ldView = window.ldview = ldview;
   }
   function import$(obj, src){
     var own = {}.hasOwnProperty;

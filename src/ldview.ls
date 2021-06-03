@@ -223,4 +223,4 @@ ldview.prototype = Object.create(Object.prototype) <<< do
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
 
 if module? => module.exports = ldview
-if window? => window.ldView = ldview = ldview
+if window? => window.ldView = window.ldview = ldview

@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.1.1
+
+ - fix bug: ldview is not in window
+
+
 ## v0.1.0
 
  - add `ctxs` for nested views.
