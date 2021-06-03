@@ -18,11 +18,13 @@
     "npm": ">=6.4.1"
   },
   "scripts": {
-    "start": "npx server -r web -o true"
+    "start": "npx server -r web -o true",
+    "deploy": "npx deploy web/static"
   },
   "devDependencies": {
     "livescript": "^1.6.0",
     "template": "github:zbryikt/template#v2.3.13",
+    "deploy": "github:zbryikt/deploy",
     "uglify-js": "=3.2.0",
     "bootstrap": "^4.5.2",
     "bootstrap.ldui": "github:loadingio/bootstrap.ldui",
