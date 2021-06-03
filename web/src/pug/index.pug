@@ -1,6 +1,6 @@
 doctype html
 include /../../static/assets/lib/ldui/pug/ldui.pug
-include /../../static/assets/lib/ldview/ldview.pug
+include /../../static/assets/lib/ldview/dev/index.pug
 html
   head
     +css("https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css")
@@ -25,5 +25,5 @@ html
             .desc(ld="description")
             .text-muted.text-sm(ld="date")
     +script("/assets/lib/ldui/ldui.min.js")
-    +script("/assets/lib/ldview/ldview.min.js")
+    +script("/assets/lib/ldview/dev/index.js")
     +script("/js/index.js")

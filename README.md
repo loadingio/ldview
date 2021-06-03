@@ -21,7 +21,7 @@ To bind the corresponding processor, create a new ldView object with a handler o
       root: document.body
       handler: do
         # this example actually demonstrates how to do a if/else or switch/case statement.
-        plan: ({node, names, name, container, idx, nodes, context, local}) ->
+        plan: ({node, names, name, container, idx, nodes, ctx, local}) ->
           node.style.display = (if currentPlan in names => 'block' else 'none')
 
 view by default will be rendered after initialized, but you can render it again with `render` api:
@@ -159,12 +159,12 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
 
 ## Configurations
 
- * root - view root
- * handler - object containing name / handler pairs.
+ * `root` - view root
+ * `handler` - object containing name / handler pairs.
    - name will be used when querying DOM in `ld` attribute.
    - handler accept an object as argument:
    - node: the target node
- * action - action handler. object containing event names such as click, mousemove, etc.
+ * `action` - action handler. object containing event names such as click, mousemove, etc.
    - each member contains a handler object similar to the root handler.
    - example:
 
@@ -177,21 +177,23 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
         title: ({node, evt}) -> ...
       }
 
- * prefix - prefix name for this view. view will be global if scope name is not defined.
+ * `prefix` - prefix name for this view. view will be global if scope name is not defined.
    this should be used along with the scope pug mixin.
- * init-render - if set to true, ldView automatically calls render immediately after initialized. default true
- * global - set true to use `pd` and `pd-each` for access nodes globally beyond ld-scope. default false.
- * context - default data accessible with in handler functions. can be set later with `setContext` api.
+ * `initRender` - if set to true, ldView automatically calls render immediately after initialized. default true
+ * `global` - set true to use `pd` and `pd-each` for access nodes globally beyond ld-scope. default false.
+ * `ctx` - default data accessible with in handler functions. can be set later with `setContext` api.
+   - `context` is used as `ctx` before `0.0.3`, and it's now `ctx`.
 
 ## API
 
- * new ldView({root, handler})
+ * new ldView({root, handler , ...})
    handler: hash with node-names as key and function as value.
    - function: ({node}) which node is the element matched with this node-name.
  * view.getAll("node-name") - return a list of nodes in the name of node-name.
  * view.get("node-name") - return the first node with the name of node-name. shorthand for getAll(...)[0]
  * view.render(cfg)
- * view.setContext(v) - set a custom context object for using in handler functions.
+ * view.setCtx(v) - set a custom context object for using in handler functions.
+   - `setContext` is used before `0.0.3`. use `setCtx` now.
  * view.bindEachNode({container, name, node, idx})
    - ldView keeps track of nodes once they are created as in ld-each.
      If for some reason we need a node to be removed from ld-each list but use in other place ( e.g.,
@@ -217,20 +219,24 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
 
 When handlers for each ld node is called, it contains following parameters:
 
- * node - current node
- * names - all name in ld/pd for current node, space separated.
- * name - matched name for current handler of this node.
- * idx - index of current node, if this rule matches multiple times.
- * local - local data for storing information along with the node, in its life cycle.
- * context - view-wise data, set via `setContext` API. default null.
- * data - only for `ld-each` node. bound data for this node.
- * evt - event object if this handler is an event handler.
- * evts - hash for listing all bound events.
- * ctxs - contexts in all parent view when using nested view feature.
+ * `node` - current node
+ * `names` - all name in ld/pd for current node, space separated.
+ * `name` - matched name for current handler of this node.
+ * `idx` - index of current node, if this rule matches multiple times.
+ * `local` - local data for storing information along with the node, in its life cycle.
+ * `ctx` - view-wise data, set via `setCtx` API. default null.
+   - `context` is used before 0.0.3. use `ctx` now.
+ * `data` - only for `ld-each` node. bound data for this node.
+ * `evt` - event object if this handler is an event handler.
+ * `evts` - hash for listing all bound events.
+ * `ctxs` - contexts in all parent view when using nested view feature.
+ * `views` - list of views (including views built recursively) for invoking this handler
+   - `views[0]` is always the current view. larger number gets ancestor views.
 
 
-## Update Note
+## Update Note ( to be removed - use CHANGELOG.md instead )
 
+ * rename `context` to `ctx`.
  * add `local` parameter for storing data along with node.
  * add `context` parameters for storing data along with ldView.
  * add `global` option for global ldView.
@@ -240,7 +246,6 @@ When handlers for each ld node is called, it contains following parameters:
 ## TODO
 
  * lookup view from node.
- * even with view directive, user should still be able to work on the context node.
 
 
 ## License
