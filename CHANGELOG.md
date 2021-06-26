@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.2.0
+
+ - only check direct parent instead of ancestor to verify if ld-each node has been processed.
+
+
 ## v0.1.1
 
  - fix bug: ldview is not in window

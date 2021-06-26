@@ -59,9 +59,15 @@ ldview.prototype = Object.create(Object.prototype) <<< do
       .filter -> !(it in exclusions)
       .filter -> !(it in eaches-nodes)
       .map (n) ~>
-        p = n.parentNode
-        while p => if p == document => break else p = p.parentNode
-        if !p => return null
+        # not sure why we look up the ancestor,
+        # but this make ld-each fails when DOM tree is not attached in the document
+        # it seems that we only need to check direct parent.
+        # remove following code after ensuring no side effect.
+        #p = n.parentNode
+        #while p => if p == document => break else p = p.parentNode
+        #if !p => return null
+        if !n.parentNode => return null
+
         if ld$.parent(n.parentNode, "*[#{@ld}-each]", document) => return null
         name = n.getAttribute("#{@ld}-each")
         if !@handler[name] => return null

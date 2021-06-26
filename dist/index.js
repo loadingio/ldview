@@ -137,16 +137,8 @@
       }).filter(function(it){
         return !in$(it, eachesNodes);
       }).map(function(n){
-        var p, name, c, i, ret;
-        p = n.parentNode;
-        while (p) {
-          if (p === document) {
-            break;
-          } else {
-            p = p.parentNode;
-          }
-        }
-        if (!p) {
+        var name, c, i, ret, p;
+        if (!n.parentNode) {
           return null;
         }
         if (ld$.parent(n.parentNode, "*[" + this$.ld + "-each]", document)) {
