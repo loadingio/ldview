@@ -14,6 +14,9 @@
           data.slice start, end
         view:
           handler:
+            '@': ({node, ctx, ctxs}) ->
+              node.style
+                ..background = <[#ecb #bfc #bcf]>[Math.floor(Math.random! * 3)]
             title: ({node, ctx, ctxs}) -> node.innerText = ctx.title
             description: ({node, ctx, ctxs}) -> node.innerText = ctx.description
             date:({node, ctx, ctxs, views}) -> node.innerText = ctxs.0.time

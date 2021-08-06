@@ -183,7 +183,7 @@
       });
       this.nodes = this.nodes.concat(nodes);
       prefixRE = this.prefix ? new RegExp("^" + this.prefix + "\\$") : null;
-      return nodes.map(function(node){
+      nodes.map(function(node){
         var names;
         names = (node.getAttribute(this$.ld) || "").split(' ');
         if (this$.prefix) {
@@ -201,6 +201,14 @@
           });
         });
       });
+      if (!this.map.nodes['@']) {
+        return this.map.nodes['@'] = [{
+          node: this.root,
+          names: '@',
+          local: {},
+          evts: {}
+        }];
+      }
     },
     procEach: function(name, data, key){
       var list, getkey, hash, items, nodes, proxyIndex, ns, i$, i, n, j, node, idx, expectedIdx, _, this$ = this;
@@ -413,7 +421,12 @@
       return obj.nodes.splice(idx, 1);
     },
     render: function(names){
-      var _, i$, ref$, len$, k, this$ = this;
+      var args, res$, i$, to$, _, ref$, len$, k, this$ = this;
+      res$ = [];
+      for (i$ = 1, to$ = arguments.length; i$ < to$; ++i$) {
+        res$.push(arguments[i$]);
+      }
+      args = res$;
       this.fire('beforeRender');
       _ = function(n){
         var ref$, key;
@@ -437,9 +450,9 @@
         }
       };
       if (names) {
-        (Array.isArray(names)
+        ((Array.isArray(names)
           ? names
-          : [names]).map(function(it){
+          : [names]).concat(args)).map(function(it){
           return _(it);
         });
       } else {

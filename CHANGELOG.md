@@ -1,5 +1,11 @@
 # Change Logs
 
+## v0.2.1
+
+ - support refering to view root with name `@`.
+ - support multiple arguments in `render` function.
+
+
 ## v0.2.0
 
  - only check direct parent instead of ancestor to verify if ld-each node has been processed.

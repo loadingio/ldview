@@ -100,6 +100,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
       names = (node.getAttribute(@ld) or "").split(' ')
       if @prefix => names = names.map -> it.replace(prefixRE,"").trim!
       names.map ~> @map.nodes[][it].push {node, names, local: {}, evts: {}}
+    if !@map.nodes['@'] => @map.nodes['@'] = [{node: @root, names: '@', local: {}, evts: {}}]
 
     # TODO
     # we should remove nodes from @map if they are updated and have ld/ld-each attribute removed.
@@ -205,7 +206,8 @@ ldview.prototype = Object.create(Object.prototype) <<< do
     if node and !idx => idx = obj.nodes.indexOf(node)
     return obj.nodes.splice idx, 1
 
-  render: (names) ->
+  render: (names, ...args) ->
+
     @fire \beforeRender
     _ = (n) ~>
       if typeof(n) == \object =>
@@ -216,7 +218,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         @_render n,d,i
       if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~> @proc-each n, it, key
 
-    if names => (if Array.isArray(names) => names else [names]).map -> _ it
+    if names => ((if Array.isArray(names) => names else [names]) ++ args).map -> _ it
     else for k in @names => _(k)
     @fire \afterRender
 
