@@ -37,6 +37,10 @@
       this.id = "ld-" + Math.random().toString(36).substring(2);
       this.root.setAttribute("ld-scope-" + this.id, '');
     }
+    if (this.template = opt.template) {
+      this.root.textContent = '';
+      this.root.appendChild(this.template.cloneNode(true));
+    }
     this.update();
     names = {};
     for (i$ = 0, len$ = (ref$ = [(fn$.call(this))].concat([(fn1$.call(this))], [(fn2$.call(this))], [(fn3$.call(this))], [(fn4$.call(this))], (fn5$.call(this)).map(fn6$))).length; i$ < len$; ++i$) {
@@ -324,17 +328,11 @@
       if (b) {
         if (b.view) {
           init = function(arg$){
-            var node, local, data, ctx, ctxs, views;
+            var node, local, data, ctx, ctxs, views, ref$;
             node = arg$.node, local = arg$.local, data = arg$.data, ctx = arg$.ctx, ctxs = arg$.ctxs, views = arg$.views;
-            return local._view = new ldview(import$({
-              initRender: false,
-              root: node,
-              baseViews: views,
-              ctx: data,
-              ctxs: ctxs
-                ? [ctx].concat(ctxs)
-                : [ctx]
-            }, b.view));
+            return local._view = new ldview((ref$ = import$({}, b.view), ref$.initRender = false, ref$.root = node, ref$.baseViews = views, ref$.ctx = data, ref$.ctxs = ctxs
+              ? [ctx].concat(ctxs)
+              : [ctx], ref$));
           };
           handler = function(arg$){
             var local, data;

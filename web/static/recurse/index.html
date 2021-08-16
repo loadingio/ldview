@@ -1,0 +1,69 @@
+<!DOCTYPE html><html><head><link rel="stylesheet" type="text/css" href="/assets/lib/bootstrap/main/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="/assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css"></head><body><div class="w-1024 rwd mx-auto typeset heading-contrast my-4"><h3>Recursive Views Test</h3><div ld-scope ld="template"><div class="px-4"><div ld="name"></div><div><div ld-each="item"></div></div></div></div><div ld="root"></div></div><script type="text/javascript" src="/assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="/assets/lib/ldview/dev/index.js"></script><script>var view, template, root, data, rview, cfg;
+view = new ldview({
+  root: document.body,
+  handler: {
+    template: function(){},
+    root: function(){}
+  }
+});
+template = view.get('template');
+template.removeAttribute('ld-scope');
+template.parentNode.removeChild(template);
+root = view.get('root');
+data = {
+  name: 1,
+  child: [
+    {
+      name: "1.1"
+    }, {
+      name: "1.2",
+      child: [
+        {
+          name: "2.1",
+          child: [
+            {
+              name: "3.1"
+            }, {
+              name: "3.2"
+            }, {
+              name: "3.3"
+            }
+          ]
+        }, {
+          name: "2.2"
+        }, {
+          name: "2.3"
+        }
+      ]
+    }, {
+      name: "1.3"
+    }
+  ]
+};
+rview = new ldview(import$(cfg = {}, {
+  ctx: data,
+  root: root,
+  template: template,
+  text: {
+    name: function(arg$){
+      var ctx;
+      ctx = arg$.ctx;
+      return ctx.name;
+    }
+  },
+  handler: {
+    item: {
+      list: function(arg$){
+        var ctx;
+        ctx = arg$.ctx;
+        return ctx.child || [];
+      },
+      view: cfg
+    }
+  }
+}));
+function import$(obj, src){
+  var own = {}.hasOwnProperty;
+  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+  return obj;
+}</script></body></html>

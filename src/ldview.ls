@@ -26,6 +26,9 @@ ldview = (opt = {}) ->
     @id = "ld-#{Math.random!toString(36)substring(2)}"
     # ld-scope-${id} is used to identify a ldview object, for code of excluding scoped object
     @root.setAttribute "ld-scope-#{@id}", ''
+  if (@template = opt.template) =>
+    @root.textContent = ''
+    @root.appendChild @template.cloneNode(true)
 
   @update!
 
@@ -168,10 +171,10 @@ ldview.prototype = Object.create(Object.prototype) <<< do
     if b =>
       if b.view =>
         init = ({node,local,data,ctx,ctxs,views}) ->
-          local._view = new ldview({
+          local._view = new ldview({} <<< b.view <<< {
             init-render: false, root: node, base-views: views
             ctx: data, ctxs: (if ctxs => [ctx] ++ ctxs else [ctx])
-          } <<< b.view)
+          })
         handler = ({local,data}) -> local._view.setCtx(data); local._view.render!
       else
         init = b.init or null

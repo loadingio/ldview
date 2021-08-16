@@ -1,5 +1,11 @@
 # Change Logs
 
+## v0.2.2
+
+ - add `template` to support recursive views
+ - prevent internal view from overwriting options provided by ldview logic 
+
+
 ## v0.2.1
 
  - support refering to view root with name `@`.

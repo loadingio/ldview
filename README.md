@@ -93,6 +93,14 @@ Or, let ldView do it for you with `view` option:
               name: (.node.textContent = data.name)
               author: (.node.textContent = data.author)
 
+While you can use the same options in this view config as the ldview constructor, following fields will be overwritten by ldview:
+
+ - `initRender`
+ - `root`
+ - `baseViews`
+ - `ctx`
+ - `ctxs`
+
 
 After initialization, You probably will want to update some elements instead of updating every node. Just pass target names into render function:
 
@@ -184,6 +192,7 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
  * `global` - set true to use `pd` and `pd-each` for access nodes globally beyond ld-scope. default false.
  * `ctx` - default data accessible with in handler functions. can be set later with `setContext` api.
    - `context` is used as `ctx` before `0.1.0`, and it's now `ctx`.
+ * `template` - template DOM for replacing root content. It's for supporting recursive views.
  * `ctxs` and `baseViews` - these config are used internally. Don't use this unless you know what's your doing.
 
 ## API
@@ -234,6 +243,31 @@ When handlers for each ld node is called, it contains following parameters:
  * `ctxs` - contexts in all parent view when using nested view feature.
  * `views` - list of views (including views built recursively) for invoking this handler
    - `views[0]` is always the current view. larger number gets ancestor views.
+
+
+## Recursive Views and Template
+
+It's possible to define view recursively - simply refer a view config in itself:
+
+    (cfg = {}) <<< handler: someDirective: {
+      list: -> ...
+      view: cfg
+    }
+
+However, this requires a recursively defined DOM, which is only possible with `template` option:
+
+    div(data-name="template"): ...
+    script(type="text/livescript").
+      new ldview (cfg = {}) <<< {
+        template: document.querySelector('[data-name=template]')
+        handler: someDirective: {
+          list: ({ctx}) -> ...
+          view: cfg
+        }
+      }
+
+In this case, the div named `template` will be cloned, attached and used as inner DOM of this view, recursively applied according to the return content of `list`. For a working example, check `web/src/pug/recurse/index.ls`.
+
 
 
 ## License

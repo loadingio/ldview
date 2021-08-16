@@ -1,0 +1,18 @@
+doctype html
+include @/bootstrap.ldui/dist/index.pug
+include @static/assets/lib/ldview/dev/index.pug
+html
+  head
+    +css("/assets/lib/bootstrap/main/css/bootstrap.min.css")
+    +css("/assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css")
+  body
+    .w-1024.rwd.mx-auto.typeset.heading-contrast.my-4
+      h3 Recursive Views Test
+      div(ld-scope,ld="template")
+        .px-4
+          div(ld="name")
+          div: div(ld-each="item")
+      div(ld="root")
+    +script("/assets/lib/@loadingio/ldquery/main/ldq.min.js")
+    +script("/assets/lib/ldview/dev/index.js")
+    script: include:lsc index.ls
