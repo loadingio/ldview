@@ -2,9 +2,9 @@
 rm -rf dist
 mkdir -p dist
 echo "build src/ldview.ls -> dist/index.js ..."
-npx lsc -cp --no-header src/ldview.ls > dist/index.js
+./node_modules/.bin/lsc -cp --no-header src/ldview.ls > dist/index.js
 echo "minifying index.js ..."
-npx uglifyjs dist/index.js > dist/index.min.js
+./node_modules/.bin/uglifyjs dist/index.js > dist/index.min.js
 echo "copy ldview.pug to dist/ ..."
 cp src/ldview.pug dist/index.pug
 echo "copy files to web ..."
