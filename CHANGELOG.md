@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.2.3
+
+ - fix main entry point file name
+
+
 ## v0.2.2
 
  - add `template` to support recursive views

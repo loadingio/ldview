@@ -2,9 +2,9 @@
   "author": "zbryikt",
   "name": "ldview",
   "license": "MIT",
-  "main": "dist/ldview.min.js",
+  "main": "dist/index.js",
   "description": "view template micro framework",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "files": [
     "dist/**/*"
   ],
