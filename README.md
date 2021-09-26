@@ -128,7 +128,7 @@ Above code fragment will output something like this:
       <div ld="node-name"> my element </div>
     </div>
 
-`ld-scope` will prevent other views to find elements into this scope.
+`ld-scope` will prevent other views to look up elements inside this scope.
 
 If you want to mix views, you can set the scope to `naked` by adding a `naked-scope` class:
 
