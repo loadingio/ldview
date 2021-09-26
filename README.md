@@ -90,8 +90,8 @@ Or, let ldView do it for you with `view` option:
           list: -> myBookList # tell ldView to map book elements to myBookList
           view:
             handler:
-              name: (.node.textContent = data.name)
-              author: (.node.textContent = data.author)
+              name: ({node, ctx}) -> node.textContent = ctx.name
+              author: ({node, ctx}) -> node.textContent = ctx.author
 
 While you can use the same options in this view config as the ldview constructor, following fields will be overwritten by ldview:
 
