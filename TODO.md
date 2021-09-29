@@ -1,3 +1,12 @@
+## Nested Rendering
+
+with multiple `ld-each`, we may want to update based on a chain of keys into specific item of current view.
+
+For example:
+
+    view.render {name: 'prj', key: [...], render: {name: 'item', key: [...]}
+
+
 ## Nested Views
 
 support nested views directly by `ld`. For example ( concept only, may need redesign ):
