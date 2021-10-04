@@ -113,6 +113,8 @@ For updating partial entries in `ld-each`, use following syntax with keys:
 
     view.render {name: 'some-ld-each-name', key: [key1, key2, ... ]}
 
+Be sure to make sure keys here matches the return value of `key` accessor, in case of matching failure.
+
 
 ## Scoping
 
