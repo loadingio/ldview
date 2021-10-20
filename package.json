@@ -22,14 +22,14 @@
     "deploy": "npx deploy web/static"
   },
   "devDependencies": {
-    "livescript": "^1.6.0",
-    "@zbryikt/template": "^2.3.22",
-    "deploy": "github:zbryikt/deploy",
-    "uglify-js": "=3.2.0",
-    "bootstrap": "^4.5.2",
     "@loadingio/bootstrap.ext": "^0.0.1",
+    "@loadingio/ldquery": "^2.2.0",
+    "@zbryikt/template": "^2.3.22",
+    "bootstrap": "^4.5.2",
+    "deploy": "github:zbryikt/deploy",
     "fedep": "^0.0.16",
-    "@loadingio/ldquery": "^2.2.0"
+    "livescript": "^1.6.0",
+    "uglify-js": "=3.2.0"
   },
   "frontendDependencies": {
     "root": "web/static/assets/lib",
