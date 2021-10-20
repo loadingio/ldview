@@ -243,9 +243,7 @@
         var k;
         k = getkey(n._data);
         if ((typeof k !== 'object' && !hash[k]) || (typeof k === 'object' && !in$(n._data, list))) {
-          if (n.parentNode) {
-            n.parentNode.removeChild(n);
-          }
+          data.container.removeChild(n);
           n._data = null;
         } else {
           items.push(k);
@@ -255,6 +253,9 @@
         return it._data;
       });
       proxyIndex = Array.from(data.container.childNodes).indexOf(data.proxy);
+      if (proxyIndex < 0) {
+        proxyIndex = data.container.childNodes.length;
+      }
       ns = [];
       for (i$ = list.length - 1; i$ >= 0; --i$) {
         i = i$;
@@ -274,8 +275,11 @@
           idx = Array.from(data.container.childNodes).indexOf(node);
           expectedIdx = proxyIndex - (list.length - i);
           if (idx !== expectedIdx) {
-            node.parentNode.removeChild(node);
+            data.container.removeChild(node);
             proxyIndex = Array.from(data.container.childNodes).indexOf(data.proxy);
+            if (proxyIndex < 0) {
+              proxyIndex = data.container.childNodes.length;
+            }
             expectedIdx = proxyIndex - (list.length - i);
             data.container.insertBefore(node, data.container.childNodes[expectedIdx + 1]);
             proxyIndex = proxyIndex + 1;
@@ -309,6 +313,9 @@
       _.map(function(it, i){
         return this$._render(name, it._obj, i, this$.handler[name]);
       });
+      if (data.container.update) {
+        data.container.update();
+      }
       return data.nodes = ns;
     },
     get: function(n){

@@ -76,7 +76,12 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         if !@handler[name] => return null
         c = n.parentNode
         i = Array.from(c.childNodes).indexOf(n)
-        ret = {container: c, idx: i, node: n, name: name, nodes: []}
+        ret = {
+          # to use virtual-container ( defined in container.ls ):
+          # container: new virtual-container-clustered(root: c)
+          container: c
+          idx: i, node: n, name: name, nodes: []
+        }
         p = document.createComment " #{@ld}-each=#{ret.name} "
         p._data = ret
         c.insertBefore p, n
@@ -111,6 +116,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
 
   #data = {container, idx, node, name, nodes, proxy}
   # node._data = item in list
+  # container is either a node or a virtual-container, for rendering optimization
   proc-each: (name, data, key = null) ->
     list = @handler[name].list({
       name: data.name, node: data.node, views: @views
@@ -125,13 +131,14 @@ ldview.prototype = Object.create(Object.prototype) <<< do
       .map (n) ->
         k = getkey(n._data)
         if (typeof(k) != \object and !hash[k]) or (typeof(k) == \object and !(n._data in list))  =>
-          if n.parentNode => n.parentNode.removeChild n
+          data.container.removeChild n
           n._data = null
         else
           items.push k
         n
       .filter (._data)
     proxy-index = Array.from(data.container.childNodes).indexOf(data.proxy)
+    if proxy-index < 0 => proxy-index = data.container.childNodes.length
     ns = []
     for i from list.length - 1 to 0 by -1 =>
       n = list[i]
@@ -143,8 +150,9 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         idx = Array.from(data.container.childNodes).indexOf(node)
         expected-idx = proxy-index - (list.length - i)
         if idx != expected-idx =>
-          node.parentNode.removeChild(node)
+          data.container.removeChild node
           proxy-index = Array.from(data.container.childNodes).indexOf(data.proxy)
+          if proxy-index < 0 => proxy-index = data.container.childNodes.length
           expected-idx = proxy-index - (list.length - i)
           data.container.insertBefore node, data.container.childNodes[expected-idx + 1]
           proxy-index = proxy-index + 1
@@ -161,6 +169,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
     _ = ns.filter(->it)
     if key? => _ = _.filter -> getkey(it._obj.data) in key
     _.map (it,i) ~> @_render name, it._obj, i, @handler[name]
+    if data.container.update => data.container.update!
     data.nodes = ns
 
   get: (n) -> ((@map.nodes[n] or []).0 or {}).node
