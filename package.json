@@ -23,19 +23,19 @@
   },
   "devDependencies": {
     "livescript": "^1.6.0",
-    "template": "github:zbryikt/template#v2.3.13",
+    "@zbryikt/template": "^2.3.22",
     "deploy": "github:zbryikt/deploy",
     "uglify-js": "=3.2.0",
     "bootstrap": "^4.5.2",
-    "bootstrap.ldui": "github:loadingio/bootstrap.ldui",
-    "fedep": "^0.0.12",
-    "@loadingio/ldquery": "^2.0.0"
+    "@loadingio/bootstrap.ext": "^0.0.1",
+    "fedep": "^0.0.16",
+    "@loadingio/ldquery": "^2.2.0"
   },
   "frontendDependencies": {
     "root": "web/static/assets/lib",
     "modules": [
       "bootstrap",
-      "bootstrap.ldui",
+      "@loadingio/bootstrap.ext",
       "@loadingio/ldquery"
     ]
   }

@@ -1,10 +1,9 @@
 doctype html
-include @/bootstrap.ldui/dist/index.pug
-include /../../static/assets/lib/ldview/dev/index.pug
 html
+  include @/@loadingio/bootstrap.ext/dist/index.pug
   head
     +css("/assets/lib/bootstrap/main/css/bootstrap.min.css")
-    +css("/assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css")
+    +css("/assets/lib/@loadingio/bootstrap.ext/main/index.min.css")
     style(type="text/css"): :stylus
       .item
         width: 30%
