@@ -1,9 +1,5 @@
 # Change Logs
 
-## v0.2.5
-
- - fix bug: tweak execution order of host in ld-each initialization
-
 ## v0.2.4
 
  - support virtual container
