@@ -21,7 +21,7 @@ To bind the corresponding processor, create a new ldView object with a handler o
       root: document.body
       handler:
         # this example actually demonstrates how to do a if/else or switch/case statement.
-        plan: ({node, names, name, container, idx, nodes, ctx, local, views}) ->
+        plan: ({node, names, name, idx, ctx, local, views}) ->
           node.style.display = (if currentPlan in names => 'block' else 'none')
 
 view by default will be rendered after initialized, but you can render it again with `render` api:
