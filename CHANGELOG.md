@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.2.4 (upcoming)
+
+ - support virtual container
+
+
 ## v0.2.3
 
  - fix main entry point file name
