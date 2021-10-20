@@ -141,7 +141,7 @@
       }).filter(function(it){
         return !in$(it, eachesNodes);
       }).map(function(n){
-        var name, c, i, ret, that, p;
+        var name, c, i, ret, p, that;
         if (!n.parentNode) {
           return null;
         }
@@ -155,19 +155,19 @@
         c = n.parentNode;
         i = Array.from(c.childNodes).indexOf(n);
         ret = {
-          container: (that = this$.handler[name].host) ? new that({
-            root: c
-          }) : c,
           idx: i,
           node: n,
           name: name,
           nodes: []
         };
-        p = document.createComment(" " + this$.ld + "-each=" + ret.name + " ");
-        p._data = ret;
+        p = document.createComment(" " + this$.ld + "-each=" + name + " ");
         c.insertBefore(p, n);
-        ret.proxy = p;
         c.removeChild(n);
+        p._data = ret;
+        ret.proxy = p;
+        ret.container = (that = this$.handler[name].host) ? new that({
+          root: c
+        }) : c;
         return ret;
       }).filter(function(it){
         return it;

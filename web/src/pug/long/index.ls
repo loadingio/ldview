@@ -9,7 +9,7 @@ view = new ldview do
   root: '[ld-scope=ldview]'
   handler: do
     item: do
-      host: virtual-container-clustered
+      host: vscroll.fixed
       list: ->
         #start = Math.floor(Math.random!*data.length)
         #end = ( 1 + start + Math.floor((data.length - start) * Math.random!)) <? data.length

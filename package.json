@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "description": "view template micro framework",
-  "version": "0.2.3",
+  "version": "0.2.5",
   "files": [
     "dist/**/*"
   ],
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@loadingio/bootstrap.ext": "^0.0.1",
     "@loadingio/ldquery": "^2.2.0",
+    "@loadingio/vscroll": "^0.0.1",
     "@zbryikt/template": "^2.3.22",
     "bootstrap": "^4.5.2",
     "deploy": "github:zbryikt/deploy",
@@ -36,7 +37,8 @@
     "modules": [
       "bootstrap",
       "@loadingio/bootstrap.ext",
-      "@loadingio/ldquery"
+      "@loadingio/ldquery",
+      "@loadingio/vscroll"
     ]
   }
 }

@@ -5,7 +5,7 @@
   font-size: 2em;
   font-weight: 700;
 }
-</style></head><body><div class="w-1024 rwd mx-auto typeset heading-contrast my-4"><h1>ldView</h1><div class="text-muted">ldView is a library for simple DOM rendering and event handling.</div><hr><div ld-scope="ldview"><div class="d-flex justify-content-between flex-wrap" ld="list" style="overflow-y:scroll;height:300px"><div class="item rounded border shadow-sm my-4 px-4 py-2" ld-each="item"><div class="thumb" ld="thumb"></div><div class="title" ld="title"></div><div class="desc" ld="description"></div><div class="text-muted text-sm" ld="date"></div></div></div></div></div><script type="text/javascript" src="/assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="/assets/lib/ldview/dev/index.js"></script><script type="text/javascript" src="/js/container.js"></script><script>(function(it){
+</style></head><body><div class="w-1024 rwd mx-auto typeset heading-contrast my-4"><h1>ldView</h1><div class="text-muted">ldView is a library for simple DOM rendering and event handling.</div><hr><div ld-scope="ldview"><div class="d-flex justify-content-between flex-wrap" ld="list" style="overflow-y:scroll;height:300px"><div class="item rounded border shadow-sm my-4 px-4 py-2" ld-each="item"><div class="thumb" ld="thumb"></div><div class="title" ld="title"></div><div class="desc" ld="description"></div><div class="text-muted text-sm" ld="date"></div></div></div></div></div><script type="text/javascript" src="/assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="/assets/lib/@loadingio/vscroll/main/index.js"></script><script type="text/javascript" src="/assets/lib/ldview/dev/index.js"></script><script>(function(it){
   return it.apply({});
 })(function(){
   var ctx, data, view;
@@ -23,7 +23,7 @@
     root: '[ld-scope=ldview]',
     handler: {
       item: {
-        host: virtualContainerClustered,
+        host: vscroll.fixed,
         list: function(){
           return data;
         },

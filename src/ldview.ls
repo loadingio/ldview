@@ -76,15 +76,13 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         if !@handler[name] => return null
         c = n.parentNode
         i = Array.from(c.childNodes).indexOf(n)
-        ret = {
-          container: if @handler[name].host => new that(root: c) else c
-          idx: i, node: n, name: name, nodes: []
-        }
-        p = document.createComment " #{@ld}-each=#{ret.name} "
-        p._data = ret
+        ret = { idx: i, node: n, name: name, nodes: [] }
+        p = document.createComment " #{@ld}-each=#{name} "
         c.insertBefore p, n
-        ret.proxy = p
         c.removeChild n
+        p._data = ret
+        ret.proxy = p
+        ret.container = if @handler[name].host => new that(root: c) else c
         return ret
       .filter -> it
     # TODO
