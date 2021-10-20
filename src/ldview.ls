@@ -77,9 +77,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         c = n.parentNode
         i = Array.from(c.childNodes).indexOf(n)
         ret = {
-          # to use virtual-container ( defined in container.ls ):
-          # container: new virtual-container-clustered(root: c)
-          container: c
+          container: if @handler[name].host => new that(root: c) else c
           idx: i, node: n, name: name, nodes: []
         }
         p = document.createComment " #{@ld}-each=#{ret.name} "

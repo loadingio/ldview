@@ -115,6 +115,18 @@ For updating partial entries in `ld-each`, use following syntax with keys:
 
 Be sure to make sure keys here matches the return value of `key` accessor, in case of matching failure.
 
+You can also specify `host` parameter to tell ldview how to process child elements. For example, with a large list of data, we may want to use `@loadingio/vscroll` for virtual scrolling, which effectively reduces amount of elements in the DOM tree:
+
+    new ldview({
+      handler:
+        item:
+          host: vscroll.fixed
+          list: -> ...
+          ...
+    })
+
+where the `host` parameter should be a constructor that mimic basic DOM element interface. For more information, check `@loadingio/vscroll`.
+
 
 ## Scoping
 

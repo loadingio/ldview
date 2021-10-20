@@ -141,7 +141,7 @@
       }).filter(function(it){
         return !in$(it, eachesNodes);
       }).map(function(n){
-        var name, c, i, ret, p;
+        var name, c, i, ret, that, p;
         if (!n.parentNode) {
           return null;
         }
@@ -155,7 +155,9 @@
         c = n.parentNode;
         i = Array.from(c.childNodes).indexOf(n);
         ret = {
-          container: c,
+          container: (that = this$.handler[name].host) ? new that({
+            root: c
+          }) : c,
           idx: i,
           node: n,
           name: name,

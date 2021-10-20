@@ -1,6 +1,6 @@
 # Change Logs
 
-## v0.2.4 (upcoming)
+## v0.2.4
 
  - support virtual container
 
