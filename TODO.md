@@ -9,14 +9,13 @@ For example:
 
 ## Nested Views
 
-support nested views directly by `ld`. For example ( concept only, may need redesign ):
+nested local views are supported, but we should still think about supporting module system such as `@plotdb/block` directly. For example:
 
     template(ld="calendar-template") ...
     template(ld="todolist-template") ...
     div(ld="root")
       div(ld="calendar")
       div(ld="todolist")
-
 
     script:
       manager = new ldview.manager!

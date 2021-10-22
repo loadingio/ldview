@@ -176,11 +176,13 @@ ldview.prototype = Object.create(Object.prototype) <<< do
     if b =>
       if b.view =>
         init = ({node,local,data,ctx,ctxs,views}) ->
-          local._view = new ldview({} <<< b.view <<< {
+          local._view = new ldview({ctx: data} <<< b.view <<< {
             init-render: false, root: node, base-views: views
-            ctx: data, ctxs: (if ctxs => [ctx] ++ ctxs else [ctx])
+            ctxs: (if ctxs => [ctx] ++ ctxs else [ctx])
           })
-        handler = ({local,data}) -> local._view.setCtx(data); local._view.render!
+        handler = ({local,data}) ->
+          if !b.view.ctx => local._view.setCtx(data)
+          local._view.render!
       else
         init = b.init or null
         # handle is deprecated.
@@ -223,7 +225,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         if !Array.isArray(key) => key = [key]
       if @map.nodes[n] => @map.nodes[n].map (d,i) ~>
         d <<< {name: n, idx: i}
-        @_render n,d,i
+        @_render n, d, i, (if typeof(@handler[n]) == \object => {view: @handler[n]} else null)
       if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~> @proc-each n, it, key
 
     if names => ((if Array.isArray(names) => names else [names]) ++ args).map -> _ it

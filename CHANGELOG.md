@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.2.5
+
+ - support nested local view
+
+
 ## v0.2.4
 
  - support virtual container

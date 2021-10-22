@@ -1,0 +1,58 @@
+doctype html
+include @/@loadingio/bootstrap.ext/dist/index.pug
+include @static/assets/lib/ldview/dev/index.pug
+html
+  head
+    +css("/assets/lib/bootstrap/main/css/bootstrap.min.css")
+    +css("/assets/lib/@loadingio/bootstrap.ext/main/index.min.css")
+    style(type="text/css"): :stylus
+      .grid
+        display: grid
+        grid-template-columns: 8em 8em 1fr
+        gap: .5em
+
+  body
+    .w-1024.rwd.mx-auto.typeset.heading-contrast.my-4
+      .d-none(ld-scope): div(template): .card.mb-4.shadow-sm: .card-body: .grid
+        .mr-4 #[b name]#[div(ld="name")]
+        .mr-4 #[b score]#[div(ld="score")]
+
+      h3 View Scope Test
+      hr
+
+      h5 Global View
+      p name and score are filled by global handler.
+      .card.mb-4.shadow-sm: .card-body: .grid
+        .mr-4 #[b name]#[div(ld="name")]
+        .mr-4 #[b score]#[div(ld="score")]
+
+      .py-4: .row
+        .col-md
+          h5 Unscoped Local View
+          p unscoped local view, name filled by local handler but score filled by global handler.
+          .card.mb-4.shadow-sm: .card-body(ld="local-view"): .grid
+            .mr-4 #[b name]#[div(ld="name")]
+            .mr-4 #[b score]#[div(ld="score")]
+
+        .col-md
+          h5 Scoped Local View
+          p scoped local view, name and score filled by local handler. not affected by global handler.
+          .card.mb-4.shadow-sm: +scope().card-body(ld="local-view"): .grid
+            .mr-4 #[b name]#[div(ld="name")]
+            .mr-4 #[b score]#[div(ld="score")]
+
+        .col-md
+          h5 Template Local View
+          p template local view, html from template thus name / score not visible by global handler.
+          div(ld="template-view")
+
+      h5 List View
+      p list views by default are scoped so name and score are filled by local handler.
+      .mb-4.shadow-sm(style="display:grid;grid-template-columns:1fr 1fr")
+        .grid.border.p-3(ld-each="list")
+          .mr-4 #[b name]#[div(ld="name")]
+          .mr-4 #[b score]#[div(ld="score")]
+
+    +script("/assets/lib/@loadingio/ldquery/main/ldq.min.js")
+    +script("/assets/lib/ldview/dev/index.js")
+    script: include:lsc index.ls

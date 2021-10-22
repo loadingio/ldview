@@ -1,0 +1,76 @@
+<!DOCTYPE html><html><head><link rel="stylesheet" type="text/css" href="/assets/lib/bootstrap/main/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="/assets/lib/@loadingio/bootstrap.ext/main/index.min.css"><style type="text/css">.grid {
+  display: grid;
+  grid-template-columns: 8em 8em 1fr;
+  gap: 0.5em;
+}
+</style></head><body><div class="w-1024 rwd mx-auto typeset heading-contrast my-4"><div class="d-none" ld-scope><div template><div class="card mb-4 shadow-sm"><div class="card-body"><div class="grid"><div class="mr-4"><b>name</b><div ld="name"></div></div><div class="mr-4"><b>score</b><div ld="score"></div></div></div></div></div></div></div><h3>View Scope Test</h3><hr><h5>Global View</h5><p>name and score are filled by global handler.</p><div class="card mb-4 shadow-sm"><div class="card-body"><div class="grid"><div class="mr-4"><b>name</b><div ld="name"></div></div><div class="mr-4"><b>score</b><div ld="score"></div></div></div></div></div><div class="py-4"><div class="row"><div class="col-md"><h5>Unscoped Local View</h5><p>unscoped local view, name filled by local handler but score filled by global handler.</p><div class="card mb-4 shadow-sm"><div class="card-body" ld="local-view"><div class="grid"><div class="mr-4"><b>name</b><div ld="name"></div></div><div class="mr-4"><b>score</b><div ld="score"></div></div></div></div></div></div><div class="col-md"><h5>Scoped Local View</h5><p>scoped local view, name and score filled by local handler. not affected by global handler.</p><div class="card mb-4 shadow-sm"><div class="card-body" ld-scope="" ld="local-view"><div class="grid"><div class="mr-4"><b>name</b><div ld="name"></div></div><div class="mr-4"><b>score</b><div ld="score"></div></div></div></div></div></div><div class="col-md"><h5>Template Local View</h5><p>template local view, html from template thus name / score not visible by global handler.</p><div ld="template-view"></div></div></div></div><h5>List View</h5><p>list views by default are scoped so name and score are filled by local handler.</p><div class="mb-4 shadow-sm" style="display:grid;grid-template-columns:1fr 1fr"><div class="grid border p-3" ld-each="list"><div class="mr-4"><b>name</b><div ld="name"></div></div><div class="mr-4"><b>score</b><div ld="score"></div></div></div></div></div><script type="text/javascript" src="/assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="/assets/lib/ldview/dev/index.js"></script><script>var list, view;
+list = [
+  {
+    name: 'kirby',
+    score: 100
+  }, {
+    name: 'tommy',
+    score: 99
+  }, {
+    name: 'john',
+    score: 98
+  }, {
+    name: 'sean',
+    score: 97
+  }
+];
+view = new ldview({
+  root: document.body,
+  handler: {
+    list: {
+      list: function(){
+        return list;
+      },
+      view: {
+        text: {
+          name: function(arg$){
+            var ctx;
+            ctx = arg$.ctx;
+            console.log(ctx);
+            return ctx.name;
+          }
+        }
+      }
+    },
+    "local-view": {
+      ctx: {
+        name: 'local',
+        score: 69
+      },
+      text: {
+        name: function(arg$){
+          var ctx;
+          ctx = arg$.ctx;
+          return ctx.name;
+        }
+      }
+    },
+    "template-view": {
+      template: ld$.find('[template]', 0),
+      ctx: {
+        name: 'local',
+        score: 55
+      },
+      text: {
+        name: function(arg$){
+          var ctx;
+          ctx = arg$.ctx;
+          return ctx.name;
+        }
+      }
+    }
+  },
+  text: {
+    score: function(){
+      return "global";
+    },
+    name: function(){
+      return "global";
+    }
+  }
+});</script></body></html>

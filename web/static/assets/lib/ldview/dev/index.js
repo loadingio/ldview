@@ -339,14 +339,18 @@
           init = function(arg$){
             var node, local, data, ctx, ctxs, views, ref$;
             node = arg$.node, local = arg$.local, data = arg$.data, ctx = arg$.ctx, ctxs = arg$.ctxs, views = arg$.views;
-            return local._view = new ldview((ref$ = import$({}, b.view), ref$.initRender = false, ref$.root = node, ref$.baseViews = views, ref$.ctx = data, ref$.ctxs = ctxs
+            return local._view = new ldview((ref$ = import$({
+              ctx: data
+            }, b.view), ref$.initRender = false, ref$.root = node, ref$.baseViews = views, ref$.ctxs = ctxs
               ? [ctx].concat(ctxs)
               : [ctx], ref$));
           };
           handler = function(arg$){
             var local, data;
             local = arg$.local, data = arg$.data;
-            local._view.setCtx(data);
+            if (!b.view.ctx) {
+              local._view.setCtx(data);
+            }
             return local._view.render();
           };
         } else {
@@ -447,7 +451,9 @@
           this$.map.nodes[n].map(function(d, i){
             d.name = n;
             d.idx = i;
-            return this$._render(n, d, i);
+            return this$._render(n, d, i, typeof this$.handler[n] === 'object' ? {
+              view: this$.handler[n]
+            } : null);
           });
         }
         if (this$.map.eaches[n] && this$.handler[n]) {

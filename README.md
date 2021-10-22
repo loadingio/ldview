@@ -295,6 +295,29 @@ However, this requires a recursively defined DOM, which is only possible with `t
 In this case, the div named `template` will be cloned, attached and used as inner DOM of this view, recursively applied according to the return content of `list`. For a working example, check `web/src/pug/recurse/index.ls`.
 
 
+## Nested Local Views and Template
+
+It's possible to nest a local view in a selector:
+
+    new ldview({
+      handler: localView:
+        handler: ...
+    });
+
+However, nodes under this local view are still visble to its parent view. Use `ld-scope` to prevent accessing from parent view:
+
+    div(ld-scope,ld="localView"): ...
+
+
+Or, use `template` instead, which is by default scoped:
+
+    new ldview({
+      handler: localView:
+        template: ...
+        handler: ...
+    });
+
+check `web/src/pug/scope/index.ls` for a working example of local views.
 
 ## License
 
