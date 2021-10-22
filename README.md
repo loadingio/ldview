@@ -5,7 +5,9 @@ A simple, logic-less client side template engine.
 
 ## Usage
 
-ldView works by defining what elements are and how should they be processed. Instead of defining how html should be rendered inside DOM, we name elements and assign processors in JavaScript according to their names.
+ldView works by defining what elements are and how should they be processed - you can think of this as the concept of `JS Selector`, like `CSS Selector`.
+
+Instead of defining how html should be rendered inside DOM, we name elements and assign processors in JavaScript according to their names.
 
 For example, following code names three DIVs with "ld" attributes in "plan free", "plan month", and "plan year":
 
@@ -28,6 +30,8 @@ view by default will be rendered after initialized, but you can render it again 
 
     view.render!
 
+
+### loop with ld-each
 
 ldView supports basic looping too. Declare an element to be looped with "ld-each" attribute:
 
@@ -63,6 +67,7 @@ in list config, you can use all configs available for a generic items. for examp
       action: click: ({node, name, evt, idx}) -> ...
 
 
+### ld-each view
 
 While you can manually update DOM content in the handler, you can also recursively apply ldView to make the whole process simpler:
 
@@ -101,6 +106,10 @@ While you can use the same options in this view config as the ldview constructor
  - `ctx`
  - `ctxs`
 
+It's also possible to recursively apply ldview. For more information, check `Recursive Views and Template` section below.
+
+
+### partial rendering
 
 After initialization, You probably will want to update some elements instead of updating every node. Just pass target names into render function:
 
@@ -114,6 +123,9 @@ For updating partial entries in `ld-each`, use following syntax with keys:
     view.render {name: 'some-ld-each-name', key: [key1, key2, ... ]}
 
 Be sure to make sure keys here matches the return value of `key` accessor, in case of matching failure.
+
+
+### customize ld-each behavior / list optimization
 
 You can also specify `host` parameter to tell ldview how to process child elements. For example, with a large list of data, we may want to use `@loadingio/vscroll` for virtual scrolling, which effectively reduces amount of elements in the DOM tree:
 
