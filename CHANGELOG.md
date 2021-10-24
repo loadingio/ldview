@@ -1,5 +1,10 @@
 # Change Logs
 
+## v0.2.6
+
+ - dont insert ld-each comment if host provided since we don't need pivot from comment.
+
+
 ## v0.2.5
 
  - support nested local view

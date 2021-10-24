@@ -78,7 +78,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         i = Array.from(c.childNodes).indexOf(n)
         ret = { idx: i, node: n, name: name, nodes: [] }
         p = document.createComment " #{@ld}-each=#{name} "
-        c.insertBefore p, n
+        if !@handler[name].host => c.insertBefore p, n
         c.removeChild n
         p._data = ret
         ret.proxy = p

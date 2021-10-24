@@ -5,10 +5,12 @@
     opt == null && (opt = {});
     this.root = opt.root;
     this.childNodes = Array.from(this.root.childNodes);
+    console.log(this.childNodes);
     this.init();
     return this;
   };
   vscroll.fixed.prototype = (ref$ = Object.create(Object.prototype), ref$.init = function(){
+    console.log(this.childNodes.filter(function(n) { return n.nodeType != Node.ELEMENT_NODE}));
     var this$ = this;
     this.range = [1, 0];
     this.row = 1;
@@ -29,6 +31,7 @@
       height: 0
     };
   }, ref$.update = function(){
+    console.log(">", this.childNodes.filter(function(n) { return n.nodeType != Node.ELEMENT_NODE}));
     var ref$, ref1$, i$, to$, i, y, box;
     this.rbox = this.root.getBoundingClientRect();
     this.row = 0;
@@ -41,9 +44,13 @@
         this.root.insertBefore(this.childNodes[i], this.ph[1]);
       }
     }
+    console.log(">>", this.childNodes.map(function(n,i) { return [n,i];}).filter(function(n) { return n[0].nodeType != Node.ELEMENT_NODE}));
     y = undefined;
+    console.log(this.childNodes.length);
     for (i$ = 0, to$ = this.childNodes.length; i$ < to$; ++i$) {
       i = i$;
+      if(i == 2000) { console.log('here'); }
+      if(this.childNodes[i].nodeType != Node.ELEMENT_NODE) { console.log(this.childNodes[i], i); }
       box = this.childNodes[i].getBoundingClientRect();
       this.lineHeight = box.height;
       if (!(y != null)) {
@@ -55,6 +62,7 @@
         break;
       }
     }
+    console.log(">>>", this.childNodes.filter(function(n) { return n.nodeType != Node.ELEMENT_NODE}));
     for (i$ = 0, to$ = this.childNodes.length; i$ < to$; ++i$) {
       i = i$;
       box = this.childNodes[i].getBoundingClientRect();

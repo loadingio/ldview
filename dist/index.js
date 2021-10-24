@@ -161,7 +161,9 @@
           nodes: []
         };
         p = document.createComment(" " + this$.ld + "-each=" + name + " ");
-        c.insertBefore(p, n);
+        if (!this$.handler[name].host) {
+          c.insertBefore(p, n);
+        }
         c.removeChild(n);
         p._data = ret;
         ret.proxy = p;
