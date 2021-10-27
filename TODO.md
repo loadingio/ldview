@@ -1,3 +1,8 @@
+## Dependencies
+
+ - remove `@loadingio/ldquery` dependency.
+
+
 ## Nested Rendering
 
 with multiple `ld-each`, we may want to update based on a chain of keys into specific item of current view.
