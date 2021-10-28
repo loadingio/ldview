@@ -315,7 +315,7 @@
         });
       }
       _.map(function(it, i){
-        return this$._render(name, it._obj, i, this$.handler[name]);
+        return this$._render(name, it._obj, i, this$.handler[name], true);
       });
       if (data.container.update) {
         data.container.update();
@@ -330,8 +330,8 @@
         return it.node;
       });
     },
-    _render: function(n, d, i, b){
-      var init, handler, text, attr, style, action, ref$, k, v, f, e, results$ = [];
+    _render: function(n, d, i, b, e){
+      var init, handler, text, attr, style, action, ref$, k, v, f, results$ = [];
       d.ctx = this.ctx;
       d.context = this.ctx;
       d.ctxs = this.ctxs;
@@ -350,7 +350,7 @@
           handler = function(arg$){
             var local, data;
             local = arg$.local, data = arg$.data;
-            if (!b.view.ctx) {
+            if (e) {
               local._view.setCtx(data);
             }
             return local._view.render();
@@ -455,7 +455,7 @@
             d.idx = i;
             return this$._render(n, d, i, typeof this$.handler[n] === 'object' ? {
               view: this$.handler[n]
-            } : null);
+            } : null, false);
           });
         }
         if (this$.map.eaches[n] && this$.handler[n]) {

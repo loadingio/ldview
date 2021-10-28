@@ -164,14 +164,18 @@ ldview.prototype = Object.create(Object.prototype) <<< do
       ns.splice 0, 0, node
     _ = ns.filter(->it)
     if key? => _ = _.filter -> getkey(it._obj.data) in key
-    _.map (it,i) ~> @_render name, it._obj, i, @handler[name]
+    _.map (it,i) ~> @_render name, it._obj, i, @handler[name], true
     if data.container.update => data.container.update!
     data.nodes = ns
 
   get: (n) -> ((@map.nodes[n] or []).0 or {}).node
   getAll: (n) -> (@map.nodes[n] or []).map -> it.node
+  # n: node
+  # d: data
+  # i: index. not a reliable information, since for `ld` it's order from query. deprecate it and remove?
   # b: base handling class. will be local object for repeat items, otherwise is null
-  _render: (n,d,i,b) ->
+  # e: true if from each
+  _render: (n,d,i,b,e) ->
     d <<< {ctx: @ctx, context: @ctx, ctxs: @ctxs, views: @views}
     if b =>
       if b.view =>
@@ -181,7 +185,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
             ctxs: (if ctxs => [ctx] ++ ctxs else [ctx])
           })
         handler = ({local,data}) ->
-          if !b.view.ctx => local._view.setCtx(data)
+          if e => local._view.setCtx(data)
           local._view.render!
       else
         init = b.init or null
@@ -225,7 +229,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         if !Array.isArray(key) => key = [key]
       if @map.nodes[n] => @map.nodes[n].map (d,i) ~>
         d <<< {name: n, idx: i}
-        @_render n, d, i, (if typeof(@handler[n]) == \object => {view: @handler[n]} else null)
+        @_render n, d, i, (if typeof(@handler[n]) == \object => {view: @handler[n]} else null), false
       if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~> @proc-each n, it, key
 
     if names => ((if Array.isArray(names) => names else [names]) ++ args).map -> _ it
