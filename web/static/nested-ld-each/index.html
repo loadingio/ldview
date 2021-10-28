@@ -1,0 +1,61 @@
+<!DOCTYPE html><html><head><link rel="stylesheet" type="text/css" href="/assets/lib/bootstrap/main/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="/assets/lib/@loadingio/bootstrap.ext/main/index.min.css"><style type="text/css">.item {
+  width: 30%;
+}
+.item .title {
+  font-size: 2em;
+  font-weight: 700;
+}
+</style></head><body><div class="w-1024 rwd mx-auto typeset heading-contrast my-4"><h1>ldView</h1><div class="text-muted">ldView is a library for simple DOM rendering and event handling.</div><hr><div ld-scope="ldview"><div class="d-flex justify-content-between flex-wrap" ld="list"><div class="item rounded border bg-light my-2 p-4" ld-each="item"><div class="title" ld="title"></div><div class="desc" ld="description"></div><div class="p-2 bg-dark text-white" ld-each="tag"></div></div></div></div></div><script type="text/javascript" src="/assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="/assets/lib/ldview/dev/index.js"></script><script>(function(it){
+  return it.apply({});
+})(function(){
+  var ctx, data, view;
+  ctx = {
+    time: new Date().toLocaleString()
+  };
+  data = [10, 11, 12, 13, 14, 15].map(function(it){
+    return {
+      title: "title " + it,
+      description: Math.random().toString(36).substring(2),
+      list: [2, 3].map(function(){
+        return Math.ceil(10 * Math.random());
+      })
+    };
+  });
+  return view = new ldView({
+    ctx: ctx,
+    root: '[ld-scope=ldview]',
+    handler: {
+      item: {
+        list: function(){
+          return data;
+        },
+        view: {
+          handler: {
+            title: function(arg$){
+              var node, ctx, ctxs;
+              node = arg$.node, ctx = arg$.ctx, ctxs = arg$.ctxs;
+              return node.innerText = ctx.title;
+            },
+            description: function(arg$){
+              var node, ctx, ctxs;
+              node = arg$.node, ctx = arg$.ctx, ctxs = arg$.ctxs;
+              return node.innerText = ctx.description;
+            },
+            tag: {
+              list: function(arg$){
+                var ctx;
+                ctx = arg$.ctx;
+                return ctx.list;
+              },
+              text: function(arg$){
+                var data;
+                data = arg$.data;
+                return data;
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+});</script></body></html>
