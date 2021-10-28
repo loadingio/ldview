@@ -1,5 +1,13 @@
 # Change Logs
 
+## v0.2.7
+
+ - fix bug: nested ld-eachs are not proper scoped.
+   - to proper fix this we may need a breaking changes with upgraded ldquery dependency.
+   - we workaround this for now and expect to remove the workaround in next major release.
+ - fix bug ( caused by 0.2.5 ): context for nested views from ld-each doesn't updated by its data
+
+
 ## v0.2.6
 
  - dont insert ld-each comment if host provided since we don't need pivot from comment.
