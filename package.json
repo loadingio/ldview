@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@loadingio/bootstrap.ext": "^0.0.1",
-    "@loadingio/ldquery": "^2.2.0",
+    "@loadingio/ldquery": "^2.2.1",
     "@loadingio/vscroll": "^0.0.1",
     "@zbryikt/template": "^2.3.22",
     "bootstrap": "^4.5.2",
