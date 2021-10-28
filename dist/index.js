@@ -141,12 +141,16 @@
       }).filter(function(it){
         return !in$(it, eachesNodes);
       }).map(function(n){
-        var name, c, i, ret, p, that;
+        var e, name, c, i, ret, p, that;
         if (!n.parentNode) {
           return null;
         }
-        if (ld$.parent(n.parentNode, "*[" + this$.ld + "-each]", document)) {
-          return null;
+        try {
+          if (ld$.parent(n.parentNode, "*[" + this$.ld + "-each]")) {
+            return null;
+          }
+        } catch (e$) {
+          e = e$;
         }
         name = n.getAttribute(this$.ld + "-each");
         if (!this$.handler[name]) {

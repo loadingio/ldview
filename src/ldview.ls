@@ -71,7 +71,13 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         #if !p => return null
         if !n.parentNode => return null
 
-        if ld$.parent(n.parentNode, "*[#{@ld}-each]", document) => return null
+        # there is a bug in ldquery <= 2.2.0 which may cause exception when calling ld$.parent without boundary node.
+        # but we have to remove boundary node for this check to work
+        # so we catch this and simply let it go, since there is no such parent if the error happens.
+        # this try catch can be removed in future major release as a breaking change
+        try
+          if ld$.parent(n.parentNode, "*[#{@ld}-each]") => return null
+        catch e
         name = n.getAttribute("#{@ld}-each")
         if !@handler[name] => return null
         c = n.parentNode
