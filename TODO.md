@@ -1,3 +1,28 @@
+## Cascade Script Sheet
+
+ - load multiple configs, e.g.,
+
+    new ldview({
+      root: "body"
+      defs: [cfg1, cfg2, cfg3, ...]
+    });
+
+or, with identifiers:
+
+    new ldview({
+      root: "body"
+      defs: {cfg1, cfg2, cfg3, ...}
+    });
+
+or for hybrid model:
+
+    new ldview({
+      root: "body"
+      defs: [cfg1, cfg2, cfg3, ...]
+      scopes: {cfg4, cfg5, ...}
+    });
+
+
 ## Dependencies
 
  - remove `@loadingio/ldquery` dependency.
