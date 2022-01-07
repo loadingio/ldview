@@ -1,3 +1,13 @@
+## promise-based initialization
+
+we should enable users to wait until init resolved if it return a promise:
+
+  v = new ldview do
+    root: document.body
+    init: foo: -> Promise.resolve!
+    handler: foo: -> ... # only run after `init.foo` resolves.
+
+
 ## Cascade Script Sheet
 
  - load multiple configs, e.g.,
