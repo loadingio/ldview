@@ -10,19 +10,20 @@ view = new ldview do
     list:
       list: -> list
       view:
-        text: name: ({ctx}) ->
-          console.log ctx
-          ctx.name
+        text:
+          name: ({ctx}) -> ctx.name
+          score: ({ctx}) -> ctx.score
     "local-view":
-      ctx: {name: \local, score: 69}
+      ctx: {name: \local, score: "69 ( local )"}
       text:
         name: ({ctx}) -> ctx.name
     "template-view":
       template: ld$.find('[template]',0)
-      ctx: {name: \local, score: 55}
+      ctx: {name: \template, score: "55 ( template )"}
       text:
         name: ({ctx}) -> ctx.name
+        score: ({ctx}) -> ctx.score
   text:
-    score: -> "global"
     name: -> "global"
+    score: -> "0 ( global )"
 
