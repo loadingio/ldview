@@ -1,5 +1,11 @@
 # Change Logs
 
+## v1.0.0
+
+ - upgrade dev modules
+ - release with compact directory structure
+
+
 ## v0.2.8
 
  - use minimized dist file as main / browser default file
