@@ -2,7 +2,8 @@
   "author": "zbryikt",
   "name": "ldview",
   "license": "MIT",
-  "main": "dist/index.js",
+  "browser": "dist/index.min.js",
+  "main": "dist/index.min.js",
   "description": "view template micro framework",
   "version": "0.2.7",
   "files": [
