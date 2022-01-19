@@ -1,5 +1,12 @@
 # Change Logs
 
+## v0.2.8
+
+ - use minimized dist file as main / browser default file
+ - further minimize minimized file
+ - upgrade modules
+
+
 ## v0.2.7
 
  - fix bug: nested ld-eachs are not proper scoped.
