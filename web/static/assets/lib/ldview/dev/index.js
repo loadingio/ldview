@@ -222,8 +222,8 @@
         }];
       }
     },
-    procEach: function(name, data, key){
-      var list, getkey, hash, items, nodes, proxyIndex, ns, i$, i, n, j, node, idx, expectedIdx, _, this$ = this;
+    procEach: function(name, data, key, initOnly){
+      var list, getkey, hash, items, nodes, proxyIndex, ns, i$, i, n, j, node, idx, expectedIdx, _, ps, this$ = this;
       key == null && (key = null);
       list = this.handler[name].list({
         name: data.name,
@@ -318,13 +318,14 @@
           return in$(getkey(it._obj.data), key);
         });
       }
-      _.map(function(it, i){
-        return this$._render(name, it._obj, i, this$.handler[name], true);
+      ps = _.map(function(it, i){
+        return this$._render(name, it._obj, i, this$.handler[name], true, initOnly);
       });
       if (data.container.update) {
         data.container.update();
       }
-      return data.nodes = ns;
+      data.nodes = ns;
+      return ps;
     },
     get: function(n){
       return ((this.map.nodes[n] || [])[0] || {}).node;
@@ -334,7 +335,7 @@
         return it.node;
       });
     },
-    _render: function(n, d, i, b, e){
+    _render: function(n, d, i, b, e, initOnly){
       var init, handler, text, attr, style, action, ref$, k, v, f, results$ = [];
       d.ctx = this.ctx;
       d.context = this.ctx;
@@ -372,8 +373,12 @@
       }
       try {
         if (init && !(d.inited || (d.inited = {}))[n]) {
-          init(d);
-          d.inited[n] = true;
+          d.inited[n] = Promise.resolve(init(d)).then(function(){
+            return d.inited[n] = true;
+          });
+        }
+        if (initOnly) {
+          return Promise.resolve((d.inited || (d.inited = {}))[n]);
         }
         if (handler) {
           handler(d);
@@ -437,16 +442,31 @@
       }
       return obj.nodes.splice(idx, 1);
     },
-    render: function(names){
-      var args, res$, i$, to$, _, ref$, len$, k, this$ = this;
+    init: function(names){
+      var args, res$, i$, to$;
       res$ = [];
       for (i$ = 1, to$ = arguments.length; i$ < to$; ++i$) {
         res$.push(arguments[i$]);
       }
       args = res$;
+      return this._prerender('init', names, args);
+    },
+    render: function(names){
+      var args, res$, i$, to$;
+      res$ = [];
+      for (i$ = 1, to$ = arguments.length; i$ < to$; ++i$) {
+        res$.push(arguments[i$]);
+      }
+      args = res$;
+      return this._prerender('render', names, args);
+    },
+    _prerender: function(type, names, args){
+      var initOnly, _, ps, k, this$ = this;
+      initOnly = type === 'init';
       this.fire('beforeRender');
       _ = function(n){
-        var ref$, key;
+        var ps, ref$, key;
+        ps = [];
         if (typeof n === 'object') {
           ref$ = [n.name, n.key], n = ref$[0], key = ref$[1];
           if (!Array.isArray(key)) {
@@ -454,33 +474,37 @@
           }
         }
         if (this$.map.nodes[n]) {
-          this$.map.nodes[n].map(function(d, i){
+          ps = ps.concat(this$.map.nodes[n].map(function(d, i){
             d.name = n;
             d.idx = i;
             return this$._render(n, d, i, typeof this$.handler[n] === 'object' ? {
               view: this$.handler[n]
-            } : null, false);
-          });
+            } : null, false, initOnly);
+          }));
         }
         if (this$.map.eaches[n] && this$.handler[n]) {
-          return this$.map.eaches[n].map(function(it){
-            return this$.procEach(n, it, key);
-          });
+          ps = ps.concat(this$.map.eaches[n].map(function(it){
+            return this$.procEach(n, it, key, initOnly);
+          }));
         }
+        return Promise.all(ps);
       };
-      if (names) {
-        ((Array.isArray(names)
+      ps = names
+        ? ((Array.isArray(names)
           ? names
           : [names]).concat(args)).map(function(it){
           return _(it);
-        });
-      } else {
-        for (i$ = 0, len$ = (ref$ = this.names).length; i$ < len$; ++i$) {
-          k = ref$[i$];
-          _(k);
-        }
-      }
-      return this.fire('afterRender');
+        })
+        : (function(){
+          var i$, ref$, len$, results$ = [];
+          for (i$ = 0, len$ = (ref$ = this.names).length; i$ < len$; ++i$) {
+            k = ref$[i$];
+            results$.push(_(k));
+          }
+          return results$;
+        }.call(this));
+      this.fire('afterRender');
+      return Promise.all(ps);
     },
     setContext: function(v){
       console.warn('[ldview] `setContext` is deprecated. use `setCtx` instead.');

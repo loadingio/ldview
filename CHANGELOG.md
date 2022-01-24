@@ -1,5 +1,11 @@
 # Change Logs
 
+## v1.1.0
+
+ - support promise in `init` ( but not yet support render after init resolve )
+ - add `view.init`
+
+
 ## v1.0.0
 
  - upgrade dev modules

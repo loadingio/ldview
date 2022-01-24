@@ -228,6 +228,7 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
    - function: ({node}) which node is the element matched with this node-name.
  * view.getAll("node-name") - return a list of nodes in the name of node-name.
  * view.get("node-name") - return the first node with the name of node-name. shorthand for getAll(...)[0]
+ * view.init(cfg) - return a Promise that resolves after all init resolves.
  * view.render(cfg)
  * view.setCtx(v) - set a custom context object for using in handler functions.
    - `setContext` is used before `0.1.0`. use `setCtx` now.

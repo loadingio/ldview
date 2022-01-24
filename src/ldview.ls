@@ -119,7 +119,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
   #data = {container, idx, node, name, nodes, proxy}
   # node._data = item in list
   # container is either a node or a virtual-container, for rendering optimization
-  proc-each: (name, data, key = null) ->
+  proc-each: (name, data, key = null, init-only) ->
     list = @handler[name].list({
       name: data.name, node: data.node, views: @views
       context: @ctx, ctx: @ctx, ctxs: @ctxs
@@ -170,9 +170,10 @@ ldview.prototype = Object.create(Object.prototype) <<< do
       ns.splice 0, 0, node
     _ = ns.filter(->it)
     if key? => _ = _.filter -> getkey(it._obj.data) in key
-    _.map (it,i) ~> @_render name, it._obj, i, @handler[name], true
+    ps = _.map (it,i) ~> @_render name, it._obj, i, @handler[name], true, init-only
     if data.container.update => data.container.update!
     data.nodes = ns
+    return ps
 
   get: (n) -> ((@map.nodes[n] or []).0 or {}).node
   getAll: (n) -> (@map.nodes[n] or []).map -> it.node
@@ -181,7 +182,8 @@ ldview.prototype = Object.create(Object.prototype) <<< do
   # i: index. not a reliable information, since for `ld` it's order from query. deprecate it and remove?
   # b: base handling class. will be local object for repeat items, otherwise is null
   # e: true if from each
-  _render: (n,d,i,b,e) ->
+  # init-only: init only
+  _render: (n,d,i,b,e, init-only) ->
     d <<< {ctx: @ctx, context: @ctx, ctxs: @ctxs, views: @views}
     if b =>
       if b.view =>
@@ -203,7 +205,9 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         action = b.action or {}
     else [init,handler,attr,style,text,action] = [@initer[n], @handler[n], @attr[n], @style[n], @text[n], @action]
     try
-      if init and !d.{}inited[n] => init(d); d.inited[n] = true
+      if init and !d.{}inited[n] => d.inited[n] = Promise.resolve(init(d)).then(->d.inited[n] = true)
+      if init-only => return Promise.resolve(d.{}inited[n])
+      # TODO render after inited ( p resolved )
       if handler => handler(d)
       if text => d.node.textContent = if typeof(text) == \function => text(d) else text
       if attr => for k,v of (attr(d) or {}) => d.node.setAttribute(k,v)
@@ -226,21 +230,27 @@ ldview.prototype = Object.create(Object.prototype) <<< do
     if node and !idx => idx = obj.nodes.indexOf(node)
     return obj.nodes.splice idx, 1
 
-  render: (names, ...args) ->
-
+  init: (names, ...args) -> @_prerender \init, names, args
+  render: (names, ...args) -> @_prerender \render, names, args
+  _prerender: (type, names, args) ->
+    init-only = (type == \init)
     @fire \beforeRender
     _ = (n) ~>
+      ps = []
       if typeof(n) == \object =>
         [n,key] = [n.name, n.key]
         if !Array.isArray(key) => key = [key]
-      if @map.nodes[n] => @map.nodes[n].map (d,i) ~>
+      if @map.nodes[n] => ps ++= @map.nodes[n].map (d,i) ~>
         d <<< {name: n, idx: i}
-        @_render n, d, i, (if typeof(@handler[n]) == \object => {view: @handler[n]} else null), false
-      if @map.eaches[n] and @handler[n] => @map.eaches[n].map ~> @proc-each n, it, key
+        @_render n, d, i, (if typeof(@handler[n]) == \object => {view: @handler[n]} else null), false, init-only
+      if @map.eaches[n] and @handler[n] =>
+        ps ++= @map.eaches[n].map ~> @proc-each n, it, key, init-only
+      Promise.all ps
 
-    if names => ((if Array.isArray(names) => names else [names]) ++ args).map -> _ it
+    ps = if names => ((if Array.isArray(names) => names else [names]) ++ args).map -> _ it
     else for k in @names => _(k)
     @fire \afterRender
+    return Promise.all(ps)
 
   set-context: (v) ->
     console.warn '[ldview] `setContext` is deprecated. use `setCtx` instead.'
