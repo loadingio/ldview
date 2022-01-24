@@ -1,9 +1,9 @@
 doctype html
 html
-  include @/@loadingio/bootstrap.ext/dist/index.pug
+  include @/@loadingio/bootstrap.ext/index.pug
   include @static/assets/lib/ldview/dev/index.pug
   head
-    +css("/assets/lib/bootstrap/main/css/bootstrap.min.css")
+    +css("/assets/lib/bootstrap/main/dist/css/bootstrap.min.css")
     +css("/assets/lib/@loadingio/bootstrap.ext/main/index.min.css")
     style(type="text/css"): :stylus
       .item
@@ -24,7 +24,7 @@ html
             .title(ld="title")
             .desc(ld="description")
             .text-muted.text-sm(ld="date")
-    +script("/assets/lib/@loadingio/ldquery/main/ldq.min.js")
+    +script("/assets/lib/@loadingio/ldquery/main/index.min.js")
     +script("/assets/lib/@loadingio/vscroll/main/index.js")
     +script("/assets/lib/ldview/dev/index.js")
-    script: include:lsc index.ls
+    script(type="module"): include:lsc index.ls

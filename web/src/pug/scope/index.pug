@@ -1,9 +1,9 @@
 doctype html
-include @/@loadingio/bootstrap.ext/dist/index.pug
+include @/@loadingio/bootstrap.ext/index.pug
 include @static/assets/lib/ldview/dev/index.pug
 html
   head
-    +css("/assets/lib/bootstrap/main/css/bootstrap.min.css")
+    +css("/assets/lib/bootstrap/main/dist/css/bootstrap.min.css")
     +css("/assets/lib/@loadingio/bootstrap.ext/main/index.min.css")
     style(type="text/css"): :stylus
       .grid
@@ -53,6 +53,6 @@ html
           .mr-4 #[b name]#[div(ld="name")]
           .mr-4 #[b score]#[div(ld="score")]
 
-    +script("/assets/lib/@loadingio/ldquery/main/ldq.min.js")
+    +script("/assets/lib/@loadingio/ldquery/main/index.min.js")
     +script("/assets/lib/ldview/dev/index.js")
-    script: include:lsc index.ls
+    script(type="module"): include:lsc index.ls
