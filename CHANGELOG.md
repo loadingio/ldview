@@ -1,5 +1,12 @@
 # Change Logs
 
+## v1.1.1
+
+ - fix bug: proc-each should return Promise, instead of list of Promises
+ - fix bug: ensure correct initialization order by waiting for init Promise to resolve before render when `init-render` is enabled.
+ - fix bug: nested view initialization should return Promise returned by its own init function call.
+
+
 ## v1.1.0
 
  - support promise in `init` ( but not yet support render after init resolve )

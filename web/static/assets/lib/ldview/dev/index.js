@@ -8,7 +8,7 @@
     });
   };
   ldview = function(opt){
-    var names, i$, ref$, k, v, len$, list, j$, len1$, it, res$;
+    var names, i$, ref$, k, v, len$, list, j$, len1$, it, res$, this$ = this;
     opt == null && (opt = {});
     this.evtHandler = {};
     this.ctxs = opt.ctxs || null;
@@ -56,7 +56,9 @@
     }
     this.names = res$;
     if (this.initRender) {
-      this.render();
+      this.init().then(function(){
+        return this$.render();
+      });
     }
     return this;
     function fn$(){
@@ -325,7 +327,7 @@
         data.container.update();
       }
       data.nodes = ns;
-      return ps;
+      return Promise.all(ps);
     },
     get: function(n){
       return ((this.map.nodes[n] || [])[0] || {}).node;
@@ -346,11 +348,12 @@
           init = function(arg$){
             var node, local, data, ctx, ctxs, views, ref$;
             node = arg$.node, local = arg$.local, data = arg$.data, ctx = arg$.ctx, ctxs = arg$.ctxs, views = arg$.views;
-            return local._view = new ldview((ref$ = import$({
+            local._view = new ldview((ref$ = import$({
               ctx: data
             }, b.view), ref$.initRender = false, ref$.root = node, ref$.baseViews = views, ref$.ctxs = ctxs
               ? [ctx].concat(ctxs)
               : [ctx], ref$));
+            return local._view.init();
           };
           handler = function(arg$){
             var local, data;

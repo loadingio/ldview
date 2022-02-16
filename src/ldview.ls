@@ -36,7 +36,9 @@ ldview = (opt = {}) ->
   for list in ([[k for k of @initer]] ++ [[k for k of @attr]] ++ [[k for k of @style]] ++ [[k for k of @text]] ++ [[k for k of @handler]] ++ [v for k,v of @action].map (it) -> [k for k of it]) =>
     for it in list => names[it] = true
   @names = [k for k of names]
-  if @init-render => @render!
+  # TODO we don't yet support proxise.once in @init.
+  # Thus, to be able to wait until init, we have to set init-render to false.
+  if @init-render => @init!then ~> @render!
   @
 
 ldview.prototype = Object.create(Object.prototype) <<< do
@@ -173,7 +175,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
     ps = _.map (it,i) ~> @_render name, it._obj, i, @handler[name], true, init-only
     if data.container.update => data.container.update!
     data.nodes = ns
-    return ps
+    return Promise.all(ps)
 
   get: (n) -> ((@map.nodes[n] or []).0 or {}).node
   getAll: (n) -> (@map.nodes[n] or []).map -> it.node
@@ -192,6 +194,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
             init-render: false, root: node, base-views: views
             ctxs: (if ctxs => [ctx] ++ ctxs else [ctx])
           })
+          local._view.init!
         handler = ({local,data}) ->
           if e => local._view.setCtx(data)
           local._view.render!
