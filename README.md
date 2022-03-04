@@ -320,6 +320,7 @@ Or, use `template` instead, which is by default scoped:
 
 check `web/src/pug/scope/index.ls` for a working example of local views.
 
+
 ## License
 
 MIT
