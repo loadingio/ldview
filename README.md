@@ -295,6 +295,12 @@ However, this requires a recursively defined DOM, which is only possible with `t
 
 In this case, the div named `template` will be cloned, attached and used as inner DOM of this view, recursively applied according to the return content of `list`. For a working example, check `web/src/pug/recurse/index.ls`.
 
+Also please note that `ctx` should not be defined in the reused `cfg`, otherwise it may cause infinite recursive calls, leading to maximal callstack exceeded exception. Following is a correct example:
+
+    {ctx: mydata} <<< (cfg = {}) <<< {
+      handler: myselector: view: cfg
+    }
+
 
 ## Nested Local Views and Template
 

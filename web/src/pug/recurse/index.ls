@@ -21,10 +21,11 @@ data = {name: 1, child: [
 ]}
 
 
-rview = new ldview (cfg = {}) <<< do
-  ctx: data, root: root
+rview = new ldview({ctx: data} <<< ((cfg = {}) <<< do
+  root: root
   template: template
   text: name: ({ctx}) -> ctx.name
   handler: item:
     list: ({ctx}) -> ctx.child or []
     view: cfg
+))
