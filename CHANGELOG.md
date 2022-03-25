@@ -1,5 +1,11 @@
 # Change Logs
 
+## v2.0.0 (TBD)
+
+ - remove deprecated `ldView`
+ - only update one of module or window
+
+
 ## v1.1.1
 
  - fix bug: proc-each should return Promise, instead of list of Promises
