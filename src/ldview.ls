@@ -211,6 +211,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
       if init and !d.{}inited[n] => d.inited[n] = Promise.resolve(init(d)).then(->d.inited[n] = true)
       if init-only => return Promise.resolve(d.{}inited[n])
       # TODO render after inited ( p resolved )
+      # TODO also, we may want to wait handler ( for its sub-init be resolved )
       if handler => handler(d)
       if text => d.node.textContent = if typeof(text) == \function => text(d) else text
       if attr => for k,v of (attr(d) or {}) => d.node.setAttribute(k,v)
