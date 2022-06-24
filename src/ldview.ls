@@ -4,10 +4,10 @@ ldview = (opt = {}) ->
   @evt-handler = {}
 
   # configs only for internal usage
-  @ctxs = opt.ctxs or null
+  @_ctxs = opt.ctxs or null
   @views = [@] ++ (opt.base-views or [])
 
-  @ctx = opt.context or opt.ctx or null
+  @_ctx = opt.context or opt.ctx or null
   if opt.context => console.warn '[ldview] `context` is deprecated. use `ctx` instead.'
   @attr = opt.attr or {}
   @style = opt.style or {}
@@ -124,7 +124,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
   proc-each: (name, data, key = null, init-only) ->
     list = @handler[name].list({
       name: data.name, node: data.node, views: @views
-      context: @ctx, ctx: @ctx, ctxs: @ctxs
+      context: @_ctx, ctx: @_ctx, ctxs: @_ctxs
     }) or []
     getkey = @handler[name].key
     hash = {}
@@ -186,7 +186,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
   # e: true if from each
   # init-only: init only
   _render: (n,d,i,b,e, init-only) ->
-    d <<< {ctx: @ctx, context: @ctx, ctxs: @ctxs, views: @views}
+    d <<< {ctx: @_ctx, context: @_ctx, ctxs: @_ctxs, views: @views}
     if b =>
       if b.view =>
         init = ({node,local,data,ctx,ctxs,views}) ->
@@ -196,7 +196,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
           })
           local._view.init!
         handler = ({local,data}) ->
-          if e => local._view.setCtx(data)
+          if e => local._view.ctx(data)
           local._view.render!
       else
         init = b.init or null
@@ -257,9 +257,13 @@ ldview.prototype = Object.create(Object.prototype) <<< do
     return Promise.all(ps)
 
   set-context: (v) ->
-    console.warn '[ldview] `setContext` is deprecated. use `setCtx` instead.'
-    @ctx = v
-  set-ctx: (v) -> @ctx = v
+    console.warn '[ldview] `setContext` is deprecated. use `ctx(...)` instead.'
+    @_ctx = v
+  # deprecate `setCtx`. use `ctx` now.
+  set-ctx: (v) ->
+    console.warn '[ldview] `setCtx` is deprecated. use `ctx(...)` instead.'
+    @_ctx = v
+  ctx: (v) -> if v? => @_ctx = v else @_ctx
 
   on: (n, cb) -> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v

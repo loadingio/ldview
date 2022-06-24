@@ -11,9 +11,9 @@
     var names, i$, ref$, k, v, len$, list, j$, len1$, it, res$, this$ = this;
     opt == null && (opt = {});
     this.evtHandler = {};
-    this.ctxs = opt.ctxs || null;
+    this._ctxs = opt.ctxs || null;
     this.views = [this].concat(opt.baseViews || []);
-    this.ctx = opt.context || opt.ctx || null;
+    this._ctx = opt.context || opt.ctx || null;
     if (opt.context) {
       console.warn('[ldview] `context` is deprecated. use `ctx` instead.');
     }
@@ -231,9 +231,9 @@
         name: data.name,
         node: data.node,
         views: this.views,
-        context: this.ctx,
-        ctx: this.ctx,
-        ctxs: this.ctxs
+        context: this._ctx,
+        ctx: this._ctx,
+        ctxs: this._ctxs
       }) || [];
       getkey = this.handler[name].key;
       hash = {};
@@ -339,9 +339,9 @@
     },
     _render: function(n, d, i, b, e, initOnly){
       var init, handler, text, attr, style, action, ref$, k, v, f, results$ = [];
-      d.ctx = this.ctx;
-      d.context = this.ctx;
-      d.ctxs = this.ctxs;
+      d.ctx = this._ctx;
+      d.context = this._ctx;
+      d.ctxs = this._ctxs;
       d.views = this.views;
       if (b) {
         if (b.view) {
@@ -359,7 +359,7 @@
             var local, data;
             local = arg$.local, data = arg$.data;
             if (e) {
-              local._view.setCtx(data);
+              local._view.ctx(data);
             }
             return local._view.render();
           };
@@ -510,11 +510,19 @@
       return Promise.all(ps);
     },
     setContext: function(v){
-      console.warn('[ldview] `setContext` is deprecated. use `setCtx` instead.');
-      return this.ctx = v;
+      console.warn('[ldview] `setContext` is deprecated. use `ctx(...)` instead.');
+      return this._ctx = v;
     },
     setCtx: function(v){
-      return this.ctx = v;
+      console.warn('[ldview] `setCtx` is deprecated. use `ctx(...)` instead.');
+      return this._ctx = v;
+    },
+    ctx: function(v){
+      if (v != null) {
+        return this._ctx = v;
+      } else {
+        return this._ctx;
+      }
     },
     on: function(n, cb){
       var ref$;
