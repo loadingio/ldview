@@ -230,8 +230,10 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
  * view.get("node-name") - return the first node with the name of node-name. shorthand for getAll(...)[0]
  * view.init(cfg) - return a Promise that resolves after all init resolves.
  * view.render(cfg)
- * view.setCtx(v) - set a custom context object for using in handler functions.
-   - `setContext` is used before `0.1.0`. use `setCtx` now.
+ * view.ctx(v) - set a custom context object for using in handler functions.
+   - return current context if `v` is not defined.
+   - `setCtx()` is used before `2.0.0`. use `ctx()` now.
+   - `setContext()` is used before `0.1.0`. use `ctx()` now.
  * view.bindEachNode({container, name, node, idx})
    - ldView keeps track of nodes once they are created as in ld-each.
      If for some reason we need a node to be removed from ld-each list but use in other place ( e.g.,

@@ -4,6 +4,11 @@
 
  - remove deprecated `ldView`
  - only update one of module or window
+ - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
+
+## v1.2.0
+
+ - add `ctx()` function to replace `setCtx()`.
 
 
 ## v1.1.1
