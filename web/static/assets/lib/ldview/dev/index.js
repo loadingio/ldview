@@ -518,7 +518,7 @@
       return this._ctx = v;
     },
     ctx: function(v){
-      if (v != null) {
+      if (arguments.length) {
         return this._ctx = v;
       } else {
         return this._ctx;

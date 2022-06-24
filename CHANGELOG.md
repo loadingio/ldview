@@ -6,6 +6,11 @@
  - only update one of module or window
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
+## v1.2.1
+
+ - fix bug: `ctx()` should test argument's existence with `arguments.length`
+
+
 ## v1.2.0
 
  - add `ctx()` function to replace `setCtx()`.

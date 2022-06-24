@@ -263,7 +263,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
   set-ctx: (v) ->
     console.warn '[ldview] `setCtx` is deprecated. use `ctx(...)` instead.'
     @_ctx = v
-  ctx: (v) -> if v? => @_ctx = v else @_ctx
+  ctx: (v) -> if arguments.length => @_ctx = v else @_ctx
 
   on: (n, cb) -> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
