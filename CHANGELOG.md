@@ -6,6 +6,11 @@
  - only update one of module or window
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
+## v1.3.0
+
+ - support functional `ctx` parameter for returning customized context especially useful for nested views.
+
+
 ## v1.2.1
 
  - fix bug: `ctx()` should test argument's existence with `arguments.length`

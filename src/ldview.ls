@@ -29,6 +29,7 @@ ldview = (opt = {}) ->
   if (@template = opt.template) =>
     @root.textContent = ''
     @root.appendChild @template.cloneNode(true)
+  if typeof(@_ctx) == \function => @_ctx = @_ctx {node: @root, ctxs: @_ctxs, views: @views}
 
   @update!
 

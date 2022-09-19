@@ -41,6 +41,13 @@
       this.root.textContent = '';
       this.root.appendChild(this.template.cloneNode(true));
     }
+    if (typeof this._ctx === 'function') {
+      this._ctx = this._ctx({
+        node: this.root,
+        ctxs: this._ctxs,
+        views: this.views
+      });
+    }
     this.update();
     names = {};
     for (i$ = 0, len$ = (ref$ = [(fn$.call(this))].concat([(fn1$.call(this))], [(fn2$.call(this))], [(fn3$.call(this))], [(fn4$.call(this))], (fn5$.call(this)).map(fn6$))).length; i$ < len$; ++i$) {
