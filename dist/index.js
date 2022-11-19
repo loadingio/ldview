@@ -363,11 +363,17 @@
             return local._view.init();
           };
           handler = function(arg$){
-            var local, data;
-            local = arg$.local, data = arg$.data;
+            var local, data, ctx, ctxs;
+            local = arg$.local, data = arg$.data, ctx = arg$.ctx, ctxs = arg$.ctxs;
+            if (n === 'prj' && e) {
+              console.log("blah: ", data.blah);
+            }
             if (e) {
               local._view.ctx(data);
             }
+            local._view.ctxs(ctxs
+              ? [ctx].concat(ctxs)
+              : [ctx]);
             return local._view.render();
           };
         } else {
@@ -529,6 +535,13 @@
         return this._ctx = v;
       } else {
         return this._ctx;
+      }
+    },
+    ctxs: function(v){
+      if (arguments.length) {
+        return this._ctxs = v;
+      } else {
+        return this._ctxs;
       }
     },
     on: function(n, cb){

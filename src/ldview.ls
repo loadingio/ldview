@@ -29,6 +29,7 @@ ldview = (opt = {}) ->
   if (@template = opt.template) =>
     @root.textContent = ''
     @root.appendChild @template.cloneNode(true)
+  # TODO should we keep the original function and update _ctx everytime when render?
   if typeof(@_ctx) == \function => @_ctx = @_ctx {node: @root, ctxs: @_ctxs, views: @views}
 
   @update!
@@ -196,8 +197,10 @@ ldview.prototype = Object.create(Object.prototype) <<< do
             ctxs: (if ctxs => [ctx] ++ ctxs else [ctx])
           })
           local._view.init!
-        handler = ({local,data}) ->
+        handler = ({local,data,ctx,ctxs}) ->
+          if n == \prj and e => console.log "blah: ", data.blah
           if e => local._view.ctx(data)
+          local._view.ctxs(if ctxs => [ctx] ++ ctxs else [ctx])
           local._view.render!
       else
         init = b.init or null
@@ -265,6 +268,9 @@ ldview.prototype = Object.create(Object.prototype) <<< do
     console.warn '[ldview] `setCtx` is deprecated. use `ctx(...)` instead.'
     @_ctx = v
   ctx: (v) -> if arguments.length => @_ctx = v else @_ctx
+
+  # internal api. prevent using this outside lib
+  ctxs: (v) -> if arguments.length => @_ctxs = v else @_ctxs
 
   on: (n, cb) -> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
