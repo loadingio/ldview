@@ -6,6 +6,14 @@
  - only update one of module or window
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
+
+## v1.3.1
+
+ - fix bug: subview rendering should update `ctxs`
+ - add internal `ctxs` api for updating `ctxs`
+ - upgrade dependencies
+
+
 ## v1.3.0
 
  - support functional `ctx` parameter for returning customized context especially useful for nested views.
