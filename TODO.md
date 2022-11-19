@@ -1,3 +1,8 @@
+## ctx function in nested view won't be run again
+
+ctx function in nested view is run only once when inited. This can be intended but somewhat we may need documentation or re-evaluation of design.
+
+
 ## promise-based initialization
 
 we should enable users to wait until init resolved if it return a promise:
