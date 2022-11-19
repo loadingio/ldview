@@ -7,6 +7,11 @@
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
 
+## v1.3.2
+
+ - remove unnecessary log
+
+
 ## v1.3.1
 
  - fix bug: subview rendering should update `ctxs`

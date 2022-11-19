@@ -365,9 +365,6 @@
           handler = function(arg$){
             var local, data, ctx, ctxs;
             local = arg$.local, data = arg$.data, ctx = arg$.ctx, ctxs = arg$.ctxs;
-            if (n === 'prj' && e) {
-              console.log("blah: ", data.blah);
-            }
             if (e) {
               local._view.ctx(data);
             }

@@ -198,7 +198,6 @@ ldview.prototype = Object.create(Object.prototype) <<< do
           })
           local._view.init!
         handler = ({local,data,ctx,ctxs}) ->
-          if n == \prj and e => console.log "blah: ", data.blah
           if e => local._view.ctx(data)
           local._view.ctxs(if ctxs => [ctx] ++ ctxs else [ctx])
           local._view.render!
