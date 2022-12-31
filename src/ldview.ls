@@ -184,7 +184,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
   # n: node
   # d: data
   # i: index. not a reliable information, since for `ld` it's order from query. deprecate it and remove?
-  # b: base handling class. will be local object for repeat items, otherwise is null
+  # b: base handling class. will be local object for repeat items (or, for recursed handler), otherwise is null
   # e: true if from each
   # init-only: init only
   _render: (n,d,i,b,e, init-only) ->
