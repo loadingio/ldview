@@ -41,13 +41,6 @@
       this.root.textContent = '';
       this.root.appendChild(this.template.cloneNode(true));
     }
-    if (typeof this._ctx === 'function') {
-      this._ctx = this._ctx({
-        node: this.root,
-        ctxs: this._ctxs,
-        views: this.views
-      });
-    }
     this.update();
     names = {};
     for (i$ = 0, len$ = (ref$ = [(fn$.call(this))].concat([(fn1$.call(this))], [(fn2$.call(this))], [(fn3$.call(this))], [(fn4$.call(this))], (fn5$.call(this)).map(fn6$))).length; i$ < len$; ++i$) {
@@ -232,14 +225,21 @@
       }
     },
     procEach: function(name, data, key, initOnly){
-      var list, getkey, hash, items, nodes, proxyIndex, ns, i$, i, n, j, node, idx, expectedIdx, _, ps, this$ = this;
+      var c, list, getkey, hash, items, nodes, proxyIndex, ns, i$, i, n, j, node, idx, expectedIdx, _, ps, this$ = this;
       key == null && (key = null);
+      c = typeof this._ctx === 'function'
+        ? this._ctx({
+          node: this.root,
+          ctxs: this._ctxs,
+          views: this.views
+        })
+        : this._ctx;
       list = this.handler[name].list({
         name: data.name,
         node: data.node,
         views: this.views,
-        context: this._ctx,
-        ctx: this._ctx,
+        context: c,
+        ctx: c,
         ctxs: this._ctxs
       }) || [];
       getkey = this.handler[name].key;
@@ -345,9 +345,16 @@
       });
     },
     _render: function(n, d, i, b, e, initOnly){
-      var init, handler, text, attr, style, action, ref$, k, v, f, results$ = [];
-      d.ctx = this._ctx;
-      d.context = this._ctx;
+      var c, init, handler, text, attr, style, action, ref$, k, v, f, results$ = [];
+      c = typeof this._ctx === 'function'
+        ? c = this._ctx({
+          node: this.root,
+          ctxs: this._ctxs,
+          views: this.views
+        })
+        : this._ctx;
+      d.ctx = c;
+      d.context = c;
       d.ctxs = this._ctxs;
       d.views = this.views;
       if (b) {

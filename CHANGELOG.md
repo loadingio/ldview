@@ -7,6 +7,11 @@
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
 
+## v1.4.0
+
+ - by default update ctx via functional ctx before rendering
+
+
 ## v1.3.2
 
  - remove unnecessary log

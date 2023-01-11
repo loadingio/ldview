@@ -29,8 +29,12 @@ ldview = (opt = {}) ->
   if (@template = opt.template) =>
     @root.textContent = ''
     @root.appendChild @template.cloneNode(true)
-  # TODO should we keep the original function and update _ctx everytime when render?
-  if typeof(@_ctx) == \function => @_ctx = @_ctx {node: @root, ctxs: @_ctxs, views: @views}
+  # if _ctx is a function, ctx will  updated each time before render now.
+  # we probably may want to add a config to disable this behavior in the future, such as:
+  # if opt.ctx-only-init and typeof(@_ctx) == \function =>
+  #   @_ctx = @_ctx {node: @root, ctxs: @_ctxs, views: @views}
+
+
 
   @update!
 
@@ -124,9 +128,11 @@ ldview.prototype = Object.create(Object.prototype) <<< do
   # node._data = item in list
   # container is either a node or a virtual-container, for rendering optimization
   proc-each: (name, data, key = null, init-only) ->
+    c = if typeof(@_ctx) == \function => @_ctx {node: @root, ctxs: @_ctxs, views: @views} else @_ctx
     list = @handler[name].list({
       name: data.name, node: data.node, views: @views
-      context: @_ctx, ctx: @_ctx, ctxs: @_ctxs
+      context: c, ctx: c
+      ctxs: @_ctxs
     }) or []
     getkey = @handler[name].key
     hash = {}
@@ -188,7 +194,8 @@ ldview.prototype = Object.create(Object.prototype) <<< do
   # e: true if from each
   # init-only: init only
   _render: (n,d,i,b,e, init-only) ->
-    d <<< {ctx: @_ctx, context: @_ctx, ctxs: @_ctxs, views: @views}
+    c = if typeof(@_ctx) == \function => c = @_ctx {node: @root, ctxs: @_ctxs, views: @views} else @_ctx
+    d <<< {ctx: c, context: c, ctxs: @_ctxs, views: @views}
     if b =>
       if b.view =>
         init = ({node,local,data,ctx,ctxs,views}) ->
