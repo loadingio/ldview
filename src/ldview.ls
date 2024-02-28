@@ -135,27 +135,48 @@ ldview.prototype = Object.create(Object.prototype) <<< do
       ctxs: @_ctxs
     }) or []
     getkey = @handler[name].key
-    hash = {}
+    keycount = {}
     items = []
-    if getkey => list.map(-> hash[getkey(it)] = it) else getkey = (->it)
+    usekey = !!getkey
+    if !getkey => getkey = (->it)
+    else
+      list.map (n) ->
+        if typeof(k = getkey n) == \object => return
+        keycount[k] = (keycount[k] or 0) + 1
     nodes = data.nodes
       .filter(->it)
       .map (n) ->
         k = getkey(n._data)
-        if (typeof(k) != \object and !hash[k]) or (typeof(k) == \object and !(n._data in list))  =>
+        if (typeof(k) != \object and !usekey) # plain text without key - dup is possible
+        or (typeof(k) == \object and !(n._data in list)) # obj: match obj directly
+        or (usekey and !keycount[k]) => # has getkey with nonobj key, but not exists
           data.container.removeChild n
           n._data = null
         else
           items.push k
+          # has getkey with nonobj key, and exist.
+          # reduce same key count to balance between data and node
+          if usekey and keycount[k] => keycount[k]--
         n
       .filter (._data)
     proxy-index = Array.from(data.container.childNodes).indexOf(data.proxy)
     if proxy-index < 0 => proxy-index = data.container.childNodes.length
     ns = []
+    # we are going to create nodes based on keys. however, we won't want
+    # to create nodes for duplicated keys if `getkey` is provided and key isn't an obj.
+    # thus we track if a key is dup by `consumed` hash.
+    consumed = {}
     for i from list.length - 1 to 0 by -1 =>
       n = list[i]
-      if (j = items.indexOf(getkey(n))) >= 0 =>
+      k = getkey(n)
+      if usekey and typeof(k) != \object => consumed[k] = (consumed[k] or 0) + 1
+      if (j = items.indexOf(k)) >= 0 =>
         node = nodes[j]
+        # we consume matched entries in items and nodes
+        # so we can still locate duplicated entries in following iterations.
+        # without this, we will always find the exact same node for the same key from different objects.
+        items.splice j, 1
+        nodes.splice j, 1
         node._data = n
         if !node._obj => node._obj = {node, name, idx: i, local: {}}
         node._obj.data = n
@@ -170,6 +191,8 @@ ldview.prototype = Object.create(Object.prototype) <<< do
           proxy-index = proxy-index + 1
         ns.splice 0, 0, node
         continue
+      # this can prevent dup key from creating new node.
+      if usekey and (typeof(key) != \object) => if consumed[key] > 1 => continue
       node = data.node.cloneNode true
       node._data = n
       node._obj = {node, name, data: n, idx: i, local: {}}

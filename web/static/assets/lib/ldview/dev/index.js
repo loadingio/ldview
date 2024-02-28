@@ -225,7 +225,7 @@
       }
     },
     procEach: function(name, data, key, initOnly){
-      var c, list, getkey, hash, items, nodes, proxyIndex, ns, i$, i, n, j, node, idx, expectedIdx, _, ps, this$ = this;
+      var c, list, getkey, keycount, items, usekey, nodes, proxyIndex, ns, consumed, i$, i, n, k, j, node, idx, expectedIdx, _, ps, this$ = this;
       key == null && (key = null);
       c = typeof this._ctx === 'function'
         ? this._ctx({
@@ -243,27 +243,35 @@
         ctxs: this._ctxs
       }) || [];
       getkey = this.handler[name].key;
-      hash = {};
+      keycount = {};
       items = [];
-      if (getkey) {
-        list.map(function(it){
-          return hash[getkey(it)] = it;
-        });
-      } else {
+      usekey = !!getkey;
+      if (!getkey) {
         getkey = function(it){
           return it;
         };
+      } else {
+        list.map(function(n){
+          var k;
+          if (typeof (k = getkey(n)) === 'object') {
+            return;
+          }
+          return keycount[k] = (keycount[k] || 0) + 1;
+        });
       }
       nodes = data.nodes.filter(function(it){
         return it;
       }).map(function(n){
         var k;
         k = getkey(n._data);
-        if ((typeof k !== 'object' && !hash[k]) || (typeof k === 'object' && !in$(n._data, list))) {
+        if ((typeof k !== 'object' && !usekey) || (typeof k === 'object' && !in$(n._data, list)) || (usekey && !keycount[k])) {
           data.container.removeChild(n);
           n._data = null;
         } else {
           items.push(k);
+          if (usekey && keycount[k]) {
+            keycount[k]--;
+          }
         }
         return n;
       }).filter(function(it){
@@ -274,11 +282,18 @@
         proxyIndex = data.container.childNodes.length;
       }
       ns = [];
+      consumed = {};
       for (i$ = list.length - 1; i$ >= 0; --i$) {
         i = i$;
         n = list[i];
-        if ((j = items.indexOf(getkey(n))) >= 0) {
+        k = getkey(n);
+        if (usekey && typeof k !== 'object') {
+          consumed[k] = (consumed[k] || 0) + 1;
+        }
+        if ((j = items.indexOf(k)) >= 0) {
           node = nodes[j];
+          items.splice(j, 1);
+          nodes.splice(j, 1);
           node._data = n;
           if (!node._obj) {
             node._obj = {
@@ -303,6 +318,11 @@
           }
           ns.splice(0, 0, node);
           continue;
+        }
+        if (usekey && typeof key !== 'object') {
+          if (consumed[key] > 1) {
+            continue;
+          }
         }
         node = data.node.cloneNode(true);
         node._data = n;

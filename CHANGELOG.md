@@ -7,6 +7,12 @@
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
 
+## v1.4.1
+
+ - fix bug: duplicated keys in `ld-each` `list` may leave orphan nodes undeleted.
+ - npm audit fix
+
+
 ## v1.4.0
 
  - by default update ctx via functional ctx before rendering

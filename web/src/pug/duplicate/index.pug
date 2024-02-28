@@ -12,11 +12,14 @@ html
       p we expect `1,B` to be removed, or even don't be added.
 
       .d-flex.g-4.flex-column
-        .d-flex.g-4.border.rounded.p-4.shadow(ld-each="item")
-          div(ld="key")
-          div(ld="name")
+        div
+          .d-flex.g-4.border.rounded.p-4.shadow(ld-each="item")
+            div(ld="key")
+            div(ld="name")
+        .d-flex.g-2: div(ld-each="str")
 
     +script("/assets/lib/@loadingio/ldquery/main/index.min.js")
+    +script("/assets/lib/@loadingio/debounce.js/main/index.min.js")
     +script("/assets/lib/ldview/dev/index.js")
     script(type="module"): include:lsc index.ls
 
