@@ -154,7 +154,6 @@ hashfile({type: "css", name: name, files: urls, src: locals.filename});
 pug_html = pug_html + "\u003Clink" + (" rel=\"stylesheet\" type=\"text\u002Fcss\""+pug_attr("href", fn + libLoader._v, true, true)) + "\u003E";
 }
 };
-pug_html = pug_html + "\u003Chtml\u003E";
 if (!(libLoader || scriptLoader)) {
 if(!scriptLoader) { scriptLoader = {url: {}, config: {}}; }
 if(!decache) { decache = (version? "?v=" + version : ""); }
@@ -242,13 +241,13 @@ prefix = function(n) { return (!n?[]:(Array.isArray(n)?n:[n])).map(function(it){
 
 
 
-pug_html = pug_html + "\u003Chead\u003E";
+pug_html = pug_html + "\u003Chtml\u003E\u003Chead\u003E";
 pug_mixins["css"]("/assets/lib/bootstrap/main/dist/css/bootstrap.min.css");
 pug_mixins["css"]("/assets/lib/@loadingio/bootstrap.ext/main/index.min.css");
-pug_html = pug_html + "\u003C\u002Fhead\u003E\u003Cbody\u003E\u003Cdiv class=\"w-1024 rwd mx-auto typeset heading-contrast my-4\"\u003E\u003Ch1\u003EldView\u003C\u002Fh1\u003E\u003Cdiv class=\"text-muted\"\u003EldView is a library for simple DOM rendering and event handling.\u003C\u002Fdiv\u003E\u003Chr\u003E\u003Cdiv ld=\"error\"\u003E\u003C\u002Fdiv\u003E\u003Cdiv\u003E\u003Cdiv ld-each=\"item\"\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+pug_html = pug_html + "\u003C\u002Fhead\u003E\u003Cbody\u003E\u003Cdiv class=\"p-5\"\u003E\u003Cp\u003Efirst items `1,A` and `1,B` are added, with dup key `1`. Then only `1,A` is kept.\u003C\u002Fp\u003E\u003Cp\u003Ewe expect `1,B` to be removed, or even don't be added.\u003C\u002Fp\u003E\u003Cdiv class=\"d-flex g-4 flex-column\"\u003E\u003Cdiv class=\"d-flex g-4 border rounded p-4 shadow\" ld-each=\"item\"\u003E\u003Cdiv ld=\"key\"\u003E\u003C\u002Fdiv\u003E\u003Cdiv ld=\"name\"\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
 pug_mixins["script"]("/assets/lib/@loadingio/ldquery/main/index.min.js");
 pug_mixins["script"]("/assets/lib/ldview/dev/index.js");
-pug_html = pug_html + "\u003Cscript type=\"module\"\u003Evar items,view;items=[1,2,3,4,5,6,7,8,9,10].map(function(e){return{idx:e,value:Math.random()}});view=new ldview({root:document.body,handler:{error:function(){},item:{list:function(){return items},key:function(e){return e.idx},view:{handler:{\"@\":function(e){var n;n=e.ctx;console.log(n.value);return node.innerText=n.value}}}}}});\u003C\u002Fscript\u003E\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";
+pug_html = pug_html + "\u003Cscript type=\"module\"\u003Evar view,list;view=new ldview({root:document.body,initRender:false,handler:{item:{list:function(){return list},key:function(e){return e.key},view:{text:{key:function(e){var n;n=e.ctx;return n.key},name:function(e){var n;n=e.ctx;return n.name}}}}}});list=[{key:1,name:\"A\"},{key:1,name:\"B\"}];view.render();list=[{key:1,name:\"A\"}];view.render();\u003C\u002Fscript\u003E\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";
     }.call(this, "Array" in locals_for_with ?
         locals_for_with.Array :
         typeof Array !== 'undefined' ? Array : undefined, "JSON" in locals_for_with ?
