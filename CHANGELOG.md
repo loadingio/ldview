@@ -7,7 +7,7 @@
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
 
-## v1.4.2 (upcoming)
+## v1.4.2
 
  - fix bug: incorrect variable used in checking `consumed`.
 
