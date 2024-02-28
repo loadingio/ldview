@@ -319,8 +319,8 @@
           ns.splice(0, 0, node);
           continue;
         }
-        if (usekey && typeof key !== 'object') {
-          if (consumed[key] > 1) {
+        if (usekey && typeof k !== 'object') {
+          if (consumed[k] > 1) {
             continue;
           }
         }

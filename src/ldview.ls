@@ -192,7 +192,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         ns.splice 0, 0, node
         continue
       # this can prevent dup key from creating new node.
-      if usekey and (typeof(key) != \object) => if consumed[key] > 1 => continue
+      if usekey and (typeof(k) != \object) => if consumed[k] > 1 => continue
       node = data.node.cloneNode true
       node._data = n
       node._obj = {node, name, data: n, idx: i, local: {}}

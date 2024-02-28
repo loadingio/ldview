@@ -7,6 +7,11 @@
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
 
+## v1.4.2 (upcoming)
+
+ - fix bug: incorrect variable used in checking `consumed`.
+
+
 ## v1.4.1
 
  - fix bug: duplicated keys in `ld-each` `list` may leave orphan nodes undeleted.
