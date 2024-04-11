@@ -151,14 +151,14 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         or (typeof(k) == \object and !(n._data in list)) # obj: match obj directly
         or (usekey and !keycount[k]) => # has getkey with nonobj key, but not exists
           data.container.removeChild n
-          n._data = null
+          delete n._data
         else
           items.push k
           # has getkey with nonobj key, and exist.
           # reduce same key count to balance between data and node
           if usekey and keycount[k] => keycount[k]--
         n
-      .filter (._data)
+      .filter -> it._data?
     proxy-index = Array.from(data.container.childNodes).indexOf(data.proxy)
     if proxy-index < 0 => proxy-index = data.container.childNodes.length
     ns = []

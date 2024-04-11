@@ -266,7 +266,7 @@
         k = getkey(n._data);
         if ((typeof k !== 'object' && !usekey) || (typeof k === 'object' && !in$(n._data, list)) || (usekey && !keycount[k])) {
           data.container.removeChild(n);
-          n._data = null;
+          delete n._data;
         } else {
           items.push(k);
           if (usekey && keycount[k]) {
@@ -275,7 +275,7 @@
         }
         return n;
       }).filter(function(it){
-        return it._data;
+        return it._data != null;
       });
       proxyIndex = Array.from(data.container.childNodes).indexOf(data.proxy);
       if (proxyIndex < 0) {

@@ -7,6 +7,11 @@
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
 
+## v1.4.3
+
+ - fix bug: `''` treated as undefined and thus can't be mapped to a node, causing node not found issue.
+
+
 ## v1.4.2
 
  - fix bug: incorrect variable used in checking `consumed`.
