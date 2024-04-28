@@ -278,16 +278,27 @@ When handlers for each ld node is called, it contains following parameters:
 
 It's possible to define view recursively - simply refer a view config in itself:
 
-    (cfg = {}) <<< handler: someDirective: {
+    cfg = {}
+    cfg <<< handler: someDirective: {
       list: -> ...
       view: cfg
     }
 
-However, this requires a recursively defined DOM, which is only possible with `template` option:
+Please note that the first `cfg = {}` is necessary since cfg won't be available for recursive definition when we initialize it, such as:
+
+    cfg = handler: someDirective: {
+      list: -> ...
+      # incorrect: cfg is not available here.
+      view: cfg
+    }
+
+
+Additionally, we need also a recursively defined DOM, which is only possible with `template` option:
 
     div(data-name="template"): ...
     script(type="text/livescript").
-      new ldview (cfg = {}) <<< {
+      cfg = {}
+      new ldview cfg <<< {
         template: document.querySelector('[data-name=template]')
         handler: someDirective: {
           list: ({ctx}) -> ...
@@ -299,9 +310,31 @@ In this case, the div named `template` will be cloned, attached and used as inne
 
 Also please note that `ctx` should not be defined in the reused `cfg`, otherwise it may cause infinite recursive calls, leading to maximal callstack exceeded exception. Following is a correct example:
 
-    {ctx: mydata} <<< (cfg = {}) <<< {
+    cfg = {}
+    {ctx: mydata} <<< cfg <<< {
       handler: myselector: view: cfg
     }
+
+A workable, complete example with both JS and HTML (written in Pug) is as below:
+
+    //- HTML
+    .template #[div(ld="title")]#[div(ld-each="child")]
+    #root
+
+    # JS - DATA
+    ctx = name: "root", list: [
+    * name: "entry1", list: [{name: "sub entry 1.1"}]
+    * name: "entry2", list: [{name: "sub entry 2.1"}, {name: "sub entry 2.2"}]
+    * name: "entry3", list: [{name: "sub entry 3.1"}, {name: "sub entry 3.2"}]
+    ]
+    # JS - View Code
+    cfg = {}
+    cfg <<<
+      text: title: ({ctx}) -> ctx.name
+      handler: child:
+        view: cfg
+        list: ({ctx}) -> ctx.list or []
+    view = new ldview({root: root, ctx: -> list} <<< cfg)
 
 
 ## Nested Local Views and Template
