@@ -10,6 +10,9 @@
   ldview = function(opt){
     var names, i$, ref$, k, v, len$, list, j$, len1$, it, res$, this$ = this;
     opt == null && (opt = {});
+    if (arguments.length > 1) {
+      opt = ldview.merge.apply(ldview, Array.from(arguments));
+    }
     this.evtHandler = {};
     this._ctxs = opt.ctxs || null;
     this.views = [this].concat(opt.baseViews || []);
@@ -586,6 +589,31 @@
       return results$;
     }
   });
+  ldview.merge = function(){
+    return ldview._merge.apply(ldview, [{}].concat(Array.from(arguments)));
+  };
+  ldview._merge = function(){
+    var list, a, i$, len$, b, k;
+    list = Array.from(arguments);
+    if (list.length < 2) {
+      return list[0];
+    }
+    a = list.splice(0, 1)[0];
+    for (i$ = 0, len$ = list.length; i$ < len$; ++i$) {
+      b = list[i$];
+      for (k in b) {
+        if (!b[k]) {
+          continue;
+        }
+        if (typeof b[k] === 'object' && b[k].constructor === Object) {
+          ldview._merge(a[k] || (a[k] = {}), b[k]);
+        } else {
+          a[k] = b[k];
+        }
+      }
+    }
+    return a;
+  };
   if (typeof module != 'undefined' && module !== null) {
     module.exports = ldview;
   }

@@ -30,6 +30,12 @@ view by default will be rendered after initialized, but you can render it again 
 
     view.render!
 
+You can merge multiple configs by constructing ldview with multiple object:
+
+    view = new ldview({root: document.body}, {handler: {...}}, {text: {...}});
+
+You can also use `ldview.merge` to manually combine the view configuration object. see `Class API` for mode detail.
+
 
 ### loop with ld-each
 
@@ -360,6 +366,11 @@ Or, use `template` instead, which is by default scoped:
     });
 
 check `web/src/pug/scope/index.ls` for a working example of local views.
+
+
+## Class API
+
+ - `merge(a, b, ...)`: merge view config objects and returns the merged result.
 
 
 ## License

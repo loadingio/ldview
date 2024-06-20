@@ -7,6 +7,12 @@
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
 
+## v1.5.0
+
+ - add `merge` class api
+ - support multiple configuration in constructor arguments.
+
+
 ## v1.4.3
 
  - fix bug: `''` treated as undefined and thus can't be mapped to a node, causing node not found issue.

@@ -1,6 +1,7 @@
 set-evt-handler = (d,k,f) -> d.node.addEventListener k, (evt) -> f({evt} <<< d)
 
 ldview = (opt = {}) ->
+  if arguments.length > 1 => opt = ldview.merge.apply ldview, Array.from(arguments)
   @evt-handler = {}
 
   # configs only for internal usage
@@ -303,6 +304,18 @@ ldview.prototype = Object.create(Object.prototype) <<< do
 
   on: (n, cb) -> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
+
+ldview.merge = -> ldview._merge.apply ldview, ([{}] ++ Array.from(arguments))
+ldview._merge = ->
+  list = Array.from(arguments)
+  if list.length < 2 => return list.0
+  a = list.splice 0, 1 .0
+  for b in list => for k of b
+    if !b[k] => continue
+    if typeof(b[k]) == \object and b[k].constructor == Object =>
+      ldview._merge (a[k] or (a[k] = {})), b[k]
+    else a[k] = b[k]
+  return a
 
 if module? => module.exports = ldview
 if window? => window.ldView = window.ldview = ldview
