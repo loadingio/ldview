@@ -5,6 +5,12 @@ A simple, logic-less client side template engine.
 
 ## Usage
 
+Install via npm:
+
+    npm install --save ldview @loadingio/ldquery
+
+and include both modules in your page. Note that ldview depends on `@loadingio/ldquery`
+
 ldView works by defining what elements are and how should they be processed - you can think of this as the concept of `JS Selector`, like `CSS Selector`.
 
 Instead of defining how html should be rendered inside DOM, we name elements and assign processors in JavaScript according to their names.

@@ -22,10 +22,12 @@
     "start": "npx server -r web -o true",
     "deploy": "npx deploy web/static"
   },
+  "dependencies": {
+    "@loadingio/ldquery": "^3.0.6"
+  },
   "devDependencies": {
     "@loadingio/bootstrap.ext": "^0.0.11",
     "@loadingio/debounce.js": "^1.0.1",
-    "@loadingio/ldquery": "^3.0.5",
     "@loadingio/vscroll": "^0.0.11",
     "@zbryikt/deploy": "^0.0.4",
     "@zbryikt/template": "^2.3.46",
