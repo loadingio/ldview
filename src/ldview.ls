@@ -34,9 +34,6 @@ ldview = (opt = {}) ->
   # we probably may want to add a config to disable this behavior in the future, such as:
   # if opt.ctx-only-init and typeof(@_ctx) == \function =>
   #   @_ctx = @_ctx {node: @root, ctxs: @_ctxs, views: @views}
-
-
-
   @update!
 
   names = {}
