@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ldview + ldreactive Integration Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+    .demo { margin: 30px 0; padding: 20px; border: 2px solid #007bff; border-radius: 8px; }
+    .demo h2 { margin-top: 0; color: #007bff; }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    button:hover { background: #0056b3; }
+    .output {
+      margin: 15px 0;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    .label { font-weight: bold; color: #666; }
+  </style>
+</head>
+<body>
+  <h1>ldview + ldreactive Integration Tests</h1>
+
+  <!-- Demo 1: Basic Reactive Binding -->
+  <div class="demo">
+    <h2>Demo 1: Basic Reactive Counter</h2>
+    <div id="demo1">
+      <div class="output">
+        <span class="label">Count:</span> <span ld="count"></span>
+      </div>
+      <button ld="increment">Increment</button>
+      <button ld="decrement">Decrement</button>
+      <button ld="reset">Reset</button>
+    </div>
+  </div>
+
+  <!-- Demo 2: Multiple Properties -->
+  <div class="demo">
+    <h2>Demo 2: User Profile (Multiple Properties)</h2>
+    <div id="demo2">
+      <div class="output">
+        <div><span class="label">Name:</span> <span ld="name"></span></div>
+        <div><span class="label">Email:</span> <span ld="email"></span></div>
+        <div><span class="label">Age:</span> <span ld="age"></span></div>
+      </div>
+      <button ld="updateName">Change Name</button>
+      <button ld="updateEmail">Change Email</button>
+      <button ld="increaseAge">Increase Age</button>
+    </div>
+  </div>
+
+  <!-- Demo 3: Nested Objects -->
+  <div class="demo">
+    <h2>Demo 3: Nested Object Tracking</h2>
+    <div id="demo3">
+      <div class="output">
+        <div><span class="label">Street:</span> <span ld="street"></span></div>
+        <div><span class="label">City:</span> <span ld="city"></span></div>
+        <div><span class="label">Country:</span> <span ld="country"></span></div>
+      </div>
+      <button ld="changeStreet">Change Street</button>
+      <button ld="changeCity">Change City</button>
+    </div>
+  </div>
+
+  <!-- Demo 4: Array/List -->
+  <div class="demo">
+    <h2>Demo 4: Todo List (Array Tracking)</h2>
+    <div id="demo4">
+      <div class="output">
+        <div><span class="label">Total:</span> <span ld="count"></span></div>
+        <div ld-each="item">
+          <div ld="text"></div>
+        </div>
+      </div>
+      <button ld="addItem">Add Item</button>
+      <button ld="removeItem">Remove Last</button>
+    </div>
+  </div>
+
+  <script src="dist/ldreactive.js"></script>
+  <script src="web/static/assets/lib/@loadingio/ldquery/3.0.6/index.min.js"></script>
+  <script src="dist/index.js"></script>
+
+  <script>
+    console.log('ldview:', ldview);
+    console.log('ldreactive:', ldreactive);
+    console.log('ldview.reactive:', ldview.reactive);
+
+    // Demo 1: Basic Counter
+    const state1 = new ldview.reactive({ count: 0 });
+    const view1 = new ldview({
+      root: document.getElementById('demo1'),
+      ctx: state1,
+      handler: {
+        count: ({node, ctx}) => {
+          console.log('[Demo1] Rendering count:', ctx.count);
+          node.textContent = ctx.count;
+        },
+        increment: ({node, ctx}) => {
+          node.onclick = () => {
+            console.log('[Demo1] Increment clicked');
+            ctx.count++;
+          };
+        },
+        decrement: ({node, ctx}) => {
+          node.onclick = () => {
+            console.log('[Demo1] Decrement clicked');
+            ctx.count--;
+          };
+        },
+        reset: ({node, ctx}) => {
+          node.onclick = () => {
+            console.log('[Demo1] Reset clicked');
+            ctx.count = 0;
+          };
+        }
+      }
+    });
+
+    // Demo 2: Multiple Properties
+    const state2 = new ldview.reactive({
+      name: 'John Doe',
+      email: 'john@example.com',
+      age: 30
+    });
+    const view2 = new ldview({
+      root: document.getElementById('demo2'),
+      ctx: state2,
+      handler: {
+        name: ({node, ctx}) => {
+          console.log('[Demo2] Rendering name:', ctx.name);
+          node.textContent = ctx.name;
+        },
+        email: ({node, ctx}) => {
+          console.log('[Demo2] Rendering email:', ctx.email);
+          node.textContent = ctx.email;
+        },
+        age: ({node, ctx}) => {
+          console.log('[Demo2] Rendering age:', ctx.age);
+          node.textContent = ctx.age;
+        },
+        updateName: ({node, ctx}) => {
+          node.onclick = () => {
+            const names = ['Alice Smith', 'Bob Johnson', 'Charlie Brown'];
+            ctx.name = names[Math.floor(Math.random() * names.length)];
+          };
+        },
+        updateEmail: ({node, ctx}) => {
+          const user = ctx.name.split(' ')[0].toLowerCase();
+          ctx.email = user + '@example.com';
+        },
+        increaseAge: ({node, ctx}) => {
+          node.onclick = () => {
+            ctx.age++;
+          };
+        }
+      }
+    });
+
+    // Demo 3: Nested Objects
+    const state3 = new ldview.reactive({
+      address: {
+        street: '123 Main St',
+        city: 'New York',
+        country: 'USA'
+      }
+    });
+    const view3 = new ldview({
+      root: document.getElementById('demo3'),
+      ctx: state3,
+      handler: {
+        street: ({node, ctx}) => {
+          console.log('[Demo3] Rendering street:', ctx.address.street);
+          node.textContent = ctx.address.street;
+        },
+        city: ({node, ctx}) => {
+          console.log('[Demo3] Rendering city:', ctx.address.city);
+          node.textContent = ctx.address.city;
+        },
+        country: ({node, ctx}) => {
+          console.log('[Demo3] Rendering country:', ctx.address.country);
+          node.textContent = ctx.address.country;
+        },
+        changeStreet: ({node, ctx}) => {
+          node.onclick = () => {
+            const num = Math.floor(Math.random() * 999) + 1;
+            ctx.address.street = num + ' Main St';
+          };
+        },
+        changeCity: ({node, ctx}) => {
+          node.onclick = () => {
+            const cities = ['New York', 'Los Angeles', 'Chicago', 'Houston'];
+            ctx.address.city = cities[Math.floor(Math.random() * cities.length)];
+          };
+        }
+      }
+    });
+
+    // Demo 4: Array/List
+    const state4 = new ldview.reactive({
+      items: ['Task 1', 'Task 2', 'Task 3']
+    });
+    const view4 = new ldview({
+      root: document.getElementById('demo4'),
+      ctx: state4,
+      handler: {
+        count: ({node, ctx}) => {
+          console.log('[Demo4] Rendering count:', ctx.items.length);
+          node.textContent = ctx.items.length;
+        },
+        item: {
+          list: ({ctx}) => ctx.items,
+          handler: {
+            text: ({node, ctx}) => {
+              node.textContent = '• ' + ctx;
+            }
+          }
+        },
+        addItem: ({node, ctx}) => {
+          node.onclick = () => {
+            const num = ctx.items.length + 1;
+            console.log('[Demo4] Adding item:', num);
+            ctx.items.push('Task ' + num);
+          };
+        },
+        removeItem: ({node, ctx}) => {
+          node.onclick = () => {
+            if (ctx.items.length > 0) {
+              console.log('[Demo4] Removing last item');
+              ctx.items.pop();
+            }
+          };
+        }
+      }
+    });
+
+    console.log('All demos initialized!');
+  </script>
+</body>
+</html>

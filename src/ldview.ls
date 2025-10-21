@@ -1,5 +1,8 @@
 set-evt-handler = (d,k,f) -> d.node.addEventListener k, (evt) -> f({evt} <<< d)
 
+# Import ldreactive for reactive data binding support
+ldreactive = if module? and require? => require('./ldreactive.js') else window?ldreactive
+
 ldview = (opt = {}) ->
   if arguments.length > 1 => opt = ldview.merge.apply ldview, Array.from(arguments)
   @evt-handler = {}
@@ -10,6 +13,18 @@ ldview = (opt = {}) ->
 
   @_ctx = opt.context or opt.ctx or null
   if opt.context => console.warn '[ldview] `context` is deprecated. use `ctx` instead.'
+
+  # Reactive data binding support
+  @_reactive = null
+  @_reactive-enabled = false
+  if @_ctx and ldreactive and (@_ctx instanceof ldreactive or @_ctx._isReactiveContext)
+    @_reactive = @_ctx
+    @_reactive-enabled = true
+    # Listen for changes and auto-render affected handlers
+    @_reactive.on 'change', (key, value, old-value, dependents) ~>
+      if dependents and dependents.length > 0
+        @render dependents
+
   @attr = opt.attr or {}
   @style = opt.style or {}
   @handler = opt.handler or {}
@@ -218,8 +233,18 @@ ldview.prototype = Object.create(Object.prototype) <<< do
   # e: true if from each
   # init-only: init only
   _render: (n,d,i,b,e, init-only) ->
-    c = if typeof(@_ctx) == \function => c = @_ctx {node: @root, ctxs: @_ctxs, views: @views} else @_ctx
+    # Get context - if reactive, use the proxy
+    c = if @_reactive-enabled
+      then @_reactive.get!
+      else if typeof(@_ctx) == \function
+        then @_ctx {node: @root, ctxs: @_ctxs, views: @views}
+        else @_ctx
     d <<< {ctx: c, context: c, ctxs: @_ctxs, views: @views}
+
+    # Check if this handler has reactive disabled
+    reactive-allowed = @_reactive-enabled
+    if b and typeof(b.reactive) != \undefined => reactive-allowed = b.reactive
+
     if b =>
       if b.view =>
         init = ({node,local,data,ctx,ctxs,views}) ->
@@ -246,10 +271,33 @@ ldview.prototype = Object.create(Object.prototype) <<< do
       if init-only => return Promise.resolve(d.{}inited[n])
       # TODO render after inited ( p resolved )
       # TODO also, we may want to wait handler ( for its sub-init be resolved )
-      if handler => handler(d)
-      if text => d.node.textContent = if typeof(text) == \function => text(d) else text
-      if attr => for k,v of (attr(d) or {}) => d.node.setAttribute(k,v)
-      if style => for k,v of (style(d) or {}) => d.node.style[k] = v
+
+      # Wrap handler execution with dependency tracking if reactive is enabled
+      if handler =>
+        if reactive-allowed and @_reactive
+          @_reactive.track n, -> handler(d)
+        else
+          handler(d)
+
+      if text =>
+        text-val = if typeof(text) == \function
+          then (if reactive-allowed and @_reactive
+            then @_reactive.track n, -> text(d)
+            else text(d))
+          else text
+        d.node.textContent = text-val
+
+      if attr =>
+        attr-val = if reactive-allowed and @_reactive
+          then @_reactive.track n, -> attr(d)
+          else attr(d)
+        for k,v of (attr-val or {}) => d.node.setAttribute(k,v)
+
+      if style =>
+        style-val = if reactive-allowed and @_reactive
+          then @_reactive.track n, -> style(d)
+          else style(d)
+        for k,v of (style-val or {}) => d.node.style[k] = v
       for k,v of (action or {}) =>
         if !v or !((f = if b => v else v[n]) and !d.{}evts[k]) => continue
         # scoping so event handler can call v[n]
@@ -316,6 +364,9 @@ ldview._merge = ->
       ldview._merge (a[k] or (a[k] = {})), b[k]
     else a[k] = b[k]
   return a
+
+# Export ldreactive as static method for reactive data binding
+if ldreactive => ldview.reactive = ldreactive
 
 if module? => module.exports = ldview
 if window? => window.ldView = window.ldview = ldview

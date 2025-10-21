@@ -1,5 +1,5 @@
 (function(){
-  var setEvtHandler, ldview;
+  var setEvtHandler, ldreactive, ldview;
   setEvtHandler = function(d, k, f){
     return d.node.addEventListener(k, function(evt){
       return f(import$({
@@ -7,6 +7,9 @@
       }, d));
     });
   };
+  ldreactive = (typeof module != 'undefined' && module !== null) && (typeof require != 'undefined' && require !== null)
+    ? require('./ldreactive.js')
+    : typeof window != 'undefined' && window !== null ? window.ldreactive : void 8;
   ldview = function(opt){
     var names, i$, ref$, k, v, len$, list, j$, len1$, it, res$, this$ = this;
     opt == null && (opt = {});
@@ -19,6 +22,17 @@
     this._ctx = opt.context || opt.ctx || null;
     if (opt.context) {
       console.warn('[ldview] `context` is deprecated. use `ctx` instead.');
+    }
+    this._reactive = null;
+    this._reactiveEnabled = false;
+    if (this._ctx && ldreactive && (this._ctx instanceof ldreactive || this._ctx._isReactiveContext)) {
+      this._reactive = this._ctx;
+      this._reactiveEnabled = true;
+      this._reactive.on('change', function(key, value, oldValue, dependents){
+        if (dependents && dependents.length > 0) {
+          return this$.render(dependents);
+        }
+      });
     }
     this.attr = opt.attr || {};
     this.style = opt.style || {};
@@ -368,18 +382,24 @@
       });
     },
     _render: function(n, d, i, b, e, initOnly){
-      var c, init, handler, text, attr, style, action, ref$, k, v, f, results$ = [];
-      c = typeof this._ctx === 'function'
-        ? c = this._ctx({
-          node: this.root,
-          ctxs: this._ctxs,
-          views: this.views
-        })
-        : this._ctx;
+      var c, reactiveAllowed, init, handler, text, attr, style, action, ref$, textVal, attrVal, k, v, styleVal, f, results$ = [];
+      c = this._reactiveEnabled
+        ? this._reactive.get()
+        : typeof this._ctx === 'function'
+          ? this._ctx({
+            node: this.root,
+            ctxs: this._ctxs,
+            views: this.views
+          })
+          : this._ctx;
       d.ctx = c;
       d.context = c;
       d.ctxs = this._ctxs;
       d.views = this.views;
+      reactiveAllowed = this._reactiveEnabled;
+      if (b && typeof b.reactive !== 'undefined') {
+        reactiveAllowed = b.reactive;
+      }
       if (b) {
         if (b.view) {
           init = function(arg$){
@@ -424,19 +444,40 @@
           return Promise.resolve((d.inited || (d.inited = {}))[n]);
         }
         if (handler) {
-          handler(d);
+          if (reactiveAllowed && this._reactive) {
+            this._reactive.track(n, function(){
+              return handler(d);
+            });
+          } else {
+            handler(d);
+          }
         }
         if (text) {
-          d.node.textContent = typeof text === 'function' ? text(d) : text;
+          textVal = typeof text === 'function' ? reactiveAllowed && this._reactive
+            ? this._reactive.track(n, function(){
+              return text(d);
+            })
+            : text(d) : text;
+          d.node.textContent = textVal;
         }
         if (attr) {
-          for (k in ref$ = attr(d) || {}) {
+          attrVal = reactiveAllowed && this._reactive
+            ? this._reactive.track(n, function(){
+              return attr(d);
+            })
+            : attr(d);
+          for (k in ref$ = attrVal || {}) {
             v = ref$[k];
             d.node.setAttribute(k, v);
           }
         }
         if (style) {
-          for (k in ref$ = style(d) || {}) {
+          styleVal = reactiveAllowed && this._reactive
+            ? this._reactive.track(n, function(){
+              return style(d);
+            })
+            : style(d);
+          for (k in ref$ = styleVal || {}) {
             v = ref$[k];
             d.node.style[k] = v;
           }
@@ -614,6 +655,9 @@
     }
     return a;
   };
+  if (ldreactive) {
+    ldview.reactive = ldreactive;
+  }
   if (typeof module != 'undefined' && module !== null) {
     module.exports = ldview;
   }

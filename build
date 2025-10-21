@@ -1,14 +1,25 @@
 #!/usr/bin/env bash
 rm -rf dist
 mkdir -p dist
+
+echo "build src/ldreactive.ls -> dist/ldreactive.js ..."
+./node_modules/.bin/lsc -cp --no-header src/ldreactive.ls > dist/ldreactive.js
+
 echo "build src/ldview.ls -> dist/index.js ..."
 ./node_modules/.bin/lsc -cp --no-header src/ldview.ls > dist/index.js
+
+echo "minifying ldreactive.js ..."
+./node_modules/.bin/uglifyjs dist/ldreactive.js -m -c > dist/ldreactive.min.js
+
 echo "minifying index.js ..."
 ./node_modules/.bin/uglifyjs dist/index.js -m -c > dist/index.min.js
+
 echo "copy ldview.pug to dist/ ..."
 cp src/ldview.pug dist/index.pug
+
 echo "copy files to web ..."
 rm -rf web/static/assets/lib/ldview/dev
 mkdir -p web/static/assets/lib/ldview/dev
 cp dist/* web/static/assets/lib/ldview/dev
+
 echo "done."
