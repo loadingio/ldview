@@ -1,11 +1,21 @@
 (function(){
-  var setEvtHandler, ldview;
+  var setEvtHandler, find, parent, ldview;
   setEvtHandler = function(d, k, f){
     return d.node.addEventListener(k, function(evt){
       return f(import$({
         evt: evt
       }, d));
     });
+  };
+  find = function(n, s, i){
+    if (i != null) {
+      return n.querySelectorAll(s)[i];
+    } else {
+      return Array.from(n.querySelectorAll(s));
+    }
+  };
+  parent = function(n, s){
+    return n.closest(s);
   };
   ldview = function(opt){
     var names, i$, ref$, k, v, len$, list, j$, len1$, it, res$, this$ = this;
@@ -31,7 +41,7 @@
     this.ld = this.global ? 'pd' : 'ld';
     this.initRender = opt.initRender != null ? opt.initRender : true;
     this.root = typeof opt.root === 'string'
-      ? ld$.find(document, opt.root, 0)
+      ? find(document, opt.root, 0)
       : opt.root;
     if (!this.root) {
       console.warn("[ldview] warning: no node found for root ", opt.root);
@@ -136,8 +146,8 @@
         : "[" + this.ld + "-each]";
       exclusions = this.global
         ? []
-        : ld$.find(root, (this.id ? "[ld-scope-" + this.id + "] " : "") + ("[ld-scope] " + selector));
-      all = ld$.find(root, selector);
+        : find(root, (this.id ? "[ld-scope-" + this.id + "] " : "") + ("[ld-scope] " + selector));
+      all = find(root, selector);
       eachesNodes = this.eaches.map(function(it){
         return it.n;
       });
@@ -146,16 +156,12 @@
       }).filter(function(it){
         return !in$(it, eachesNodes);
       }).map(function(n){
-        var e, name, c, i, ret, p, that;
+        var name, c, i, ret, p, that;
         if (!n.parentNode) {
           return null;
         }
-        try {
-          if (ld$.parent(n.parentNode, "*[" + this$.ld + "-each]")) {
-            return null;
-          }
-        } catch (e$) {
-          e = e$;
+        if (parent(n.parentNode, "*[" + this$.ld + "-each]")) {
+          return null;
         }
         name = n.getAttribute(this$.ld + "-each");
         if (!this$.handler[name]) {
@@ -193,8 +199,8 @@
         : "[" + this.ld + "]";
       exclusions = this.global
         ? []
-        : ld$.find(root, (this.id ? "[ld-scope-" + this.id + "] " : "") + ("[ld-scope] " + selector));
-      all = ld$.find(root, selector);
+        : find(root, (this.id ? "[ld-scope-" + this.id + "] " : "") + ("[ld-scope] " + selector));
+      all = find(root, selector);
       nodes = all.filter(function(it){
         return !(in$(it, exclusions) || in$(it, this$.nodes));
       });

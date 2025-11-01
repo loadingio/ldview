@@ -7,6 +7,11 @@
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
 
+## v1.5.2 (upcoming)
+
+ - remove @loadingio/ldquery dependency
+
+
 ## v1.5.1
 
  - fix typo in pug mixin `scope`

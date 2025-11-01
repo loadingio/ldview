@@ -1,5 +1,8 @@
 set-evt-handler = (d,k,f) -> d.node.addEventListener k, (evt) -> f({evt} <<< d)
 
+find = (n, s, i) -> if i? => n.querySelectorAll(s)[i] else Array.from(n.querySelectorAll s)
+parent = (n, s) -> n.closest s
+
 ldview = (opt = {}) ->
   if arguments.length > 1 => opt = ldview.merge.apply ldview, Array.from(arguments)
   @evt-handler = {}
@@ -20,7 +23,7 @@ ldview = (opt = {}) ->
   @global = opt.global or false
   @ld = if @global => \pd else \ld
   @init-render = if opt.init-render? => opt.init-render else true
-  @root = if typeof(opt.root) == \string => ld$.find(document, opt.root, 0) else opt.root
+  @root = if typeof(opt.root) == \string => find(document, opt.root, 0) else opt.root
   if !@root => console.warn "[ldview] warning: no node found for root ", opt.root
   # some roots such as document don't support setAttribute. yet document doesn't need scope, too.
   if @root.setAttribute and !@global =>
@@ -60,8 +63,8 @@ ldview.prototype = Object.create(Object.prototype) <<< do
     # querySelector returns all nodes that matches the selector, even if some rule are above / in parent of root.
     # so, we use a ld-root to trap the rule inside.
     exclusions = if @global => []
-    else ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
-    all = ld$.find(root, selector)
+    else find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
+    all = find(root, selector)
     # remove all ld-each by orders.
     eaches-nodes = @eaches.map -> it.n
     eaches = all
@@ -76,14 +79,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         #while p => if p == document => break else p = p.parentNode
         #if !p => return null
         if !n.parentNode => return null
-
-        # there is a bug in ldquery <= 2.2.0 which may cause exception when calling ld$.parent without boundary node.
-        # but we have to remove boundary node for this check to work
-        # so we catch this and simply let it go, since there is no such parent if the error happens.
-        # this try catch can be removed in future major release as a breaking change
-        try
-          if ld$.parent(n.parentNode, "*[#{@ld}-each]") => return null
-        catch e
+        if parent(n.parentNode, "*[#{@ld}-each]") => return null
         name = n.getAttribute("#{@ld}-each")
         if !@handler[name] => return null
         c = n.parentNode
@@ -106,8 +102,8 @@ ldview.prototype = Object.create(Object.prototype) <<< do
     # now here is for [ld]
     selector = if @prefix => "[#{@ld}^=#{@prefix}\\$]" else "[#{@ld}]"
     exclusions = if @global => []
-    else ld$.find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
-    all = ld$.find(root, selector)
+    else find(root, (if @id => "[ld-scope-#{@id}] " else "") + "[ld-scope] #selector")
+    all = find(root, selector)
     nodes = all.filter ~> !((it in exclusions) or (it in @nodes))
     @nodes = @nodes ++ nodes
 
