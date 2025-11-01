@@ -1,19 +1,40 @@
-# ldView
+# ldview
 
-A simple, logic-less client side template engine.
+A headless, logic-less HTML template engine.
 
 
 ## Usage
 
 Install via npm:
 
-    npm install --save ldview @loadingio/ldquery
+    npm install --save ldview
 
-and include both modules in your page. Note that ldview depends on `@loadingio/ldquery`
+and include in your page:
 
-ldView works by defining what elements are and how should they be processed - you can think of this as the concept of `JS Selector`, like `CSS Selector`.
+    <script src="path-to-ldview/index.min.js"></script>
 
-Instead of defining how html should be rendered inside DOM, we name elements and assign processors in JavaScript according to their names.
+construct a ldview base on how you'd like to render. For example, this render `name` tag with username:
+
+    view = new ldview do
+      root: someDomRoot
+      ctx: -> user or {}
+      handler: name: ({node, ctx}) -> node.textContent = ctx.user?name or 'unnamed'
+
+which corresponds to HTML (written in Pug) such as:
+
+    #someDomRoot: div(ld="name")
+
+
+You can merge multiple configs by constructing ldview with multiple object:
+
+    view = new ldview({root: document.body}, {handler: {...}}, {text: {...}});
+
+You can also use `ldview.merge` to manually combine the configuration object. see `Class API` for detail.
+
+
+### Basic Concept
+
+ldview works by defining the binding between JS functions and element by `ld` attribute - consider it as the concept of `JS Selector`, like `CSS Selector`. We name elements and assign processors in JavaScript according to their names.
 
 For example, following code names three DIVs with "ld" attributes in "plan free", "plan month", and "plan year":
 
@@ -23,7 +44,7 @@ For example, following code names three DIVs with "ld" attributes in "plan free"
       div(ld="plan year")
 
 
-To bind the corresponding processor, create a new ldView object with a handler object:
+To bind the corresponding processor, create a new ldview object with a handler object:
 
     view = new ldview do
       root: document.body
@@ -36,21 +57,38 @@ view by default will be rendered after initialized, but you can render it again 
 
     view.render!
 
-You can merge multiple configs by constructing ldview with multiple object:
+To separate `init` from `render`, use `init` handler:
 
-    view = new ldview({root: document.body}, {handler: {...}}, {text: {...}});
+    view = new ldview do
+      root: document.body
+      init: plan: -> /* do
 
-You can also use `ldview.merge` to manually combine the view configuration object. see `Class API` for mode detail.
+initialization by default will be done once the view is created unless `initRender` option is false; in this case, you can initialize manually with `init` function:
+
+    view.init!then -> /* run after initialized */
+
+There are other types of handler, such as `action`, `text`, `style` and `attr`, See below for more information.
+
+    view = new ldview do
+      root: someDomNode
+      init: someSelector: (->), ...
+      text: someSelector: (->), ...
+      style: someSelector: (->), ...
+      attr: someSelector: (->), ...
+      handle: someSelector: (->), ...
+      action: /* unlike above handlers, first level of action contains different event names */
+        click: someSelector: (->),
+        mousedown: someSelector: (->),
+        ....
+
+in `handler` you can also loop a node with selector defined `ld-each` attribute, which is described in the next section.
 
 
-### loop with ld-each
+### Loop with ld-each
 
-ldView supports basic looping too. Declare an element to be looped with "ld-each" attribute:
+ldview supports looping too. Declare an element to be looped with "ld-each" attribute:
 
-    .shelf
-      div(ld-each="book")
-        .name(ld="name") Sample Name
-        .author(ld="author") Sample Author
+    .shelf: div(ld-each="book")
 
 the element with "book" ld-each attribute will be replaced by a comment node. Then, you can bind it with an array of elements to automatically generate a list of similar book elements with a slightly different handler config:
 
@@ -59,7 +97,7 @@ the element with "book" ld-each attribute will be replaced by a comment node. Th
         # instead of a simple handler function,
         # here we have an object containing a list function and a handler function
         book:
-          # tell ldView to map book elements to myBookList
+          # tell ldview to map book elements to myBookList
           list: -> myBookList
 
           # optional key getter for stable update
@@ -79,16 +117,23 @@ in list config, you can use all configs available for a generic items. for examp
       action: click: ({node, name, evt, idx}) -> ...
 
 
-### ld-each view
+### Loop with Nested View
 
-While you can manually update DOM content in the handler, you can also recursively apply ldView to make the whole process simpler:
+Usually you will want to render nodes below the looped element:
+
+  .shelf
+    div(ld-each="book")
+      .name(ld="name") Sample Name
+      .author(ld="author") Sample Author
+
+This requires a nested ldview construction like below if done manually:
 
     new ldview do
       handler:
-        # instead of a simple handler function,
-        # here we have an object containing a list function and a handle function
         book:
-          list: -> myBookList # tell ldView to map book elements to myBookList
+          list: -> myBookList
+          # manual approach - use init to create nested view.
+          # for illustration only, don't replicate.
           init: ({node,data}) ->
             (new ldview do
                root: node,
@@ -97,20 +142,19 @@ While you can manually update DOM content in the handler, you can also recursive
                  author: (.node.textContent = data.author)
             ).render!
 
-Or, let ldView do it for you with `view` option:
+however, ldview already does this for you. Simply move the view config under `view` field after `list`:
 
     new ldview do
       handler:
-        # instead of a simple handler function,
-        # here we have an object containing a list function and a handle function
         book:
-          list: -> myBookList # tell ldView to map book elements to myBookList
+          list: -> myBookList
+          # here is the trick
           view:
             handler:
               name: ({node, ctx}) -> node.textContent = ctx.name
               author: ({node, ctx}) -> node.textContent = ctx.author
 
-While you can use the same options in this view config as the ldview constructor, following fields will be overwritten by ldview:
+In nested case, following constructor fields inherits the parent view configs unless you overwrite them explicitly:
 
  - `initRender`
  - `root`
@@ -118,10 +162,17 @@ While you can use the same options in this view config as the ldview constructor
  - `ctx`
  - `ctxs`
 
-It's also possible to recursively apply ldview. For more information, check `Recursive Views and Template` section below.
+When you apply nested config with circular reference to itself, you can then construct a recursive view:
+
+    viewcfg = {}
+    viewcfg.handler = book:
+      list: ({ctx}) -> ctx.child
+      view: viewcfg
+
+Check `Recursive Views and Template` section below.
 
 
-### partial rendering
+### Partial Rendering
 
 After initialization, You probably will want to update some elements instead of updating every node. Just pass target names into render function:
 
@@ -137,7 +188,7 @@ For updating partial entries in `ld-each`, use following syntax with keys:
 Be sure to make sure keys here matches the return value of `key` accessor, in case of matching failure.
 
 
-### customize ld-each behavior / list optimization
+### Customize ld-each Behavior / List Optimization
 
 You can also specify `host` parameter to tell ldview how to process child elements. For example, with a large list of data, we may want to use `@loadingio/vscroll` for virtual scrolling, which effectively reduces amount of elements in the DOM tree:
 
@@ -152,21 +203,42 @@ You can also specify `host` parameter to tell ldview how to process child elemen
 where the `host` parameter should be a constructor that mimic basic DOM element interface. For more information, check `@loadingio/vscroll`.
 
 
-## Scoping
+### Nested View and Scoping
 
-Scope the DOM fragment with `scope` pug mixin and `scope` function available in ldview's `index.pug`:
+You can use nested view on a non-looping selector, which makes you possible to reuse configs and provide better modularization:
+
+    viewcfg = text: name: ({ctx}) -> ctx.name
+    new ldview(
+      {
+        handler:
+          userInfo: viewcfg
+          classInfo: viewcfg
+      },
+      viewcfg
+    )
+
+however, this also introduces name conflict if selectors with the same name are used across modules, so you may want to prevent ldview from selecting nodes that belongs to nested views, such as `name` in below DOM:
+
+    div(ld="name")
+    div(ld="userInfo"): div(ld="name")
+    div(ld="classInfo"): div(ld="name")
+
+To separate the scope of interest, use `ld-scope` tag to scope the DOM fragment:
+
+    div(ld="name")
+    div(ld-scope="scope-name-1",ld="userInfo"): div(ld="name")
+    div(ld-scope="scope-name-2",ld="classInfo"): div(ld="name")
+
+ldview also provides a `scope` pug mixin and `scope` function in ldview's `index.pug`:
 
     include /path-to-ldview/index.pug
     +scope("scope-name")
       div(ld="node-name") my element.
 
-Above code fragment will output something like this:
+`ld-scope` prevents other views to look up elements inside it.
 
-    <div ld-scope="scope-name">
-      <div ld="node-name"> my element </div>
-    </div>
 
-`ld-scope` will prevent other views to look up elements inside this scope.
+### Using Scope with Prefix for Mixed Views
 
 If you want to mix views, you can set the scope to `naked` by adding a `naked-scope` class:
 
@@ -188,7 +260,7 @@ becomes
     <div ld="scope-name$node-name"> my element </div>
     <div ld="global-name"> global element </div>
 
-To access prefix-ed node, adding `prefix` option when initializing ldView:
+To access prefix-ed node, adding `prefix` option when initializing ldview:
 
     var localView = new ldview({prefix: 'scope-name', handler: {
       "node-name": function(node) { ... }
@@ -205,6 +277,8 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
 
 
 ## Configurations
+
+Construct a ldview object with one (or more) configuration object with following fields:
 
  * `root` - view root
  * `handler` - object containing name / handler pairs.
@@ -226,12 +300,13 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
 
  * `prefix` - prefix name for this view. view will be global if scope name is not defined.
    this should be used along with the scope pug mixin.
- * `initRender` - if set to true, ldView automatically calls render immediately after initialized. default true
+ * `initRender` - if set to true, ldview automatically calls render immediately after initialized. default true
  * `global` - set true to use `pd` and `pd-each` for access nodes globally beyond ld-scope. default false.
  * `ctx` - default data accessible with in handler functions. can be set later with `setContext` api.
    - `context` is used as `ctx` before `0.1.0`, and it's now `ctx`.
  * `template` - template DOM for replacing root content. It's for supporting recursive views.
  * `ctxs` and `baseViews` - these config are used internally. Don't use this unless you know what's your doing.
+
 
 ## API
 
@@ -247,7 +322,7 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
    - `setCtx()` is used before `2.0.0`. use `ctx()` now.
    - `setContext()` is used before `0.1.0`. use `ctx()` now.
  * view.bindEachNode({container, name, node, idx})
-   - ldView keeps track of nodes once they are created as in ld-each.
+   - ldview keeps track of nodes once they are created as in ld-each.
      If for some reason we need a node to be removed from ld-each list but use in other place ( e.g.,
      when dragging outside we need the dragged node to exist for better user experience ), we can
      unbind it and rebind it later.
@@ -264,8 +339,9 @@ Basically `Scope` and `Prefix` are mutual exclusive; with `scope` you don't have
    - parameters:
      - container: container of these ld-each nodes.
      - idx: if provided, remove node in this position and return it.
-     - node: if idx is not provided, user can use the node itself to hint ldView.
+     - node: if idx is not provided, user can use the node itself to hint ldview.
      - name: name of ld-each.
+
 
 ## Handler Parameters
 
@@ -290,20 +366,18 @@ When handlers for each ld node is called, it contains following parameters:
 
 It's possible to define view recursively - simply refer a view config in itself:
 
-    cfg = {}
-    cfg <<< handler: someDirective: {
+    viewcfg = {}
+    viewcfg.handler = someDirective:
       list: -> ...
-      view: cfg
-    }
+      view: viewcfg
 
-Please note that the first `cfg = {}` is necessary since cfg won't be available for recursive definition when we initialize it, such as:
+Please note that the first `viewcfg = {}` is necessary since cfg won't be available for recursive definition when we initialize it, such as:
 
-    cfg = handler: someDirective: {
+    viewcfg = handler: someDirective: {
       list: -> ...
       # incorrect: cfg is not available here.
-      view: cfg
+      view: viewcfg
     }
-
 
 Additionally, we need also a recursively defined DOM, which is only possible with `template` option:
 
@@ -311,7 +385,7 @@ Additionally, we need also a recursively defined DOM, which is only possible wit
     script(type="text/livescript").
       cfg = {}
       new ldview cfg <<< {
-        template: document.querySelector('[data-name=template]')
+        template: document.querySelector('div[data-name=template]')
         handler: someDirective: {
           list: ({ctx}) -> ...
           view: cfg
@@ -322,10 +396,14 @@ In this case, the div named `template` will be cloned, attached and used as inne
 
 Also please note that `ctx` should not be defined in the reused `cfg`, otherwise it may cause infinite recursive calls, leading to maximal callstack exceeded exception. Following is a correct example:
 
-    cfg = {}
-    {ctx: mydata} <<< cfg <<< {
-      handler: myselector: view: cfg
-    }
+    viewcfg = {}
+    viewcfg.handler = myselector: view: viewcfg
+    rootcfg = ldview.merge({ctx: mydata}, viewcfg)
+
+or
+    viewcfg = {}
+    rootcfg = {ctx: mydata} <<< viewcfg <<< handler: myselector: view: viewcfg
+
 
 A workable, complete example with both JS and HTML (written in Pug) is as below:
 
@@ -349,21 +427,21 @@ A workable, complete example with both JS and HTML (written in Pug) is as below:
     view = new ldview({root: root, ctx: -> list} <<< cfg)
 
 
-## Nested Local Views and Template
+## Nested Views and Template
 
-It's possible to nest a local view in a selector:
+As described above, it's possible to nest a view in a selector:
 
     new ldview({
       handler: localView:
         handler: ...
     });
 
-However, nodes under this local view are still visble to its parent view. Use `ld-scope` to prevent accessing from parent view:
+And we use `ld-scope` to prevent selectors inside localView to be accessed by parent view:
 
     div(ld-scope,ld="localView"): ...
 
 
-Or, use `template` instead, which is by default scoped:
+It can also be accomplished via `template`, which is by default scoped:
 
     new ldview({
       handler: localView:
@@ -371,7 +449,7 @@ Or, use `template` instead, which is by default scoped:
         handler: ...
     });
 
-check `web/src/pug/scope/index.ls` for a working example of local views.
+check `web/src/pug/scope/index.ls` for a working example of template-based local views.
 
 
 ## Class API
