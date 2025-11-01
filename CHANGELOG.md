@@ -10,6 +10,7 @@
 ## v1.5.2 (upcoming)
 
  - remove @loadingio/ldquery dependency
+ - upgrade dependencies
 
 
 ## v1.5.1
