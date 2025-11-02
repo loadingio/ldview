@@ -1,0 +1,145 @@
+doctype html
+html
+  include @/@loadingio/bootstrap.ext/index.pug
+  include @static/assets/lib/ldview/dev/index.pug
+  head
+    +css("/assets/lib/bootstrap/main/dist/css/bootstrap.min.css")
+    +css("/assets/lib/@loadingio/bootstrap.ext/main/index.min.css")
+    style(type="text/css").
+      .test-section {
+        margin: 30px 0;
+        padding: 20px;
+        border: 2px solid #007bff;
+        border-radius: 8px;
+      }
+      .test-section h2 {
+        color: #007bff;
+        margin-top: 0;
+      }
+      .output {
+        margin: 15px 0;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        font-family: monospace;
+      }
+      .label {
+        font-weight: bold;
+        color: #666;
+      }
+      button {
+        margin: 5px;
+      }
+      .item {
+        padding: 10px;
+        margin: 5px 0;
+        background: #e9ecef;
+        border-radius: 4px;
+      }
+
+  body
+    .w-1024.rwd.mx-auto.typeset.heading-contrast.my-4
+      h1 ldreactive + ldview Integration Tests
+      .text-muted Test integration between ldreactive.ls and ldview.ls with automatic reactive updates
+      hr
+
+      // Test 1: Basic Counter - Property Tracking
+      .test-section
+        h2 Test 1: Basic Counter (Property Tracking)
+        .text-muted Tests basic reactive property tracking and automatic updates
+        +scope("test1")
+          .output
+            div
+              span.label Count: 
+              span(ld="count")
+            div
+              span.label Render count: 
+              span(ld="renderCount")
+          button.btn.btn-primary(ld="increment") Increment
+          button.btn.btn-secondary(ld="decrement") Decrement
+          button.btn.btn-warning(ld="reset") Reset
+
+      // Test 2: Nested Object Tracking
+      .test-section
+        h2 Test 2: Nested Object Tracking
+        .text-muted Tests deep property tracking in nested objects
+        +scope("test2")
+          .output
+            div
+              span.label Street: 
+              span(ld="street")
+            div
+              span.label City: 
+              span(ld="city")
+            div
+              span.label Country: 
+              span(ld="country")
+            div
+              span.label Full Address: 
+              span(ld="fullAddress")
+          button.btn.btn-primary(ld="changeStreet") Change Street
+          button.btn.btn-primary(ld="changeCity") Change City
+          button.btn.btn-primary(ld="changeCountry") Change Country
+
+      // Test 3: Array/List Tracking
+      .test-section
+        h2 Test 3: Array/List Tracking
+        .text-muted Tests array operations and reactive length tracking
+        +scope("test3")
+          .output
+            div
+              span.label Total Items: 
+              span(ld="count")
+            div
+              span.label Items as JSON: 
+              span(ld="itemsList")
+          button.btn.btn-success(ld="addItem") Add Item
+          button.btn.btn-danger(ld="removeItem") Remove Last
+          button.btn.btn-info(ld="clearAll") Clear All
+
+      // Test 4: Batch Updates
+      .test-section
+        h2 Test 4: Batch Updates
+        .text-muted Tests batching multiple updates into a single render
+        +scope("test4")
+          .output
+            div
+              span.label Name: 
+              span(ld="name")
+            div
+              span.label Age: 
+              span(ld="age")
+            div
+              span.label Email: 
+              span(ld="email")
+            div
+              span.label Batch render count: 
+              span(ld="batchCount")
+          button.btn.btn-primary(ld="updateAll") Update All (Batch)
+          button.btn.btn-secondary(ld="updateSeparate") Update Separately
+
+      // Test 5: Manual Render Control
+      .test-section
+        h2 Test 5: Manual Render Control (reactive: false)
+        .text-muted Tests disabling automatic reactive updates for specific handlers
+        +scope("test5")
+          .output
+            div
+              span.label Auto Value: 
+              span(ld="autoValue")
+            div
+              span.label Manual Value: 
+              span(ld="manualValue")
+            div
+              span.label Auto render count: 
+              span(ld="autoCount")
+            div
+              span.label Manual render count: 
+              span(ld="manualCount")
+          button.btn.btn-primary(ld="changeValue") Change Value
+          button.btn.btn-warning(ld="manualRender") Manual Render
+
+    +script("/assets/lib/@loadingio/ldquery/main/index.min.js")
+    +script("/assets/lib/ldview/dev/ldreactive.js")
+    +script("/assets/lib/ldview/dev/index.js")
+    script(type="module"): include:lsc index.ls

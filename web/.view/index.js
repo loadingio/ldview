@@ -10,7 +10,7 @@ function pug_merge(e,r){if(1===arguments.length){for(var t=e[0],g=1;g<e.length;g
 function pug_style(r){if(!r)return"";if("object"==typeof r){var t="";for(var e in r)pug_has_own_property.call(r,e)&&(t=t+e+":"+r[e]+";");return t}return r+""}function template(locals) {var pug_html = "", pug_mixins = {}, pug_interp;;
     var locals_for_with = (locals || {});
     
-    (function (Array, JSON, b64img, blockLoader, c, cssLoader, decache, defer, escape, hashfile, libLoader, md5, parentName, prefix, scriptLoader, url, version) {
+    (function (Array, JSON, b64img, blockLoader, c, cssLoader, decache, defer, escape, hashfile, libLoader, md5, prefix, scriptLoader, url, version) {
       pug_html = pug_html + "\u003C!DOCTYPE html\u003E";
 if(!libLoader) {
   libLoader = {
@@ -230,7 +230,7 @@ var loremtext = {
 prefix = function(n) { return (!n?[]:(Array.isArray(n)?n:[n])).map(function(it){ return `${prefix.currentName}$${it}`; }).join(' ');}
 pug_mixins["scope"] = pug_interp = function(name){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
-var prentName = prefix.currentName;
+var parentName = prefix.currentName;
 prefix.currentName = name;
 if (attributes.class && /naked-scope/.exec(attributes.class)) {
 block && block();
@@ -280,9 +280,7 @@ pug_html = pug_html + "\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";
         locals_for_with.libLoader :
         typeof libLoader !== 'undefined' ? libLoader : undefined, "md5" in locals_for_with ?
         locals_for_with.md5 :
-        typeof md5 !== 'undefined' ? md5 : undefined, "parentName" in locals_for_with ?
-        locals_for_with.parentName :
-        typeof parentName !== 'undefined' ? parentName : undefined, "prefix" in locals_for_with ?
+        typeof md5 !== 'undefined' ? md5 : undefined, "prefix" in locals_for_with ?
         locals_for_with.prefix :
         typeof prefix !== 'undefined' ? prefix : undefined, "scriptLoader" in locals_for_with ?
         locals_for_with.scriptLoader :
