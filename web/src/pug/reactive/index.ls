@@ -86,19 +86,21 @@
     handler:
       count: ({node, ctx}) ->
         node.textContent = ctx.items.length
-      item:
-        list: ({ctx}) -> ctx.items
-        view:
-          text:
-            text: ({ctx}) -> ctx.text
+      itemsList: ({node, ctx}) ->
+        # Show items as JSON string to demonstrate array tracking
+        node.textContent = JSON.stringify(ctx.items)
       addItem: ({node, ctx}) ->
         node.onclick = ->
           itemCounter++
-          ctx.items.push {text: "Item ##{itemCounter}"}
+          ctx.items.push {id: itemCounter, text: "Item ##{itemCounter}"}
       removeItem: ({node, ctx}) ->
         node.onclick = ->
           if ctx.items.length > 0
             ctx.items.pop!
+      clearAll: ({node, ctx}) ->
+        node.onclick = ->
+          # Test reassignment
+          ctx.items = []
   
   console.log "Test 3 initialized"
 )!
@@ -113,11 +115,7 @@
     age: 25
     email: "john@example.com"
   
-  batchRenderCount = 0
-  
-  # Listen to change events to count renders
-  state.on 'change', (key, value, oldValue) ->
-    batchRenderCount++
+  updateCounter = 0
   
   view = new ldview do
     ctx: state
@@ -130,23 +128,21 @@
       email: ({node, ctx}) ->
         node.textContent = ctx.email
       batchCount: ({node}) ->
-        node.textContent = batchRenderCount
+        node.textContent = updateCounter
       updateAll: ({node}) ->
         node.onclick = ->
           # Use batch to update all at once
-          prevCount = batchRenderCount
+          updateCounter++
           state.batch ->
             data = state.get!
             data.name = "Jane"
             data.age = 30
             data.email = "jane@example.com"
-          # In batch mode, only batch-change event is fired, not individual change events
-          # So we manually increment for demonstration
-          batchRenderCount = prevCount + 1
           view.render \batchCount
       updateSeparate: ({node}) ->
         node.onclick = ->
-          # Update separately (not batched)
+          # Update separately (not batched) - multiple updates
+          updateCounter++
           data = state.get!
           data.name = "Bob"
           data.age = 35

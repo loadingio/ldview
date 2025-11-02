@@ -84,16 +84,18 @@ html
       // Test 3: Array/List Tracking
       .test-section
         h2 Test 3: Array/List Tracking
-        .text-muted Tests array operations and list rendering
+        .text-muted Tests array operations and reactive length tracking
         +scope("test3")
           .output
             div
               span.label Total Items: 
               span(ld="count")
-            div.mt-3(ld-each="item")
-              .item(ld="text")
+            div
+              span.label Items as JSON: 
+              span(ld="itemsList")
           button.btn.btn-success(ld="addItem") Add Item
           button.btn.btn-danger(ld="removeItem") Remove Last
+          button.btn.btn-info(ld="clearAll") Clear All
 
       // Test 4: Batch Updates
       .test-section
