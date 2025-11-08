@@ -389,20 +389,32 @@
       if (b) {
         if (b.view) {
           init = function(arg$){
-            var node, local, data, ctx, ctxs, views, ref$;
+            var node, local, data, ctx, ctxs, views, _cfg, ref$, _ctx;
             node = arg$.node, local = arg$.local, data = arg$.data, ctx = arg$.ctx, ctxs = arg$.ctxs, views = arg$.views;
-            local._view = new ldview((ref$ = import$({
+            _cfg = (ref$ = import$({
               ctx: data
             }, b.view), ref$.initRender = false, ref$.root = node, ref$.baseViews = views, ref$.ctxs = ctxs
               ? [ctx].concat(ctxs)
-              : [ctx], ref$));
+              : [ctx], ref$);
+            if (typeof _cfg.ctx === 'function') {
+              _ctx = _cfg.ctx;
+              _cfg.ctx = function(opt){
+                return _ctx(import$({
+                  ctx: data || ctx
+                }, opt));
+              };
+              local._ctx = _ctx;
+            }
+            local._view = new ldview(_cfg);
             return local._view.init();
           };
-          handler = function(arg$){
+          handler = function(opt){
             var local, data, ctx, ctxs;
-            local = arg$.local, data = arg$.data, ctx = arg$.ctx, ctxs = arg$.ctxs;
+            local = opt.local, data = opt.data, ctx = opt.ctx, ctxs = opt.ctxs;
             if (e) {
-              local._view.ctx(data);
+              local._view.ctx(data || ctx);
+            } else if (local._ctx) {
+              local._view.ctx(local._ctx(opt));
             }
             local._view.ctxs(ctxs
               ? [ctx].concat(ctxs)

@@ -33,7 +33,7 @@ ldview = (opt = {}) ->
   if (@template = opt.template) =>
     @root.textContent = ''
     @root.appendChild @template.cloneNode(true)
-  # if _ctx is a function, ctx will  updated each time before render now.
+  # if _ctx is a function, ctx will updated each time before render now.
   # we probably may want to add a config to disable this behavior in the future, such as:
   # if opt.ctx-only-init and typeof(@_ctx) == \function =>
   #   @_ctx = @_ctx {node: @root, ctxs: @_ctxs, views: @views}
@@ -216,13 +216,20 @@ ldview.prototype = Object.create(Object.prototype) <<< do
     if b =>
       if b.view =>
         init = ({node,local,data,ctx,ctxs,views}) ->
-          local._view = new ldview({ctx: data} <<< b.view <<< {
+          _cfg = {ctx: data} <<< b.view <<< {
             init-render: false, root: node, base-views: views
             ctxs: (if ctxs => [ctx] ++ ctxs else [ctx])
-          })
+          }
+          if typeof(_cfg.ctx) == \function =>
+            _ctx = _cfg.ctx
+            _cfg.ctx = (opt) -> _ctx({ctx: data or ctx} <<< opt)
+            local._ctx = _ctx
+          local._view = new ldview _cfg
           local._view.init!
-        handler = ({local,data,ctx,ctxs}) ->
-          if e => local._view.ctx(data)
+        handler = (opt) ->
+          {local, data, ctx, ctxs} = opt
+          if e => local._view.ctx(data or ctx)
+          else if local._ctx => local._view.ctx local._ctx(opt)
           local._view.ctxs(if ctxs => [ctx] ++ ctxs else [ctx])
           local._view.render!
       else
