@@ -1,4 +1,3 @@
-
 data = {}
 view = new ldview do
   root: document.body

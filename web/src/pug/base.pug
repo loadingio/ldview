@@ -1,0 +1,19 @@
+//- module
+doctype html
+html
+  include @/@loadingio/bootstrap.ext/index.pug
+  include @static/assets/lib/ldview/dev/index.pug
+  head
+    block prehead
+    +css([
+      {name: "bootstrap", path: "dist/css/bootstrap.min.css"},
+      {name: "@loadingio/bootstrap.ext"}
+    ])
+    block head
+  body
+    block body
+    +script([
+      {name: "@loadingio/debounce.js"},
+      {name: "ldview", version: "dev"}
+    ])
+    block script
