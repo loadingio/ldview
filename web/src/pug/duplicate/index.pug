@@ -17,15 +17,18 @@ block body
     hr
     .d-flex.g-4.flex-wrap
       .flex-grow-1
+        .mb-2.font-weight-bold click to toggle different steps.
+        .btn-group
+          .btn.btn-outline-secondary(ld="toggle",data-step="1") Step 1
+          .btn.btn-outline-secondary(ld="toggle",data-step="2") Step 2
+          .btn.btn-outline-secondary(ld="toggle",data-step="3") Step 3
+      .flex-grow-1
         .mb-2.font-weight-bold object list
-        .d-flex.g-4
-          .d-flex.g-2.p-2.rounded.shadow-sm.border(ld-each="item")
+        .d-flex.g-4.flex-column
+          div(ld-each="item")
             .btn-group
-              .btn.btn-outline-secondary Key
-              .btn.btn-outline-secondary(ld="key")
-            .btn-group
-              .btn.btn-outline-secondary Name
-              .btn.btn-outline-secondary(ld="name")
+              .btn.btn-outline-secondary Key: #[span(ld="key")]
+              .btn.btn-outline-secondary Name: #[span(ld="name")]
       .flex-grow-1
         .mb-2.font-weight-bold string list
         .d-flex.g-2: .rounded.px-3.py-2.border.shadow-sm(ld-each="str")

@@ -1,10 +1,13 @@
 data = {}
 view = new ldview do
   root: document.body
-  init-render: false
+  init-render: true
+  action: click: toggle: ({node}) ->
+    step = node.dataset.step
+    steps[step]!
   handler:
     item:
-      list: -> data.list
+      list: -> data.list or []
       key: -> it.key
       view:
         text:
@@ -14,23 +17,21 @@ view = new ldview do
       list: -> data.str-list
       view: text: "@": ({ctx}) -> ctx
 
-Promise.resolve!
-  .then ->
+steps =
+  "1": ->
     data.list = [
     * key: 1, name: "A"
     * key: 1, name: "B"
     ]
     data.str-list = <[A A]>
     view.render!
-  .then -> debounce 1000
-  .then ->
+  "2": ->
     data.list = [
     * key: 1, name: "A"
     ]
     data.str-list = <[A]>
     view.render!
-  .then -> debounce 1000
-  .then ->
+  "3": ->
     data.list = [
     * key: 1, name: "A"
     * key: 1, name: "B"
