@@ -1,0 +1,14 @@
+extends /base.pug
+block head
+block body
+  .w-1024.rwd.mx-auto.my-4
+    a(href="/") &laquo; back
+    h3.m-0 test: nested views
+    p this root view is constructed with nested views and customized ctx functions, which shows name of each body parts, including head, body, foot and 5 fingers with list.
+    div
+      div(ld="head")
+      div(ld="body")
+      div(ld="foot")
+      div: div(ld-each="finger") finger #[span(ld="idx")]
+block script
+  script(type="module"): include:lsc index.ls
