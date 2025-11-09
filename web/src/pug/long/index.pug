@@ -1,30 +1,21 @@
-doctype html
-html
-  include @/@loadingio/bootstrap.ext/index.pug
-  include @static/assets/lib/ldview/dev/index.pug
-  head
-    +css("/assets/lib/bootstrap/main/dist/css/bootstrap.min.css")
-    +css("/assets/lib/@loadingio/bootstrap.ext/main/index.min.css")
-    style(type="text/css"): :stylus
-      .item
-        width: 30%
-      .item .title
-        font-size: 2em
-        font-weight: 700
-       
-  body
-    .w-1024.rwd.mx-auto.typeset.heading-contrast.my-4
-      h1 ldView
-      .text-muted ldView is a library for simple DOM rendering and event handling.
-      hr
-      +scope("ldview")
-        .d-flex.justify-content-between.flex-wrap(ld="list",style="overflow-y:scroll;height:300px")
-          .item.rounded.border.shadow-sm.my-4.px-4.py-2(ld-each="item")
-            .thumb(ld="thumb")
-            .title(ld="title")
-            .desc(ld="description")
-            .text-muted.text-sm(ld="date")
-    +script("/assets/lib/@loadingio/ldquery/main/index.min.js")
-    +script("/assets/lib/@loadingio/vscroll/main/index.js")
-    +script("/assets/lib/ldview/dev/index.js")
-    script(type="module"): include:lsc index.ls
+extends /base.pug
+block head
+  style(type="text/css"): include:stylus index.styl
+block body
+  .w-1024.rwd.mx-auto.typeset.heading-contrast.my-4
+    a(href="/") &laquo; back
+    h3.m-0 test: long list
+    p handle very long list with @loadingio/vscroll. try scrolling the below list
+    +scope("ldview")
+      .d-flex.justify-content-between.flex-wrap.shadow-sm.p-4.border(
+      ld="list",style="overflow-y:scroll;height:300px")
+        .item.rounded.my-4.px-4.py-2(ld-each="item")
+          .thumb(ld="thumb")
+          .title(ld="title")
+          .desc(ld="description")
+          .text-muted.text-sm(ld="date")
+  +script([
+    {name: "@loadingio/vscroll"}
+  ])
+block script
+  script(type="module"): include:lsc index.ls
