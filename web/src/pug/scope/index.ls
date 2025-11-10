@@ -6,6 +6,7 @@ list = [
 ]
 view = new ldview do
   root: document.body
+  ctx: {obj: {name: "root ctx", child: {name: "child ctx", score: "99"}}}
   handler:
     list:
       list: -> list
@@ -20,6 +21,12 @@ view = new ldview do
     "template-view":
       template: ld$.find('[template]',0)
       ctx: {name: \template, score: "55 ( template )"}
+      text:
+        name: ({ctx}) -> ctx.name
+        score: ({ctx}) -> ctx.score
+    "view-with-nested-ctx":
+      template: ld$.find('[template]',0)
+      ctx: ({ctx}) -> ctx.obj.child
       text:
         name: ({ctx}) -> ctx.name
         score: ({ctx}) -> ctx.score
