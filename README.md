@@ -449,6 +449,17 @@ It can also be accomplished via `template`, which is by default scoped:
         handler: ...
     });
 
+You can also define a ctx function, with parent ctx in its parameter:
+
+    new ldview({
+      ctx: -> { node: { name: "something" }}
+      handler: localView:
+        template: ...
+        ctx: ({ctx}) -> ctx.node
+        handler: ...
+    });
+
+    
 check `web/src/pug/scope/index.ls` for a working example of template-based local views.
 
 
