@@ -9,10 +9,13 @@
 
 ## v1.6.0
 
- - remove @loadingio/ldquery dependency
- - upgrade dependencies
  - support ctx in nested view with parameters as handlers
 
+
+## v1.5.2
+
+ - remove @loadingio/ldquery dependency
+ - upgrade dependencies
 
 
 ## v1.5.1
