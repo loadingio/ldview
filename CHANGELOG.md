@@ -7,6 +7,11 @@
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
 
+## v1.7.0
+
+ - support Promise with render
+
+
 ## v1.6.0
 
  - support ctx in nested view with parameters as handlers

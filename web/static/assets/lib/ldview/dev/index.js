@@ -374,7 +374,7 @@
       });
     },
     _render: function(n, d, i, b, e, initOnly){
-      var c, init, handler, text, attr, style, action, ref$, k, v, f, results$ = [];
+      var c, init, handler, text, attr, style, action, ref$, ps, k, v, f;
       c = typeof this._ctx === 'function'
         ? c = this._ctx({
           node: this.root,
@@ -441,8 +441,9 @@
         if (initOnly) {
           return Promise.resolve((d.inited || (d.inited = {}))[n]);
         }
+        ps = [];
         if (handler) {
-          handler(d);
+          ps.push(handler(d));
         }
         if (text) {
           d.node.textContent = typeof text === 'function' ? text(d) : text;
@@ -467,9 +468,9 @@
             continue;
           }
           setEvtHandler(d, k, f);
-          results$.push(d.evts[k] = true);
+          d.evts[k] = true;
         }
-        return results$;
+        return Promise.all(ps);
       } catch (e$) {
         e = e$;
         console.warn("[ldview] failed when rendering " + n + ":", e);
