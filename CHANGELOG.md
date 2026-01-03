@@ -7,6 +7,11 @@
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
 
+## v1.7.1
+
+ - fix bug: ldview.merge doesn't work correctly when field to merge is false after converting to boolean
+
+
 ## v1.7.0
 
  - support Promise with render

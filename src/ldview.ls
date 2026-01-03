@@ -313,7 +313,7 @@ ldview._merge = ->
   if list.length < 2 => return list.0
   a = list.splice 0, 1 .0
   for b in list => for k of b
-    if !b[k] => continue
+    if !(b[k]?) => continue
     if typeof(b[k]) == \object and b[k].constructor == Object =>
       ldview._merge (a[k] or (a[k] = {})), b[k]
     else a[k] = b[k]

@@ -621,7 +621,7 @@
     for (i$ = 0, len$ = list.length; i$ < len$; ++i$) {
       b = list[i$];
       for (k in b) {
-        if (!b[k]) {
+        if (!(b[k] != null)) {
           continue;
         }
         if (typeof b[k] === 'object' && b[k].constructor === Object) {
