@@ -7,6 +7,11 @@
  - remove `setContext()` and `setCtx()`, in favor of `ctx()`.
 
 
+## v1.7.2
+
+ - fix bug: ctxs in ctx of nested view isn't correct
+
+
 ## v1.7.1
 
  - fix bug: ldview.merge doesn't work correctly when field to merge is false after converting to boolean
