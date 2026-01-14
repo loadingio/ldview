@@ -229,7 +229,7 @@ ldview.prototype = Object.create(Object.prototype) <<< do
         handler = (opt) ->
           {local, data, ctx, ctxs} = opt
           if e => local._view.ctx(data or ctx)
-          else if local._ctx => local._view.ctx local._ctx(opt)
+          else if local._ctx => local._view.ctx local._ctx(opt <<< {ctxs: [ctx] ++ ctxs})
           local._view.ctxs(if ctxs => [ctx] ++ ctxs else [ctx])
           local._view.render!
       else

@@ -414,7 +414,7 @@
             if (e) {
               local._view.ctx(data || ctx);
             } else if (local._ctx) {
-              local._view.ctx(local._ctx(opt));
+              local._view.ctx(local._ctx((opt.ctxs = [ctx].concat(ctxs), opt)));
             }
             local._view.ctxs(ctxs
               ? [ctx].concat(ctxs)
